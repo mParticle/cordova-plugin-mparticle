@@ -17,11 +17,7 @@ cordova plugin add cordova-plugin-mparticle
 
 ## iOS
 
-**Start mParticle** within `application:didFinishLaunchingWithOptions:`:
-
-```objective-c
-[[MParticle sharedInstance] startWithKey:@"APP KEY" secret:@"APP SECRET"];
-```
+**Add your KEY and SECRET to plist (TBD)**
 
 ## Android
 
@@ -36,10 +32,10 @@ cordova plugin add cordova-plugin-mparticle
 </resources>
 ```
 
-**Start mParticle** in your application's `onCreate`:
+**Start mParticle** in your application's `deviceready`:
 
-```objective-c
-MParticle.start(this);
+```
+mparticle.start();
 ```
 
 # Usage

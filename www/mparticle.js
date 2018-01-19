@@ -66,6 +66,10 @@ var mparticle = {
     Click: 1
   },
 
+  start: function (key, secret) {
+    exec('start',[key, secret]);
+  },
+
   logEvent: function (eventName, type, attributes) {
     exec('logEvent', [eventName, type, attributes])
   },

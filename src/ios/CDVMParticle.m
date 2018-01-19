@@ -6,6 +6,13 @@
 
 @implementation CDVMParticle
 
+
+- (void)start:(CDVInvokedUrlCommand*)command {
+    NSString *key = [command.arguments objectAtIndex:0];
+    NSString *secret = [command.arguments objectAtIndex:1];
+    [[MParticle sharedInstance] startWithKey:key secret:secret];
+}
+
 - (void)logEvent:(CDVInvokedUrlCommand*)command {
     [self.commandDelegate runInBackground:^{
         NSString *eventName = [command.arguments objectAtIndex:0];

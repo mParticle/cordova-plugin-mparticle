@@ -19,6 +19,7 @@
         <config-file target="config.xml" parent="/*">
             <feature name="MParticle">
                 <param name="ios-package" value="CDVMParticle"/>
+                <param name="onload" value="true" />
             </feature>
         </config-file>
         <source-file src="src/ios/CDVMParticle.m" />
