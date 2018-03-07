@@ -244,7 +244,7 @@ typedef NS_ENUM(NSUInteger, MPCDVCommerceEventAction) {
 }
 
 + (MPTransactionAttributes *)MPTransactionAttributes:(id)json {
-    MPTransactionAttributes *transactionAttributes;
+    MPTransactionAttributes *transactionAttributes = [[MPTransactionAttributes alloc] init];
     transactionAttributes.affiliation = json[@"affiliation"];
     transactionAttributes.couponCode = json[@"couponCode"];
     transactionAttributes.shipping = json[@"shipping"];
