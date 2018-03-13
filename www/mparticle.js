@@ -45,7 +45,10 @@ var mparticle = {
     Yahoo: 6,
     Email: 7,
     Alias: 8,
-    FacebookCustomAudienceId: 9
+    FacebookCustomAudienceId: 9.
+    Other2: 10,
+    Other3: 11,
+    Other4: 12
   },
 
   ProductActionType: {
@@ -78,28 +81,131 @@ var mparticle = {
     exec('logScreenEvent', [screenName, attributes])
   },
 
-  setUserAttribute: function (key, value) {
-    if (value && value.constructor === Array) {
-      exec('setUserAttributeArray', [key, value])
-    } else {
-      exec('setUserAttribute', [key, value])
+  User: function (userId) {
+    this.userId = userId
+
+    this.setUserAttribute = function (key, value) {
+      if (value && value.constructor === Array) {
+        exec('setUserAttributeArray', [this.userId, key, value])
+      } else {
+        exec('setUserAttribute', [this.userId, key, value])
+      }
+    }
+
+    this.setUserAttributeArray = function (key, values) {
+      exec('setUserAttributeArray', [this.userId, key, values])
+    }
+
+    this.setUserTag = function (tag) {
+      exec('setUserTag', [this.userId, tag])
+    }
+
+    this.removeUserAttribute = function (key) {
+      exec('removeUserAttribute', [this.userId, key])
+    }
+
+    this.getUserIdentities = function (completion) {
+      cordova.exec(completion,
+                 function (error) { console.log(error) },
+                 'MParticle',
+                 'getUserIdentities',
+                 [this.userId])
     }
   },
 
-  setUserAttributeArray: function (key, values) {
-    exec('setUserAttributeArray', [key, values])
+  IdentityRequest: function () {
+
+    this.setEmail = function (email) {
+      this.email = email
+      return this
+    }
+
+    this.setUserIdentity = function (userIdentity, identityType) {
+      switch (identityType) {
+        case UserIdentityType.Other:
+          this.other = userIdentity
+          break
+        case UserIdentityType.CustomerId:
+          this.customerId = userIdentity
+          break
+        case UserIdentityType.Facebook:
+          this.facebook = userIdentity
+          break
+        case UserIdentityType.Twitter:
+          this.twitter = userIdentity
+          break
+        case UserIdentityType.Google:
+          this.google = userIdentity
+          break
+        case UserIdentityType.Microsoft:
+          this.microsoft = userIdentity
+          break
+        case UserIdentityType.Yahoo:
+          this.yahoo = userIdentity
+          break
+        case UserIdentityType.Email:
+          this.email = userIdentity
+          break
+        case UserIdentityType.FacebookCustomAudienceId:
+          this.facebookCustom = userIdentity
+          break
+        case UserIdentityType.Other2:
+          this.other2 = userIdentity
+          break
+        case UserIdentityType.Other3:
+          this.other3 = userIdentity
+          break
+        case UserIdentityType.Other4:
+          this.other4 = userIdentity
+          break
+        default:
+          break
+      }
+      return this
+    }
   },
 
-  setUserTag: function (tag) {
-    exec('setUserTag', [tag])
-  },
+  Identity: function () {
 
-  removeUserAttribute: function (key) {
-    exec('removeUserAttribute', [key])
-  },
+    this.getCurrentUser = function (completion) {
+      cordova.exec(completion,
+                 function (error) { console.log(error) },
+                 'MParticle',
+                 'getCurrentUser',
+                 [])
+    }
 
-  setUserIdentity: function (userIdentity, identityType) {
-    exec('setUserIdentity', [userIdentity, identityType])
+    this.identify = function (IdentityRequest, completion) {
+      cordova.exec(completion,
+                 function (error) { console.log(error) },
+                 'MParticle',
+                 'identify',
+                 [IdentityRequest])
+    }
+
+    this.login = function (IdentityRequest, completion) {
+      cordova.exec(completion,
+                 function (error) { console.log(error) },
+                 'MParticle',
+                 'login',
+                 [IdentityRequest])
+    }
+
+    this.logout = function (IdentityRequest, completion) {
+      cordova.exec(completion,
+                 function (error) { console.log(error) },
+                 'MParticle',
+                 'logout',
+                 [IdentityRequest])
+    }
+
+    this.modify = function (IdentityRequest, completion) {
+      cordova.exec(completion,
+                 function (error) { console.log(error) },
+                 'MParticle',
+                 'modify',
+                 [IdentityRequest])
+    }
   },
 
   Impression: function (impressionListName, products) {

@@ -2,12 +2,14 @@ package com.mparticle.cordova;
 
 import android.util.Log;
 
+import com.mparticle.MPEvent;
 import com.mparticle.MParticle;
 import com.mparticle.commerce.CommerceEvent;
 import com.mparticle.commerce.Impression;
 import com.mparticle.commerce.Product;
 import com.mparticle.commerce.TransactionAttributes;
 import com.mparticle.commerce.Promotion;
+import com.mparticle.identity.*;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
@@ -17,6 +19,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -43,8 +46,24 @@ public class MParticleCordovaPlugin extends CordovaPlugin {
             setUserTag(args);
         } else if (action.equals("removeUserAttribute")) {
             removeUserAttribute(args);
-        } else if (action.equals("setUserIdentity")) {
-            setUserIdentity(args);
+        } else if (action.equals("identify")) {
+            identify(args, callbackContext);
+            return true;
+        } else if (action.equals("login")) {
+            login(args, callbackContext);
+            return true;
+        } else if (action.equals("logout")) {
+            logout(args, callbackContext);
+            return true;
+        } else if (action.equals("modify")) {
+            modify(args, callbackContext);
+            return true;
+        } else if (action.equals("getCurrentUser")) {
+            getCurrentUser(args, callbackContext);
+            return true;
+        } else if (action.equals("getUserIdentities")) {
+            getUserIdentities(args, callbackContext);
+            return true;
         } else {
             return false;
         }
@@ -59,7 +78,12 @@ public class MParticleCordovaPlugin extends CordovaPlugin {
         JSONObject attributesMap = args.getJSONObject(2);
         Map<String, String> attributes = ConvertStringMap(attributesMap);
         MParticle.EventType eventType = ConvertEventType(type);
-        MParticle.getInstance().logEvent(name, eventType, attributes);
+
+        MPEvent event = new MPEvent.Builder(name, eventType)
+                .info(attributes)
+                .build();
+
+        MParticle.getInstance().logEvent(event);
     }
 
     public void logCommerceEvent(final JSONArray args) throws JSONException {
@@ -74,42 +98,233 @@ public class MParticleCordovaPlugin extends CordovaPlugin {
         final String event = args.getString(0);
         final JSONObject attributesMap = args.getJSONObject(1);
         Map<String, String> attributes = ConvertStringMap(attributesMap);
+
         MParticle.getInstance().logScreen(event, attributes);
     }
 
     public void setUserAttribute(final JSONArray args) throws JSONException {
-        final String userAttribute = args.getString(0);
-        final String value = args.getString(1);
-        MParticle.getInstance().setUserAttribute(userAttribute, value);
+        final String userId = args.getString(0);
+        final String userAttribute = args.getString(1);
+        final String value = args.getString(2);
+        MParticleUser selectedUser = MParticle.getInstance().Identity().getUser(Long.parseLong(userId));
+
+        if (selectedUser != null) {
+            selectedUser.setUserAttribute(userAttribute, value);
+        }
     }
 
     public void setUserAttributeArray(final JSONArray args) throws JSONException {
-        final String key = args.getString(0);
-        final JSONArray values = args.getJSONArray(1);
-        if (values != null) {
+        final String userId = args.getString(0);
+        final String key = args.getString(1);
+        final JSONArray values = args.getJSONArray(2);
+        MParticleUser selectedUser = MParticle.getInstance().Identity().getUser(Long.parseLong(userId));
+
+        if (selectedUser != null && values != null) {
             List<String> list = new ArrayList<String>();
             for (int i = 0; i < values.length(); ++i) {
                 list.add(values.getString(i));
             }
-            MParticle.getInstance().setUserAttributeList(key, list);
+            selectedUser.setUserAttributeList(key, list);
         }
     }
 
     public void setUserTag(final JSONArray args) throws JSONException {
-        final String tag = args.getString(0);
-        MParticle.getInstance().setUserTag(tag);
+        final String userId = args.getString(0);
+        final String tag = args.getString(1);
+        MParticleUser selectedUser = MParticle.getInstance().Identity().getUser(Long.parseLong(userId));
+
+        if (selectedUser != null) {
+            selectedUser.setUserTag(tag);
+        }
     }
 
     public void removeUserAttribute(final JSONArray args) throws JSONException {
-        final String key = args.getString(0);
-        MParticle.getInstance().removeUserAttribute(key);
+        final String userId = args.getString(0);
+        final String key = args.getString(1);
+        MParticleUser selectedUser = MParticle.getInstance().Identity().getUser(Long.parseLong(userId));
+
+        if (selectedUser != null) {
+            selectedUser.removeUserAttribute(key);
+        }
     }
 
-    public void setUserIdentity(final JSONArray args) throws JSONException {
-        final String identity = args.getString(0);
-        int type = args.getInt(1);
-        MParticle.IdentityType identityType = MParticle.IdentityType.parseInt(type);
-        MParticle.getInstance().setUserIdentity(identity, identityType);
+    public void identify(final JSONArray args, final CallbackContext callbackContext) throws JSONException {
+        final JSONObject map = args.getJSONObject(0);
+        if (map != null) {
+            IdentityApiRequest request = ConvertIdentityAPIRequest(map);
+            MParticle.getInstance().Identity().identify(request)
+                .addFailureListener(new TaskFailureListener() {
+                    @Override
+                    public void onFailure(IdentityHttpResponse identityHttpResponse) {
+                        final JSONObject cordovaError = new JSONObject();
+
+                        try {
+                            cordovaError.put("httpCode", identityHttpResponse.getHttpCode());
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        try {
+                            cordovaError.put("message", identityHttpResponse.toString());
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                        PluginResult pluginResult = new PluginResult(PluginResult.Status.ERROR, cordovaError);
+                        callbackContext.sendPluginResult(pluginResult);
+                    }
+                })
+                .addSuccessListener(new TaskSuccessListener() {
+                    @Override
+                    public void onSuccess(IdentityApiResult identityApiResult) {
+                        MParticleUser user = identityApiResult.getUser();
+                        String userID = Long.toString(user.getId());
+
+                        PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, userID);
+                        callbackContext.sendPluginResult(pluginResult);
+                    }
+                });
+        }
+    }
+
+    public void login(final JSONArray args, final CallbackContext callbackContext) throws JSONException {
+        final JSONObject map = args.getJSONObject(0);
+        if (map != null) {
+            IdentityApiRequest request = ConvertIdentityAPIRequest(map);
+            MParticle.getInstance().Identity().login(request)
+                    .addFailureListener(new TaskFailureListener() {
+                        @Override
+                        public void onFailure(IdentityHttpResponse identityHttpResponse) {
+                            final JSONObject cordovaError = new JSONObject();
+
+                            try {
+                                cordovaError.put("httpCode", identityHttpResponse.getHttpCode());
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            try {
+                                cordovaError.put("message", identityHttpResponse.toString());
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+                            PluginResult pluginResult = new PluginResult(PluginResult.Status.ERROR, cordovaError);
+                            callbackContext.sendPluginResult(pluginResult);
+                        }
+                    })
+                    .addSuccessListener(new TaskSuccessListener() {
+                        @Override
+                        public void onSuccess(IdentityApiResult identityApiResult) {
+                            MParticleUser user = identityApiResult.getUser();
+                            String userID = Long.toString(user.getId());
+
+                            PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, userID);
+                            callbackContext.sendPluginResult(pluginResult);
+                        }
+                    });
+        }
+    }
+
+    public void logout(final JSONArray args, final CallbackContext callbackContext) throws JSONException {
+        final JSONObject map = args.getJSONObject(0);
+        if (map != null) {
+            IdentityApiRequest request = ConvertIdentityAPIRequest(map);
+            MParticle.getInstance().Identity().logout(request)
+                    .addFailureListener(new TaskFailureListener() {
+                        @Override
+                        public void onFailure(IdentityHttpResponse identityHttpResponse) {
+                            final JSONObject cordovaError = new JSONObject();
+
+                            try {
+                                cordovaError.put("httpCode", identityHttpResponse.getHttpCode());
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            try {
+                                cordovaError.put("message", identityHttpResponse.toString());
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+                            PluginResult pluginResult = new PluginResult(PluginResult.Status.ERROR, cordovaError);
+                            callbackContext.sendPluginResult(pluginResult);
+                        }
+                    })
+                    .addSuccessListener(new TaskSuccessListener() {
+                        @Override
+                        public void onSuccess(IdentityApiResult identityApiResult) {
+                            MParticleUser user = identityApiResult.getUser();
+                            String userID = Long.toString(user.getId());
+
+                            PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, userID);
+                            callbackContext.sendPluginResult(pluginResult);
+                        }
+                    });
+        }
+    }
+
+    public void modify(final JSONArray args, final CallbackContext callbackContext) throws JSONException {
+        final JSONObject map = args.getJSONObject(0);
+        if (map != null) {
+            IdentityApiRequest request = ConvertIdentityAPIRequest(map);
+            MParticle.getInstance().Identity().modify(request)
+                    .addFailureListener(new TaskFailureListener() {
+                        @Override
+                        public void onFailure(IdentityHttpResponse identityHttpResponse) {
+                            final JSONObject cordovaError = new JSONObject();
+
+                            try {
+                                cordovaError.put("httpCode", identityHttpResponse.getHttpCode());
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            try {
+                                cordovaError.put("message", identityHttpResponse.toString());
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+                            PluginResult pluginResult = new PluginResult(PluginResult.Status.ERROR, cordovaError);
+                            callbackContext.sendPluginResult(pluginResult);
+                        }
+                    })
+                    .addSuccessListener(new TaskSuccessListener() {
+                        @Override
+                        public void onSuccess(IdentityApiResult identityApiResult) {
+                            MParticleUser user = identityApiResult.getUser();
+                            String userID = Long.toString(user.getId());
+
+                            PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, userID);
+                            callbackContext.sendPluginResult(pluginResult);
+                        }
+                    });
+        }
+    }
+
+    public void getCurrentUser(final JSONArray args, final CallbackContext callbackContext) throws JSONException {
+        MParticleUser user = MParticle.getInstance().Identity().getCurrentUser();
+        if (user != null) {
+            String userID = Long.toString(user.getId());
+            PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, userID);
+            callbackContext.sendPluginResult(pluginResult);
+        }
+    }
+
+    public void getUserIdentities(final JSONArray args, final CallbackContext callbackContext) throws JSONException {
+        String userId = args.getString(0);
+        MParticleUser selectedUser = MParticle.getInstance().Identity().getUser(Long.parseLong(userId));
+        JSONObject userIdentities = new JSONObject(selectedUser.getUserIdentities());
+
+        PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, userIdentities);
+        callbackContext.sendPluginResult(pluginResult);
+    }
+
+    private static IdentityApiRequest ConvertIdentityAPIRequest(JSONObject map) throws JSONException {
+        IdentityApiRequest.Builder identityRequest = IdentityApiRequest.withEmptyUser();
+
+        Map<MParticle.IdentityType, String> userIdentities = ConvertUserIdentities(map);
+        identityRequest.userIdentities(userIdentities);
+
+        return identityRequest.build();
     }
 
     private static CommerceEvent ConvertCommerceEvent(JSONObject map) throws JSONException {
@@ -291,6 +506,51 @@ public class MParticleCordovaPlugin extends CordovaPlugin {
         }
 
         return map;
+    }
+
+    private static Map<MParticle.IdentityType, String> ConvertUserIdentities(JSONObject jsonObject) throws JSONException {
+        Map<MParticle.IdentityType, String> map = null;
+        if (jsonObject != null) {
+            Map<String, String> stringMap = ConvertStringMap(jsonObject);
+            for (Map.Entry<String, String> entry : stringMap.entrySet())
+            {
+                MParticle.IdentityType identity = ConvertIdentityType(entry.getKey());
+                String value= entry.getValue();
+                map.put(identity, value);
+            }
+        }
+
+        return map;
+    }
+
+    private static MParticle.IdentityType ConvertIdentityType(String val) throws JSONException {
+            if (val.equals("customerId")) {
+                return MParticle.IdentityType.CustomerId;
+            } else if (val.equals("facebook")) {
+                return MParticle.IdentityType.Facebook;
+            } else if (val.equals("twitter")) {
+                return MParticle.IdentityType.Twitter;
+            } else if (val.equals("google")) {
+                return MParticle.IdentityType.Google;
+            } else if (val.equals("microsoft")) {
+                return MParticle.IdentityType.Microsoft;
+            } else if (val.equals("yahoo")) {
+                return MParticle.IdentityType.Yahoo;
+            } else if (val.equals("email")) {
+                return MParticle.IdentityType.Email;
+            } else if (val.equals("alias")) {
+                return MParticle.IdentityType.Alias;
+            } else if (val.equals("facebookCustom")) {
+                return MParticle.IdentityType.FacebookCustomAudienceId;
+            } else if (val.equals("other2")) {
+                return MParticle.IdentityType.Other2;
+            } else if (val.equals("other3")) {
+                return MParticle.IdentityType.Other3;
+            } else if (val.equals("other4")) {
+                return MParticle.IdentityType.Other4;
+            } else {
+                return MParticle.IdentityType.Other;
+            }
     }
 
     private static MParticle.EventType ConvertEventType(int eventType) throws JSONException {

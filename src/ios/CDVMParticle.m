@@ -114,23 +114,20 @@
         
         [[[MParticle sharedInstance] identity] identify:request completion:^(MPIdentityApiResult * _Nullable apiResult, NSError * _Nullable error) {
             CDVPluginResult *pluginResult = nil;
-            NSMutableDictionary *reactError;
+            NSMutableDictionary *cordovaError;
             if (error) {
-                reactError = [[NSMutableDictionary alloc] initWithCapacity:4];
+                cordovaError = [[NSMutableDictionary alloc] initWithCapacity:4];
                 
                 MPIdentityHTTPErrorResponse *response = error.userInfo[mParticleIdentityErrorKey];
 
                 if ([NSNumber numberWithLong:response.httpCode] != nil) {
-                    [reactError setObject:[NSNumber numberWithLong:response.httpCode] forKey:@"httpCode"];
-                }
-                if ([NSNumber numberWithInt:response.code] != nil) {
-                    [reactError setObject:[NSNumber numberWithInt:response.code] forKey:@"responseCode"];
+                    [cordovaError setObject:[NSNumber numberWithLong:response.httpCode] forKey:@"httpCode"];
                 }
                 if (response.message != nil) {
-                    [reactError setObject:response.message forKey:@"message"];
+                    [cordovaError setObject:response.message forKey:@"message"];
                 }
                 
-                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:reactError];
+                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:cordovaError];
                 [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
             } else {
                 pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDouble:apiResult.user.userId.doubleValue];
@@ -147,23 +144,20 @@
         
         [[[MParticle sharedInstance] identity] login:request completion:^(MPIdentityApiResult * _Nullable apiResult, NSError * _Nullable error) {
             CDVPluginResult *pluginResult = nil;
-            NSMutableDictionary *reactError;
+            NSMutableDictionary *cordovaError;
             if (error) {
-                reactError = [[NSMutableDictionary alloc] initWithCapacity:4];
+                cordovaError = [[NSMutableDictionary alloc] initWithCapacity:4];
                 
                 MPIdentityHTTPErrorResponse *response = error.userInfo[mParticleIdentityErrorKey];
                 
                 if ([NSNumber numberWithLong:response.httpCode] != nil) {
-                    [reactError setObject:[NSNumber numberWithLong:response.httpCode] forKey:@"httpCode"];
-                }
-                if ([NSNumber numberWithInt:response.code] != nil) {
-                    [reactError setObject:[NSNumber numberWithInt:response.code] forKey:@"responseCode"];
+                    [cordovaError setObject:[NSNumber numberWithLong:response.httpCode] forKey:@"httpCode"];
                 }
                 if (response.message != nil) {
-                    [reactError setObject:response.message forKey:@"message"];
+                    [cordovaError setObject:response.message forKey:@"message"];
                 }
                 
-                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:reactError];
+                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:cordovaError];
                 [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
             } else {
                 pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDouble:apiResult.user.userId.doubleValue];
@@ -180,23 +174,20 @@
         
         [[[MParticle sharedInstance] identity] logout:request completion:^(MPIdentityApiResult * _Nullable apiResult, NSError * _Nullable error) {
             CDVPluginResult *pluginResult = nil;
-            NSMutableDictionary *reactError;
+            NSMutableDictionary *cordovaError;
             if (error) {
-                reactError = [[NSMutableDictionary alloc] initWithCapacity:4];
+                cordovaError = [[NSMutableDictionary alloc] initWithCapacity:4];
                 
                 MPIdentityHTTPErrorResponse *response = error.userInfo[mParticleIdentityErrorKey];
                 
                 if ([NSNumber numberWithLong:response.httpCode] != nil) {
-                    [reactError setObject:[NSNumber numberWithLong:response.httpCode] forKey:@"httpCode"];
-                }
-                if ([NSNumber numberWithInt:response.code] != nil) {
-                    [reactError setObject:[NSNumber numberWithInt:response.code] forKey:@"responseCode"];
+                    [cordovaError setObject:[NSNumber numberWithLong:response.httpCode] forKey:@"httpCode"];
                 }
                 if (response.message != nil) {
-                    [reactError setObject:response.message forKey:@"message"];
+                    [cordovaError setObject:response.message forKey:@"message"];
                 }
                 
-                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:reactError];
+                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:cordovaError];
                 [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
             } else {
                 pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDouble:apiResult.user.userId.doubleValue];
@@ -213,23 +204,20 @@
         
         [[[MParticle sharedInstance] identity] modify:request completion:^(MPIdentityApiResult * _Nullable apiResult, NSError * _Nullable error) {
             CDVPluginResult *pluginResult = nil;
-            NSMutableDictionary *reactError;
+            NSMutableDictionary *cordovaError;
             if (error) {
-                reactError = [[NSMutableDictionary alloc] initWithCapacity:4];
+                cordovaError = [[NSMutableDictionary alloc] initWithCapacity:4];
                 
                 MPIdentityHTTPErrorResponse *response = error.userInfo[mParticleIdentityErrorKey];
                 
                 if ([NSNumber numberWithLong:response.httpCode] != nil) {
-                    [reactError setObject:[NSNumber numberWithLong:response.httpCode] forKey:@"httpCode"];
-                }
-                if ([NSNumber numberWithInt:response.code] != nil) {
-                    [reactError setObject:[NSNumber numberWithInt:response.code] forKey:@"responseCode"];
+                    [cordovaError setObject:[NSNumber numberWithLong:response.httpCode] forKey:@"httpCode"];
                 }
                 if (response.message != nil) {
-                    [reactError setObject:response.message forKey:@"message"];
+                    [cordovaError setObject:response.message forKey:@"message"];
                 }
                 
-                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:reactError];
+                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:cordovaError];
                 [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
             } else {
                 pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDouble:apiResult.user.userId.doubleValue];
@@ -428,19 +416,6 @@ typedef NS_ENUM(NSUInteger, MPCDVCommerceEventAction) {
     return product;
 }
 
-+ (MPIdentityApiRequest *)MPIdentityApiRequest:(id)json {
-    MPIdentityApiRequest *request = [[MPIdentityApiRequest alloc] init];
-    request.email = json[@"email"];
-    request.customerId = json[@"customerId"];
-    NSDictionary *jsonAttributes = json[@"userIdentities"];
-    for (NSString *key in jsonAttributes) {
-        NSString *value = jsonAttributes[key];
-        [request.userIdentities setObject:value forKeyedSubscript:key];
-    }
-    
-    return request;
-}
-
 + (MPEvent *)MPEvent:(id)json {
     MPEvent *event = [[MPEvent alloc] init];
     event.category = json[@"category"];
@@ -458,6 +433,46 @@ typedef NS_ENUM(NSUInteger, MPCDVCommerceEventAction) {
     }
     
     return event;
+}
+
++ (MPIdentityApiRequest *)MPIdentityApiRequest:(id)json {
+    MPIdentityApiRequest *request = [[MPIdentityApiRequest alloc] init];
+    for (NSString *key in json) {
+        NSString *value = json[key];
+        [request setUserIdentity:value identityType:[CDVMParticle ConvertIdentityType:key]];
+    }
+    
+    return request;
+}
+
++ (MPUserIdentity)ConvertIdentityType:(NSString *)val {
+    if ([val  isEqual: @"customerId"]) {
+        return MPUserIdentityCustomerId;
+    } else if ([val  isEqual: @"facebook"]) {
+        return MPUserIdentityFacebook;
+    } else if ([val  isEqual: @"twitter"]) {
+        return MPUserIdentityTwitter;
+    } else if ([val  isEqual: @"google"]) {
+        return MPUserIdentityGoogle;
+    } else if ([val  isEqual: @"microsoft"]) {
+        return MPUserIdentityMicrosoft;
+    } else if ([val  isEqual: @"yahoo"]) {
+        return MPUserIdentityYahoo;
+    } else if ([val  isEqual: @"email"]) {
+        return MPUserIdentityEmail;
+    } else if ([val  isEqual: @"alias"]) {
+        return MPUserIdentityAlias;
+    } else if ([val  isEqual: @"facebookCustom"]) {
+        return MPUserIdentityFacebookCustomAudienceId;
+    } else if ([val  isEqual: @"other2"]) {
+        return MPUserIdentityOther2;
+    } else if ([val  isEqual: @"other3"]) {
+        return MPUserIdentityOther3;
+    } else if ([val  isEqual: @"other4"]) {
+        return MPUserIdentityOther4;
+    } else {
+        return MPUserIdentityOther;
+    }
 }
 
 @end
