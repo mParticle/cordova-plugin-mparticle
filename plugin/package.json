@@ -1,0 +1,35 @@
+{
+  "name": "cordova-plugin-mparticle",
+  "version": "2.0.0",
+  "description": "Cordova plugin for mParticle",
+  "homepage": "https://www.mparticle.com",
+  "repository": "mParticle/cordova-plugin-mparticle",
+  "license": "Apache-2.0",
+  "main": "www/mparticle.js",
+  "scripts": {
+    "test": "npm run-script eslint",
+    "eslint": "node node_modules/eslint/bin/eslint www && node node_modules/eslint/bin/eslint src && node node_modules/eslint/bin/eslint tests",
+    "fix": "./node_modules/standard/bin/cmd.js --fix"
+  },
+  "standard": {
+    "ignore": [
+      "/mparticle-example"
+    ]
+  },
+  "devDependencies": {
+    "eslint": "^4.19.1",
+    "eslint-config-standard": "^11.0.0",
+    "eslint-plugin-import": "^2.9.0",
+    "eslint-plugin-node": "^6.0.1",
+    "eslint-plugin-promise": "^3.7.0",
+    "eslint-plugin-standard": "^3.0.1",
+    "standard": "^8.6.0"
+  },
+  "cordova": {
+    "id": "cordova-plugin-mparticle",
+    "platforms": [
+      "android",
+      "ios"
+    ]
+  }
+}

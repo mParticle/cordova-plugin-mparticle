@@ -179,23 +179,23 @@ mparticle.logScreenEvent('Test screen', { 'Test key': 'Test value' })
 
 Use Identify or currentUser to retrieve the userID for these calls
 ```js
-user.setUserAttribute('Test key', 'Test value')
+var user = new mparticle.User('userID');
 ```
 
 ```js
-user.setUserAttribute(MParticle.UserAttributeType.FirstName, 'Test first name')
+user.setUserAttribute(mparticle.UserAttributeType.FirstName, 'Test first name');
 ```
 
 ```js
-user.setUserAttributeArray('User ID', 'Test key', ['Test value 1', 'Test value 2'])
+user.setUserAttributeArray(mparticle.UserAttributeType.FirstName, ['Test value 1', 'Test value 2']);
 ```
 
 ```js
-user.setUserTag('User ID', 'Test value')
+user.setUserTag('Test value');
 ```
 
 ```js
-user.removeUserAttribute('User ID', 'Test key')
+user.removeUserAttribute(mparticle.UserAttributeType.FirstName);
 ```
 
 ```js
@@ -207,7 +207,7 @@ user.getUserIdentities((userIdentities) => {
 ## IdentityRequest
 
 ```js
-var request = new MParticle.IdentityRequest()
+var request = new MParticle.IdentityRequest();
 ```
 
 **Setting** user identities:
@@ -220,8 +220,8 @@ request.setUserIdentity('example@example.com', MParticle.UserIdentityType.Email)
 ## Identity
 
 ```js
-MParticle.Identity.getCurrentUser((currentUser) => {
-console.debug(currentUser.userID);
+MParticle.Identity.getCurrentUser(function (userID) => {
+    console.debug(userID);
 });
 ```
 
@@ -229,39 +229,30 @@ console.debug(currentUser.userID);
 
 
 ```js
-var request = new MParticle.IdentityRequest();
+var request = new mparticle.IdentityRequest();
 
-MParticle.Identity.identify(request, (error, userId) => {
-    if (error) {
-        console.debug(error); //error is an MParticleError
-    } else {
-        console.debug(userId);
-    }
+var identity = new mparticle.Identity();
+identity.identify(request, function (userId) => {
+    console.debug(userId);
 });
 ```
 
 ```js
-var request = new MParticle.IdentityRequest();
+var request = new mparticle.IdentityRequest();
 request.email = 'test email';
 
-MParticle.Identity.login(request, (error, userId) => {
-    if (error) {
-        console.debug(error); //error is an MParticleError
-    } else {
-        console.debug(userId);
-    }
+var identity = new mparticle.Identity();
+identity.login(request, function (userId) => {
+    console.debug(userId);
 });
 ```
 
 ```js
-var request = new MParticle.IdentityRequest();
+var request = new mparticle.IdentityRequest();
 
-MParticle.Identity.logout(request, (error, userId) => {
-    if (error) {
-        console.debug(error);
-    } else {
-        console.debug(userId);
-    }
+var identity = new mparticle.Identity();
+identity.logout(request, function (userId) => {
+    console.debug(userId);
 });
 ```
 
@@ -269,12 +260,9 @@ MParticle.Identity.logout(request, (error, userId) => {
 var request = new MParticle.IdentityRequest();
 request.email = 'test email 2';
 
-MParticle.Identity.modify(request, (error, userId) => {
-    if (error) {
-        console.debug(error); //error is an MParticleError
-    } else {
-        console.debug(userId);
-    }
+var identity = new mparticle.Identity();
+identity.modify(request, function (userId) => {
+    console.debug(userId);
 });
 ```
 

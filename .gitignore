@@ -58,3 +58,7 @@ freeline_project_description.json
 .DS_Store
 npm-debug.log
 node_modules
+
+example/platforms
+example/plugins
+package-lock.json

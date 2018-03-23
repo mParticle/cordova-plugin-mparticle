@@ -1,3 +1,0 @@
-include ':src:android'
-include ':mparticle-example:platforms:android:CordovaLib'
-include ':mparticle-example:platforms:android'

@@ -1,0 +1,22 @@
+{
+  "name": "com.mparticle.example",
+  "version": "1.0.0",
+  "displayName": "MParticleExample",
+  "cordova": {
+    "platforms": [
+      "android",
+      "ios"
+    ],
+    "plugins": {
+      "cordova-plugin-whitelist": {},
+      "cordova-plugin-mparticle": {}
+    }
+  },
+  "dependencies": {
+    "cordova-android": "^7.0.0",
+    "cordova-ios": "^4.4.0",
+    "cordova-plugin-mparticle": "file:../plugin",
+    "cordova-plugin-whitelist": "1",
+    "eslint": "^4.19.1"
+  }
+}
