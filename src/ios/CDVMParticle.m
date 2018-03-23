@@ -1,3 +1,4 @@
+
 #import <Cordova/CDV.h>
 #import "mParticle.h"
 
@@ -46,10 +47,14 @@
 
 - (void)setUserAttribute:(CDVInvokedUrlCommand*)command {
     [self.commandDelegate runInBackground:^{
-        NSString *key = [command.arguments objectAtIndex:0];
-        NSString *value = [command.arguments objectAtIndex:1];
-
-        [[MParticle sharedInstance] setUserAttribute:key value:value];
+        NSString *userId = [command.arguments objectAtIndex:0];
+        NSString *key = [command.arguments objectAtIndex:1];
+        NSString *value = [command.arguments objectAtIndex:2];
+        MParticleUser *selectedUser = [[[MParticle sharedInstance] identity] getUser:[NSNumber numberWithLong:userId.longLongValue]];
+        
+        if (selectedUser != nil) {
+            [selectedUser setUserAttribute:key value:value];
+        }
 
         CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -58,10 +63,14 @@
 
 - (void)setUserAttributeArray:(CDVInvokedUrlCommand*)command {
     [self.commandDelegate runInBackground:^{
-        NSString *key = [command.arguments objectAtIndex:0];
-        NSArray *values = [command.arguments objectAtIndex:1];
-
-        [[MParticle sharedInstance] setUserAttribute:key values:values];
+        NSString *userId = [command.arguments objectAtIndex:0];
+        NSString *key = [command.arguments objectAtIndex:1];
+        NSArray *values = [command.arguments objectAtIndex:2];
+        MParticleUser *selectedUser = [[[MParticle sharedInstance] identity] getUser:[NSNumber numberWithLong:userId.longLongValue]];
+        
+        if (selectedUser != nil) {
+            [selectedUser setUserAttribute:key value:values];
+        }
 
         CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -70,9 +79,13 @@
 
 - (void)setUserTag:(CDVInvokedUrlCommand*)command {
     [self.commandDelegate runInBackground:^{
-        NSString *tag = [command.arguments objectAtIndex:0];
-
-        [[MParticle sharedInstance] setUserTag:tag];
+        NSString *userId = [command.arguments objectAtIndex:0];
+        NSString *tag = [command.arguments objectAtIndex:1];
+        MParticleUser *selectedUser = [[[MParticle sharedInstance] identity] getUser:[NSNumber numberWithLong:userId.longLongValue]];
+        
+        if (selectedUser != nil) {
+            [selectedUser setUserTag:tag];
+        }
 
         CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -81,23 +94,153 @@
 
 - (void)removeUserAttribute:(CDVInvokedUrlCommand*)command {
     [self.commandDelegate runInBackground:^{
-        NSString *key = [command.arguments objectAtIndex:0];
-
-        [[MParticle sharedInstance] removeUserAttribute:key];
+        NSString *userId = [command.arguments objectAtIndex:0];
+        NSString *key = [command.arguments objectAtIndex:1];
+        MParticleUser *selectedUser = [[[MParticle sharedInstance] identity] getUser:[NSNumber numberWithLong:userId.longLongValue]];
+        
+        if (selectedUser != nil) {
+            [selectedUser removeUserAttribute:key];
+        }
 
         CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }];
 }
 
-- (void)setUserIdentity:(CDVInvokedUrlCommand*)command {
+- (void)identify:(CDVInvokedUrlCommand*)command {
     [self.commandDelegate runInBackground:^{
-        NSString *identity = [command.arguments objectAtIndex:0];
-        NSInteger type = [[command.arguments objectAtIndex:1] intValue];
+        NSString *serializedrequest = [command.arguments objectAtIndex:0];
+        MPIdentityApiRequest *request = [CDVMParticle MPIdentityApiRequest:serializedrequest];
+        
+        [[[MParticle sharedInstance] identity] identify:request completion:^(MPIdentityApiResult * _Nullable apiResult, NSError * _Nullable error) {
+            CDVPluginResult *pluginResult = nil;
+            NSMutableDictionary *cordovaError;
+            if (error) {
+                cordovaError = [[NSMutableDictionary alloc] initWithCapacity:4];
+                
+                MPIdentityHTTPErrorResponse *response = error.userInfo[mParticleIdentityErrorKey];
 
-        [[MParticle sharedInstance] setUserIdentity:identity identityType:type];
+                if ([NSNumber numberWithLong:response.httpCode] != nil) {
+                    [cordovaError setObject:[NSNumber numberWithLong:response.httpCode] forKey:@"httpCode"];
+                }
+                if (response.message != nil) {
+                    [cordovaError setObject:response.message forKey:@"message"];
+                }
+                
+                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:cordovaError];
+                [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+            } else {
+                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDouble:apiResult.user.userId.doubleValue];
+                [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+            }
+        }];
+    }];
+}
 
-        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+- (void)login:(CDVInvokedUrlCommand*)command {
+    [self.commandDelegate runInBackground:^{
+        NSString *serializedrequest = [command.arguments objectAtIndex:0];
+        MPIdentityApiRequest *request = [CDVMParticle MPIdentityApiRequest:serializedrequest];
+        
+        [[[MParticle sharedInstance] identity] login:request completion:^(MPIdentityApiResult * _Nullable apiResult, NSError * _Nullable error) {
+            CDVPluginResult *pluginResult = nil;
+            NSMutableDictionary *cordovaError;
+            if (error) {
+                cordovaError = [[NSMutableDictionary alloc] initWithCapacity:4];
+                
+                MPIdentityHTTPErrorResponse *response = error.userInfo[mParticleIdentityErrorKey];
+                
+                if ([NSNumber numberWithLong:response.httpCode] != nil) {
+                    [cordovaError setObject:[NSNumber numberWithLong:response.httpCode] forKey:@"httpCode"];
+                }
+                if (response.message != nil) {
+                    [cordovaError setObject:response.message forKey:@"message"];
+                }
+                
+                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:cordovaError];
+                [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+            } else {
+                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDouble:apiResult.user.userId.doubleValue];
+                [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+            }
+        }];
+    }];
+}
+
+- (void)logout:(CDVInvokedUrlCommand*)command {
+    [self.commandDelegate runInBackground:^{
+        NSString *serializedrequest = [command.arguments objectAtIndex:0];
+        MPIdentityApiRequest *request = [CDVMParticle MPIdentityApiRequest:serializedrequest];
+        
+        [[[MParticle sharedInstance] identity] logout:request completion:^(MPIdentityApiResult * _Nullable apiResult, NSError * _Nullable error) {
+            CDVPluginResult *pluginResult = nil;
+            NSMutableDictionary *cordovaError;
+            if (error) {
+                cordovaError = [[NSMutableDictionary alloc] initWithCapacity:4];
+                
+                MPIdentityHTTPErrorResponse *response = error.userInfo[mParticleIdentityErrorKey];
+                
+                if ([NSNumber numberWithLong:response.httpCode] != nil) {
+                    [cordovaError setObject:[NSNumber numberWithLong:response.httpCode] forKey:@"httpCode"];
+                }
+                if (response.message != nil) {
+                    [cordovaError setObject:response.message forKey:@"message"];
+                }
+                
+                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:cordovaError];
+                [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+            } else {
+                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDouble:apiResult.user.userId.doubleValue];
+                [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+            }
+        }];
+    }];
+}
+
+- (void)modify:(CDVInvokedUrlCommand*)command {
+    [self.commandDelegate runInBackground:^{
+        NSString *serializedrequest = [command.arguments objectAtIndex:0];
+        MPIdentityApiRequest *request = [CDVMParticle MPIdentityApiRequest:serializedrequest];
+        
+        [[[MParticle sharedInstance] identity] modify:request completion:^(MPIdentityApiResult * _Nullable apiResult, NSError * _Nullable error) {
+            CDVPluginResult *pluginResult = nil;
+            NSMutableDictionary *cordovaError;
+            if (error) {
+                cordovaError = [[NSMutableDictionary alloc] initWithCapacity:4];
+                
+                MPIdentityHTTPErrorResponse *response = error.userInfo[mParticleIdentityErrorKey];
+                
+                if ([NSNumber numberWithLong:response.httpCode] != nil) {
+                    [cordovaError setObject:[NSNumber numberWithLong:response.httpCode] forKey:@"httpCode"];
+                }
+                if (response.message != nil) {
+                    [cordovaError setObject:response.message forKey:@"message"];
+                }
+                
+                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:cordovaError];
+                [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+            } else {
+                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDouble:apiResult.user.userId.doubleValue];
+                [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+            }
+        }];
+    }];
+}
+
+- (void)getCurrentUser:(CDVInvokedUrlCommand*)command {
+    [self.commandDelegate runInBackground:^{
+        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDouble:[[[MParticle sharedInstance] identity] currentUser].userId.doubleValue];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }];
+}
+
+- (void)getUserIdentities:(CDVInvokedUrlCommand*)command {
+    [self.commandDelegate runInBackground:^{
+        NSNumber *userId = [command.arguments objectAtIndex:0];
+
+        MParticleUser *selectedUser = [[[MParticle sharedInstance] identity] getUser:userId];
+        
+        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:[selectedUser userIdentities]];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }];
 }
@@ -271,6 +414,65 @@ typedef NS_ENUM(NSUInteger, MPCDVCommerceEventAction) {
         [product setObject:value forKeyedSubscript:key];
     }
     return product;
+}
+
++ (MPEvent *)MPEvent:(id)json {
+    MPEvent *event = [[MPEvent alloc] init];
+    event.category = json[@"category"];
+    event.duration = json[@"duration"];
+    event.endTime = json[@"endTime"];
+    event.info = json[@"info"];
+    event.name = json[@"name"];
+    event.startTime = json[@"startTime"];
+    event.type = [json[@"type"] integerValue];
+
+    NSDictionary *jsonFlags = json[@"customFlags"];
+    for (NSString *key in jsonFlags) {
+        NSString *value = jsonFlags[key];
+        [event addCustomFlag:value withKey:key];
+    }
+    
+    return event;
+}
+
++ (MPIdentityApiRequest *)MPIdentityApiRequest:(id)json {
+    MPIdentityApiRequest *request = [[MPIdentityApiRequest alloc] init];
+    for (NSString *key in json) {
+        NSString *value = json[key];
+        [request setUserIdentity:value identityType:[CDVMParticle ConvertIdentityType:key]];
+    }
+    
+    return request;
+}
+
++ (MPUserIdentity)ConvertIdentityType:(NSString *)val {
+    if ([val  isEqual: @"customerId"]) {
+        return MPUserIdentityCustomerId;
+    } else if ([val  isEqual: @"facebook"]) {
+        return MPUserIdentityFacebook;
+    } else if ([val  isEqual: @"twitter"]) {
+        return MPUserIdentityTwitter;
+    } else if ([val  isEqual: @"google"]) {
+        return MPUserIdentityGoogle;
+    } else if ([val  isEqual: @"microsoft"]) {
+        return MPUserIdentityMicrosoft;
+    } else if ([val  isEqual: @"yahoo"]) {
+        return MPUserIdentityYahoo;
+    } else if ([val  isEqual: @"email"]) {
+        return MPUserIdentityEmail;
+    } else if ([val  isEqual: @"alias"]) {
+        return MPUserIdentityAlias;
+    } else if ([val  isEqual: @"facebookCustom"]) {
+        return MPUserIdentityFacebookCustomAudienceId;
+    } else if ([val  isEqual: @"other2"]) {
+        return MPUserIdentityOther2;
+    } else if ([val  isEqual: @"other3"]) {
+        return MPUserIdentityOther3;
+    } else if ([val  isEqual: @"other4"]) {
+        return MPUserIdentityOther4;
+    } else {
+        return MPUserIdentityOther;
+    }
 }
 
 @end

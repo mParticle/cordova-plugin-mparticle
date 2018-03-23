@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin xmlns="http://cordova.apache.org/ns/plugins/1.0"
            id="cordova-plugin-mparticle"
-           version="1.0.4">
+           version="2.0.0">
     <name>MParticle</name>
     <js-module src="www/mparticle.js" name="mparticle">
         <clobbers target="mparticle" />
@@ -13,7 +13,7 @@
             </feature>
         </config-file>
         <source-file src="src/android/src/main/java/com/mparticle/cordova/MParticleCordovaPlugin.java" target-dir="src/android/src/main/java/com/mparticle/cordova/MParticleCordovaPlugin.java" />
-        <framework src="com.mparticle:android-core:4.17.6"/>
+        <framework src="com.mparticle:android-core:5.1.5"/>
     </platform>
     <platform name="ios">
         <config-file target="config.xml" parent="/*">
@@ -22,6 +22,6 @@
             </feature>
         </config-file>
         <source-file src="src/ios/CDVMParticle.m" />
-        <framework src="mParticle-Apple-SDK" type="podspec" spec="6.16.2"/>
+        <framework src="mParticle-Apple-SDK" type="podspec" spec="7.2"/>
     </platform>
 </plugin>
