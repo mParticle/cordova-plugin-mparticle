@@ -68,7 +68,7 @@
         MParticleUser *selectedUser = [[[MParticle sharedInstance] identity] getUser:[NSNumber numberWithLong:userId.longLongValue]];
         
         if (selectedUser != nil) {
-            [selectedUser setUserAttribute:key value:values];
+            [selectedUser setUserAttributeList:key values:values];
         }
         
         CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
