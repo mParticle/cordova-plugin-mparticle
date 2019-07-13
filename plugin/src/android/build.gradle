@@ -21,5 +21,5 @@ dependencies {
     testCompile 'org.json:json:20080701'
     testCompile "org.mockito:mockito-core:1.+"
     provided 'org.apache.cordova:framework:7.1.0'
-    provided 'com.mparticle:android-core:5.1.5'
+    provided 'com.mparticle:android-core:5.9.5'
 }
