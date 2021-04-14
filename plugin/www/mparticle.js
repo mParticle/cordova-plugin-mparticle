@@ -102,7 +102,7 @@ var mparticle = {
   },
 
   setATTStatus: function (status, timestamp) {
-    exec('logScreenEvent', [status, timestamp])
+    exec('setATTStatus', [status, timestamp])
   },
 
   Impression: function (impressionListName, products) {
