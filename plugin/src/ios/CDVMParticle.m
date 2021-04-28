@@ -44,6 +44,18 @@
     }];
 }
 
+- (void)setATTStatus:(CDVInvokedUrlCommand*)command {
+    [self.commandDelegate runInBackground:^{
+        NSInteger status = [[command.arguments objectAtIndex:0] intValue];
+        NSNumber *timestamp = [command.arguments objectAtIndex:1];
+        
+        [[MParticle sharedInstance] setATTStatus:status withATTStatusTimestampMillis:timestamp];
+        
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }];
+}
+
 - (void)setUserAttribute:(CDVInvokedUrlCommand*)command {
     [self.commandDelegate runInBackground:^{
         NSString *userId = [command.arguments objectAtIndex:0];
@@ -231,7 +243,7 @@
         
         MParticleUser *selectedUser = [[[MParticle sharedInstance] identity] getUser:userId];
         
-        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:[selectedUser userIdentities]];
+        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:[selectedUser identities]];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }];
 }
@@ -434,39 +446,65 @@ typedef NS_ENUM(NSUInteger, MPCDVCommerceEventAction) {
     MPIdentityApiRequest *request = [[MPIdentityApiRequest alloc] init];
     for (NSString *key in json) {
         NSString *value = json[key];
-        [request setUserIdentity:value identityType:[CDVMParticle ConvertIdentityType:key]];
+        [request setIdentity:value identityType:[CDVMParticle ConvertIdentityType:key]];
     }
     
     return request;
 }
 
-+ (MPUserIdentity)ConvertIdentityType:(NSString *)val {
++ (MPIdentity)ConvertIdentityType:(NSString *)val {
     if ([val  isEqual: @"customerId"]) {
-        return MPUserIdentityCustomerId;
+        return MPIdentityCustomerId;
     } else if ([val  isEqual: @"facebook"]) {
-        return MPUserIdentityFacebook;
+        return MPIdentityFacebook;
     } else if ([val  isEqual: @"twitter"]) {
-        return MPUserIdentityTwitter;
+        return MPIdentityTwitter;
     } else if ([val  isEqual: @"google"]) {
-        return MPUserIdentityGoogle;
+        return MPIdentityGoogle;
     } else if ([val  isEqual: @"microsoft"]) {
-        return MPUserIdentityMicrosoft;
+        return MPIdentityMicrosoft;
     } else if ([val  isEqual: @"yahoo"]) {
-        return MPUserIdentityYahoo;
+        return MPIdentityYahoo;
     } else if ([val  isEqual: @"email"]) {
-        return MPUserIdentityEmail;
+        return MPIdentityEmail;
     } else if ([val  isEqual: @"alias"]) {
-        return MPUserIdentityAlias;
+        return MPIdentityAlias;
     } else if ([val  isEqual: @"facebookCustom"]) {
-        return MPUserIdentityFacebookCustomAudienceId;
+        return MPIdentityFacebookCustomAudienceId;
     } else if ([val  isEqual: @"other2"]) {
-        return MPUserIdentityOther2;
+        return MPIdentityOther2;
     } else if ([val  isEqual: @"other3"]) {
-        return MPUserIdentityOther3;
+        return MPIdentityOther3;
     } else if ([val  isEqual: @"other4"]) {
-        return MPUserIdentityOther4;
+        return MPIdentityOther4;
+    } else if ([val  isEqual: @"other5"]) {
+        return MPIdentityOther5;
+    } else if ([val  isEqual: @"other6"]) {
+        return MPIdentityOther6;
+    } else if ([val  isEqual: @"other7"]) {
+        return MPIdentityOther7;
+    } else if ([val  isEqual: @"other8"]) {
+        return MPIdentityOther8;
+    } else if ([val  isEqual: @"other9"]) {
+        return MPIdentityOther9;
+    } else if ([val  isEqual: @"other10"]) {
+        return MPIdentityOther10;
+    } else if ([val  isEqual: @"mobileNumber"]) {
+        return MPIdentityMobileNumber;
+    } else if ([val  isEqual: @"phoneNumber2"]) {
+        return MPIdentityPhoneNumber2;
+    } else if ([val  isEqual: @"phoneNumber3"]) {
+        return MPIdentityPhoneNumber3;
+    } else if ([val  isEqual: @"iosIDFA"]) {
+        return MPIdentityIOSAdvertiserId;
+    } else if ([val  isEqual: @"iosIDFV"]) {
+        return MPIdentityIOSVendorId;
+    } else if ([val  isEqual: @"pushToken"]) {
+        return MPIdentityPushToken;
+    } else if ([val  isEqual: @"deviceApplicationStamp"]) {
+        return MPIdentityDeviceApplicationStamp;
     } else {
-        return MPUserIdentityOther;
+        return MPIdentityOther;
     }
 }
 

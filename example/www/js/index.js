@@ -19,6 +19,7 @@ var app = {
 
         mparticle.logScreenEvent('Test screen', { 'Test key': 'Test value' });
 
+        mparticle.setATTStatus(mparticle.MPATTStatus.Authorized, null);
 
         var identity = new mparticle.Identity();
 

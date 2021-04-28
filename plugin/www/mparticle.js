@@ -53,6 +53,42 @@ var mparticle = {
     Click: 1
   },
 
+  MPATTStatus: {
+    NotDetermined: 0,
+    Restricted: 1,
+    Denied: 2,
+    Authorized: 3
+  },
+
+  IdentityType: {
+    Other: 0,
+    CustomerId: 1,
+    Facebook: 2,
+    Twitter: 3,
+    Google: 4,
+    Microsoft: 5,
+    Yahoo: 6,
+    Email: 7,
+    Alias: 8,
+    FacebookCustomAudienceId: 9,
+    Other2: 10,
+    Other3: 11,
+    Other4: 12,
+    Other5: 13,
+    Other6: 14,
+    Other7: 15,
+    Other8: 16,
+    Other9: 17,
+    Other10: 18,
+    MobileNumber: 19,
+    PhoneNumber2: 20,
+    PhoneNumber3: 21,
+    IOSAdvertiserId: 22,
+    IOSVendorId: 23,
+    PushToken: 24,
+    DeviceApplicationStamp: 25
+  },
+
   logEvent: function (eventName, type, attributes) {
     exec('logEvent', [eventName, type, attributes])
   },
@@ -63,6 +99,10 @@ var mparticle = {
 
   logScreenEvent: function (screenName, attributes) {
     exec('logScreenEvent', [screenName, attributes])
+  },
+
+  setATTStatus: function (status, timestamp) {
+    exec('setATTStatus', [status, timestamp])
   },
 
   Impression: function (impressionListName, products) {
@@ -298,43 +338,80 @@ mparticle.IdentityRequest = function () {
 
   this.setUserIdentity = function (userIdentity, identityType) {
     switch (identityType) {
-      case mparticle.UserIdentityType.Other:
+      case mparticle.IdentityType.Other:
         this.other = userIdentity
         break
-      case mparticle.UserIdentityType.CustomerId:
+      case mparticle.IdentityType.CustomerId:
         this.customerId = userIdentity
         break
-      case mparticle.UserIdentityType.Facebook:
+      case mparticle.IdentityType.Facebook:
         this.facebook = userIdentity
         break
-      case mparticle.UserIdentityType.Twitter:
+      case mparticle.IdentityType.Twitter:
         this.twitter = userIdentity
         break
-      case mparticle.UserIdentityType.Google:
+      case mparticle.IdentityType.Google:
         this.google = userIdentity
         break
-      case mparticle.UserIdentityType.Microsoft:
+      case mparticle.IdentityType.Microsoft:
         this.microsoft = userIdentity
         break
-      case mparticle.UserIdentityType.Yahoo:
+      case mparticle.IdentityType.Yahoo:
         this.yahoo = userIdentity
         break
-      case mparticle.UserIdentityType.Email:
+      case mparticle.IdentityType.Email:
         this.email = userIdentity
         break
-      case mparticle.UserIdentityType.FacebookCustomAudienceId:
+      case mparticle.IdentityType.FacebookCustomAudienceId:
         this.facebookCustom = userIdentity
         break
-      case mparticle.UserIdentityType.Other2:
+      case mparticle.IdentityType.Other2:
         this.other2 = userIdentity
         break
-      case mparticle.UserIdentityType.Other3:
+      case mparticle.IdentityType.Other3:
         this.other3 = userIdentity
         break
-      case mparticle.UserIdentityType.Other4:
+      case mparticle.IdentityType.Other4:
         this.other4 = userIdentity
         break
-      default:
+      case mparticle.IdentityType.Other5:
+        this.other5 = userIdentity
+        break
+      case mparticle.IdentityType.Other6:
+        this.other6 = userIdentity
+        break
+      case mparticle.IdentityType.Other7:
+        this.other7 = userIdentity
+        break
+      case mparticle.IdentityType.Other8:
+        this.other8 = userIdentity
+        break
+      case mparticle.IdentityType.Other9:
+        this.other9 = userIdentity
+        break
+      case mparticle.IdentityType.Other10:
+        this.other10 = userIdentity
+        break
+      case mparticle.IdentityType.MobileNumber:
+        this.mobileNumber = userIdentity
+        break
+      case mparticle.IdentityType.PhoneNumber2:
+        this.phoneNumber2 = userIdentity
+        break
+      case mparticle.IdentityType.PhoneNumber3:
+        this.phoneNumber3 = userIdentity
+        break
+      case mparticle.IdentityType.IOSAdvertiserId:
+        this.iosIDFA = userIdentity
+        break
+      case mparticle.IdentityType.IOSVendorId:
+        this.iosIDFV = userIdentity
+        break
+      case mparticle.IdentityType.PushToken:
+        this.pushToken = userIdentity
+        break
+      case mparticle.IdentityType.DeviceApplicationStamp:
+        this.deviceApplicationStamp = userIdentity
         break
     }
     return this
