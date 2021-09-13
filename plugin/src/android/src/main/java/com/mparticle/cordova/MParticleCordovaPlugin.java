@@ -86,6 +86,14 @@ public class MParticleCordovaPlugin extends CordovaPlugin {
         MParticle.getInstance().logEvent(event);
     }
 
+    public void logMPEvent(final JSONArray args) throws JSONException {
+        final JSONObject map = args.getJSONObject(0);
+        if (map != null) {
+            MPEvent event = ConvertMPEvent(map);
+            MParticle.getInstance().logEvent(event);
+        }
+    }
+
     public void logCommerceEvent(final JSONArray args) throws JSONException {
         final JSONObject map = args.getJSONObject(0);
         if (map != null) {
@@ -327,6 +335,41 @@ public class MParticleCordovaPlugin extends CordovaPlugin {
         return identityRequest.build();
     }
 
+    private static MPEvent ConvertMPEvent(ReadableMap map) throws JSONException {
+        if ((map.hasKey("name")) && (map.hasKey("type"))) {
+            String name = map.getString("name");
+            Integer type = map.getInt("type");
+            MPEvent.Builder builder = new MPEvent.Builder(name, ConvertEventType(type));
+            if (map.hasKey("category")) {
+                builder.category(map.getString("category"));
+            }
+            if (map.hasKey("duration")) {
+                builder.duration(map.getDouble("duration"));
+            }
+            if (map.hasKey("info")) {
+                ReadableMap customInfoMap = map.getMap("info");
+                Map<String, String> customInfo = ConvertStringMap(customInfoMap);
+                builder.info(customInfo);
+            }
+            if (map.hasKey("customFlags")) {
+                ReadableMap customFlagsMap = map.getMap("customFlags");
+                Map<String, String> customFlags = ConvertStringMap(customFlagsMap);
+                for (Map.Entry<String, String> entry : customFlags.entrySet())
+                {
+                    builder.addCustomFlag(entry.getKey(), entry.getValue());
+                }
+            }
+
+            if (map.hasKey("shouldUploadEvent")) {
+                builder.shouldUploadEvent(map.getBoolean("shouldUploadEvent"));
+            }
+
+            return  builder.build();
+        }
+        Log.e(LOG_TAG, "Invalid event:" + map.toString());
+        return null;
+    }
+
     private static CommerceEvent ConvertCommerceEvent(JSONObject map) throws JSONException {
         Boolean isProductAction = map.has("productActionType");
         Boolean isPromotion = map.has("promotionActionType");
@@ -380,6 +423,10 @@ public class MParticleCordovaPlugin extends CordovaPlugin {
                 impression = ConvertImpression(impressionMap);
                 builder.addImpression(impression);
             }
+        }
+
+        if (map.hasKey("shouldUploadEvent")) {
+            builder.shouldUploadEvent(map.getBoolean("shouldUploadEvent"));
         }
 
         return builder.build();
