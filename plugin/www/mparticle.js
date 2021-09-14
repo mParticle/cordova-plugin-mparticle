@@ -93,6 +93,10 @@ var mparticle = {
     exec('logEvent', [eventName, type, attributes])
   },
 
+  logMPEvent: function (event) {
+    exec('logMPEvent', [event])
+  },
+
   logCommerceEvent: function (commerceEvent) {
     exec('logCommerceEvent', [commerceEvent])
   },
