@@ -19,13 +19,26 @@
     }];
 }
 
+- (void)logMPEvent:(CDVInvokedUrlCommand*)command {
+    [self.commandDelegate runInBackground:^{
+        NSString *serializedEvent = [command.arguments objectAtIndex:0];
+        
+        MPEvent *event = [CDVMParticle MPEvent:serializedEvent];
+        
+        [[MParticle sharedInstance] logEvent:event];
+        
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }];
+}
+
 - (void)logCommerceEvent:(CDVInvokedUrlCommand*)command {
     [self.commandDelegate runInBackground:^{
         NSString *serializedCommerceEvent = [command.arguments objectAtIndex:0];
         
         MPCommerceEvent *commerceEvent = [CDVMParticle MPCommerceEvent:serializedCommerceEvent];
         
-        [[MParticle sharedInstance] logCommerceEvent:commerceEvent];
+        [[MParticle sharedInstance] logEvent:commerceEvent];
         
         CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -350,6 +363,9 @@ typedef NS_ENUM(NSUInteger, MPCDVCommerceEventAction) {
         commerceEvent.checkoutStep = [json[@"checkoutStep"] intValue];
     }
     commerceEvent.nonInteractive = [json[@"nonInteractive"] boolValue];
+    if (json[@"shouldUploadEvent"] != nil) {
+        commerceEvent.shouldUploadEvent = [json[@"shouldUploadEvent"] boolValue];
+    }
     
     NSMutableArray *products = [NSMutableArray array];
     NSArray *jsonProducts = json[@"products"];
@@ -428,10 +444,13 @@ typedef NS_ENUM(NSUInteger, MPCDVCommerceEventAction) {
     event.category = json[@"category"];
     event.duration = json[@"duration"];
     event.endTime = json[@"endTime"];
-    event.info = json[@"info"];
+    event.customAttributes = json[@"info"];
     event.name = json[@"name"];
     event.startTime = json[@"startTime"];
     event.type = [json[@"type"] integerValue];
+    if (json[@"shouldUploadEvent"] != nil) {
+        event.shouldUploadEvent = [json[@"shouldUploadEvent"] boolValue];
+    }
     
     NSDictionary *jsonFlags = json[@"customFlags"];
     for (NSString *key in jsonFlags) {

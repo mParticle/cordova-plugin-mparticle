@@ -93,6 +93,10 @@ var mparticle = {
     exec('logEvent', [eventName, type, attributes])
   },
 
+  logMPEvent: function (event) {
+    exec('logMPEvent', [event])
+  },
+
   logCommerceEvent: function (commerceEvent) {
     exec('logCommerceEvent', [commerceEvent])
   },
@@ -183,6 +187,45 @@ var mparticle = {
     }
   },
 
+  Event: function () {
+    this.setCategory = function (category) {
+      this.category = category
+      return this
+    }
+    this.setDuration = function (duration) {
+      this.duration = duration
+      return this
+    }
+    this.setEndTime = function (endTime) {
+      this.endTime = endTime
+      return this
+    }
+    this.setInfo = function (info) {
+      this.info = info
+      return this
+    }
+    this.setName = function (name) {
+      this.name = name
+      return this
+    }
+    this.setStartTime = function (startTime) {
+      this.startTime = startTime
+      return this
+    }
+    this.setType = function (type) {
+      this.type = type
+      return this
+    }
+    this.setShouldUploadEvent = function (shouldUploadEvent) {
+      this.shouldUploadEvent = shouldUploadEvent
+      return this
+    }
+    this.setCustomFlags = function (customFlags) {
+      this.customFlags = customFlags
+      return this
+    }
+  },
+
   CommerceEvent: function () {
     this.setTransactionAttributes = function (transactionAttributes) {
       this.transactionAttributes = transactionAttributes
@@ -251,6 +294,11 @@ var mparticle = {
 
     this.setNonInteractive = function (nonInteractive) {
       this.nonInteractive = nonInteractive
+      return this
+    }
+
+    this.setShouldUploadEvent = function (shouldUploadEvent) {
+      this.shouldUploadEvent = shouldUploadEvent
       return this
     }
   },
