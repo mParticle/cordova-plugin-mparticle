@@ -335,32 +335,30 @@ public class MParticleCordovaPlugin extends CordovaPlugin {
         return identityRequest.build();
     }
 
-    private static MPEvent ConvertMPEvent(ReadableMap map) throws JSONException {
-        if ((map.hasKey("name")) && (map.hasKey("type"))) {
+    private static MPEvent ConvertMPEvent(JSONObject map) throws JSONException {
+        if ((map.has("name")) && (map.has("type"))) {
             String name = map.getString("name");
             Integer type = map.getInt("type");
             MPEvent.Builder builder = new MPEvent.Builder(name, ConvertEventType(type));
-            if (map.hasKey("category")) {
+            if (map.has("category")) {
                 builder.category(map.getString("category"));
             }
-            if (map.hasKey("duration")) {
+            if (map.has("duration")) {
                 builder.duration(map.getDouble("duration"));
             }
-            if (map.hasKey("info")) {
-                ReadableMap customInfoMap = map.getMap("info");
-                Map<String, String> customInfo = ConvertStringMap(customInfoMap);
+            if (map.has("info")) {
+                Map<String, String> customInfo = ConvertStringMap(map.getJSONObject("info"));
                 builder.info(customInfo);
             }
-            if (map.hasKey("customFlags")) {
-                ReadableMap customFlagsMap = map.getMap("customFlags");
-                Map<String, String> customFlags = ConvertStringMap(customFlagsMap);
+            if (map.has("customFlags")) {
+                Map<String, String> customFlags = ConvertStringMap(map.getJSONObject("customFlags"));
                 for (Map.Entry<String, String> entry : customFlags.entrySet())
                 {
                     builder.addCustomFlag(entry.getKey(), entry.getValue());
                 }
             }
 
-            if (map.hasKey("shouldUploadEvent")) {
+            if (map.has("shouldUploadEvent")) {
                 builder.shouldUploadEvent(map.getBoolean("shouldUploadEvent"));
             }
 
@@ -425,7 +423,7 @@ public class MParticleCordovaPlugin extends CordovaPlugin {
             }
         }
 
-        if (map.hasKey("shouldUploadEvent")) {
+        if (map.has("shouldUploadEvent")) {
             builder.shouldUploadEvent(map.getBoolean("shouldUploadEvent"));
         }
 
