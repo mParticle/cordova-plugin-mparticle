@@ -427,6 +427,10 @@ public class MParticleCordovaPlugin extends CordovaPlugin {
             builder.shouldUploadEvent(map.getBoolean("shouldUploadEvent"));
         }
 
+        if (map.has("customAttributes")) {
+            builder.customAttributes(ConvertStringMap(map.getJSONObject("customAttributes")));
+        }
+
         return builder.build();
     }
 
