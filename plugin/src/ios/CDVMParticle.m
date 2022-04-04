@@ -69,6 +69,57 @@
     }];
 }
 
+- (void)addGDPRConsentState:(CDVInvokedUrlCommand*)command {
+    [self.commandDelegate runInBackground:^{
+        NSString *serializedConsent = [command.arguments objectAtIndex:0];
+        NSString *purpose = [command.arguments objectAtIndex:0];
+        
+        MPGDPRConsent *consent = [CDVMParticle MPGDPRConsent:serializedConsent];
+        MPConsentState *consentState = [[MParticle sharedInstance].identity.currentUser.consentState copy];
+        [consentState addGDPRConsentState:consent purpose:purpose];
+        
+        [MParticle sharedInstance].identity.currentUser.consentState = consentState;
+
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }];
+}
+
+- (void)removeGDPRConsentStateWithPurpose:(CDVInvokedUrlCommand*)command {
+    [self.commandDelegate runInBackground:^{
+        NSString *purpose = [command.arguments objectAtIndex:0];
+        
+        [[MParticle sharedInstance].identity.currentUser.consentState removeGDPRConsentStateWithPurpose:purpose];
+        
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }];
+}
+
+- (void)addCCPAConsentState:(CDVInvokedUrlCommand*)command {
+    [self.commandDelegate runInBackground:^{
+        NSString *serializedConsent = [command.arguments objectAtIndex:0];
+        
+        MPCCPAConsent *consent = [CDVMParticle MPCCPAConsent:serializedConsent];
+        MPConsentState *consentState = [[MParticle sharedInstance].identity.currentUser.consentState copy];
+        [consentState setCCPAConsentState:consent];
+        
+        [MParticle sharedInstance].identity.currentUser.consentState = consentState;
+
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }];
+}
+
+- (void)removeCCPAConsentState:(CDVInvokedUrlCommand*)command {
+    [self.commandDelegate runInBackground:^{
+        [[MParticle sharedInstance].identity.currentUser.consentState removeCCPAConsentState];
+        
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }];
+}
+
 - (void)setUserAttribute:(CDVInvokedUrlCommand*)command {
     [self.commandDelegate runInBackground:^{
         NSString *userId = [command.arguments objectAtIndex:0];
@@ -528,6 +579,38 @@ typedef NS_ENUM(NSUInteger, MPCDVCommerceEventAction) {
     } else {
         return MPIdentityOther;
     }
+}
+
++ (MPGDPRConsent *)MPGDPRConsent:(id)json {
+    NSString *dateString =  json[@"timestamp"];
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+    NSDate *timestamp = [dateFormatter dateFromString:dateString];
+    
+    MPGDPRConsent *consentState = [[MPGDPRConsent alloc] init];
+    consentState.consented = json[@"consented"];
+    consentState.document = json[@"document"];
+    consentState.timestamp = timestamp;
+    consentState.location = json[@"location"];
+    consentState.hardwareId = json[@"hardwareId"];
+    
+    return consentState;
+}
+
++ (MPCCPAConsent *)MPCCPAConsent:(id)json {
+    NSString *dateString =  json[@"timestamp"];
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+    NSDate *timestamp = [dateFormatter dateFromString:dateString];
+    
+    MPCCPAConsent *consentState = [[MPCCPAConsent alloc] init];
+    consentState.consented = json[@"consented"];
+    consentState.document = json[@"document"];
+    consentState.timestamp = timestamp;
+    consentState.location = json[@"location"];
+    consentState.hardwareId = json[@"hardwareId"];
+    
+    return consentState;
 }
 
 @end
