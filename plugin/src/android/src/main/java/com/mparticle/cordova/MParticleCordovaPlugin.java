@@ -346,7 +346,6 @@ public class MParticleCordovaPlugin extends CordovaPlugin {
             newConsent = ConvertGDPRConsent(map);
             ConsentState state = ConsentState.builder()
             .addGDPRConsentState(purpose, newConsent)
-            .setCCPAConsentState(ccpaConsent)
             .build();
 
             user.setConsentState(newConsent);
