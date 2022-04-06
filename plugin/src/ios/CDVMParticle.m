@@ -21,7 +21,7 @@
 
 - (void)logMPEvent:(CDVInvokedUrlCommand*)command {
     [self.commandDelegate runInBackground:^{
-        NSString *serializedEvent = [command.arguments objectAtIndex:0];
+        NSMutableDictionary *serializedEvent = [command.arguments objectAtIndex:0];
         
         MPEvent *event = [CDVMParticle MPEvent:serializedEvent];
         
@@ -34,7 +34,7 @@
 
 - (void)logCommerceEvent:(CDVInvokedUrlCommand*)command {
     [self.commandDelegate runInBackground:^{
-        NSString *serializedCommerceEvent = [command.arguments objectAtIndex:0];
+        NSMutableDictionary *serializedCommerceEvent = [command.arguments objectAtIndex:0];
         
         MPCommerceEvent *commerceEvent = [CDVMParticle MPCommerceEvent:serializedCommerceEvent];
         
@@ -63,6 +63,57 @@
         NSNumber *timestamp = [command.arguments objectAtIndex:1];
         
         [[MParticle sharedInstance] setATTStatus:status withATTStatusTimestampMillis:timestamp];
+        
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }];
+}
+
+- (void)addGDPRConsentState:(CDVInvokedUrlCommand*)command {
+    [self.commandDelegate runInBackground:^{
+        NSMutableDictionary *serializedConsent = [command.arguments objectAtIndex:0];
+        NSString *purpose = [command.arguments objectAtIndex:0];
+        
+        MPGDPRConsent *consent = [CDVMParticle MPGDPRConsent:serializedConsent];
+        MPConsentState *consentState = [[MParticle sharedInstance].identity.currentUser.consentState copy];
+        [consentState addGDPRConsentState:consent purpose:purpose];
+        
+        [MParticle sharedInstance].identity.currentUser.consentState = consentState;
+
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }];
+}
+
+- (void)removeGDPRConsentStateWithPurpose:(CDVInvokedUrlCommand*)command {
+    [self.commandDelegate runInBackground:^{
+        NSString *purpose = [command.arguments objectAtIndex:0];
+        
+        [[MParticle sharedInstance].identity.currentUser.consentState removeGDPRConsentStateWithPurpose:purpose];
+        
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }];
+}
+
+- (void)addCCPAConsentState:(CDVInvokedUrlCommand*)command {
+    [self.commandDelegate runInBackground:^{
+        NSMutableDictionary *serializedConsent = [command.arguments objectAtIndex:0];
+        
+        MPCCPAConsent *consent = [CDVMParticle MPCCPAConsent:serializedConsent];
+        MPConsentState *consentState = [[MParticle sharedInstance].identity.currentUser.consentState copy];
+        [consentState setCCPAConsentState:consent];
+        
+        [MParticle sharedInstance].identity.currentUser.consentState = consentState;
+
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }];
+}
+
+- (void)removeCCPAConsentState:(CDVInvokedUrlCommand*)command {
+    [self.commandDelegate runInBackground:^{
+        [[MParticle sharedInstance].identity.currentUser.consentState removeCCPAConsentState];
         
         CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -133,7 +184,7 @@
 
 - (void)identify:(CDVInvokedUrlCommand*)command {
     [self.commandDelegate runInBackground:^{
-        NSString *serializedrequest = [command.arguments objectAtIndex:0];
+        NSMutableDictionary *serializedrequest = [command.arguments objectAtIndex:0];
         MPIdentityApiRequest *request = [CDVMParticle MPIdentityApiRequest:serializedrequest];
         
         [[[MParticle sharedInstance] identity] identify:request completion:^(MPIdentityApiResult * _Nullable apiResult, NSError * _Nullable error) {
@@ -161,7 +212,7 @@
 
 - (void)login:(CDVInvokedUrlCommand*)command {
     [self.commandDelegate runInBackground:^{
-        NSString *serializedrequest = [command.arguments objectAtIndex:0];
+        NSMutableDictionary *serializedrequest = [command.arguments objectAtIndex:0];
         MPIdentityApiRequest *request = [CDVMParticle MPIdentityApiRequest:serializedrequest];
         
         [[[MParticle sharedInstance] identity] login:request completion:^(MPIdentityApiResult * _Nullable apiResult, NSError * _Nullable error) {
@@ -189,7 +240,7 @@
 
 - (void)logout:(CDVInvokedUrlCommand*)command {
     [self.commandDelegate runInBackground:^{
-        NSString *serializedrequest = [command.arguments objectAtIndex:0];
+        NSMutableDictionary *serializedrequest = [command.arguments objectAtIndex:0];
         MPIdentityApiRequest *request = [CDVMParticle MPIdentityApiRequest:serializedrequest];
         
         [[[MParticle sharedInstance] identity] logout:request completion:^(MPIdentityApiResult * _Nullable apiResult, NSError * _Nullable error) {
@@ -217,7 +268,7 @@
 
 - (void)modify:(CDVInvokedUrlCommand*)command {
     [self.commandDelegate runInBackground:^{
-        NSString *serializedrequest = [command.arguments objectAtIndex:0];
+        NSMutableDictionary *serializedrequest = [command.arguments objectAtIndex:0];
         MPIdentityApiRequest *request = [CDVMParticle MPIdentityApiRequest:serializedrequest];
         
         [[[MParticle sharedInstance] identity] modify:request completion:^(MPIdentityApiResult * _Nullable apiResult, NSError * _Nullable error) {
@@ -326,7 +377,7 @@ typedef NS_ENUM(NSUInteger, MPCDVCommerceEventAction) {
     return action;
 }
 
-+ (MPCommerceEvent *)MPCommerceEvent:(id)json {
++ (MPCommerceEvent *)MPCommerceEvent:(NSMutableDictionary *)json {
     BOOL isProductAction = json[@"productActionType"] != nil;
     BOOL isPromotion = json[@"promotionActionType"] != nil;
     BOOL isImpression = json[@"impressions"] != nil;
@@ -391,7 +442,7 @@ typedef NS_ENUM(NSUInteger, MPCDVCommerceEventAction) {
     return commerceEvent;
 }
 
-+ (MPPromotionContainer *)MPPromotionContainer:(id)json {
++ (MPPromotionContainer *)MPPromotionContainer:(NSMutableDictionary *)json {
     MPPromotionAction promotionAction = (MPPromotionAction)[json[@"promotionActionType"] intValue];
     MPPromotionContainer *promotionContainer = [[MPPromotionContainer alloc] initWithAction:promotionAction promotion:nil];
     NSArray *jsonPromotions = json[@"promotions"];
@@ -403,7 +454,7 @@ typedef NS_ENUM(NSUInteger, MPCDVCommerceEventAction) {
     return promotionContainer;
 }
 
-+ (MPPromotion *)MPPromotion:(id)json {
++ (MPPromotion *)MPPromotion:(NSMutableDictionary *)json {
     MPPromotion *promotion = [[MPPromotion alloc] init];
     promotion.creative = json[@"creative"];
     promotion.name = json[@"name"];
@@ -412,7 +463,7 @@ typedef NS_ENUM(NSUInteger, MPCDVCommerceEventAction) {
     return promotion;
 }
 
-+ (MPTransactionAttributes *)MPTransactionAttributes:(id)json {
++ (MPTransactionAttributes *)MPTransactionAttributes:(NSMutableDictionary *)json {
     MPTransactionAttributes *transactionAttributes = [[MPTransactionAttributes alloc] init];
     transactionAttributes.affiliation = json[@"affiliation"];
     transactionAttributes.couponCode = json[@"couponCode"];
@@ -423,7 +474,7 @@ typedef NS_ENUM(NSUInteger, MPCDVCommerceEventAction) {
     return transactionAttributes;
 }
 
-+ (MPProduct *)MPProduct:(id)json {
++ (MPProduct *)MPProduct:(NSMutableDictionary *)json {
     MPProduct *product = [[MPProduct alloc] init];
     product.brand = json[@"brand"];
     product.category = json[@"category"];
@@ -442,7 +493,7 @@ typedef NS_ENUM(NSUInteger, MPCDVCommerceEventAction) {
     return product;
 }
 
-+ (MPEvent *)MPEvent:(id)json {
++ (MPEvent *)MPEvent:(NSMutableDictionary *)json {
     MPEvent *event = [[MPEvent alloc] init];
     event.category = json[@"category"];
     event.duration = json[@"duration"];
@@ -464,7 +515,7 @@ typedef NS_ENUM(NSUInteger, MPCDVCommerceEventAction) {
     return event;
 }
 
-+ (MPIdentityApiRequest *)MPIdentityApiRequest:(id)json {
++ (MPIdentityApiRequest *)MPIdentityApiRequest:(NSMutableDictionary *)json {
     MPIdentityApiRequest *request = [[MPIdentityApiRequest alloc] init];
     for (NSString *key in json) {
         NSString *value = json[key];
@@ -530,5 +581,38 @@ typedef NS_ENUM(NSUInteger, MPCDVCommerceEventAction) {
     }
 }
 
++ (MPGDPRConsent *)MPGDPRConsent:(NSMutableDictionary *)json {
+    NSString *dateString =  json[@"timestamp"];
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+    NSDate *timestamp = [dateFormatter dateFromString:dateString];
+    
+    MPGDPRConsent *consentState = [[MPGDPRConsent alloc] init];
+    consentState.consented = [json[@"consented"] boolValue];
+    consentState.document = json[@"document"];
+    consentState.timestamp = timestamp;
+    consentState.location = json[@"location"];
+    consentState.hardwareId = json[@"hardwareId"];
+    
+    return consentState;
+}
+
++ (MPCCPAConsent *)MPCCPAConsent:(NSMutableDictionary *)json {
+    NSString *dateString =  json[@"timestamp"];
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+    NSDate *timestamp = [dateFormatter dateFromString:dateString];
+    
+    MPCCPAConsent *consentState = [[MPCCPAConsent alloc] init];
+    consentState.consented = [json[@"consented"] boolValue];
+    consentState.document = json[@"document"];
+    consentState.timestamp = timestamp;
+    consentState.location = json[@"location"];
+    consentState.hardwareId = json[@"hardwareId"];
+    
+    return consentState;
+}
+
 @end
+
 
