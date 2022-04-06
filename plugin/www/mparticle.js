@@ -109,6 +109,22 @@ var mparticle = {
     exec('setATTStatus', [status, timestamp])
   },
 
+  addGDPRConsentState: function (consentState, purpose) {
+    exec('addGDPRConsentState', [consentState, purpose])
+  },
+
+  removeGDPRConsentState: function (purpose) {
+    exec('removeGDPRConsentState', [purpose])
+  },
+
+  addCCPAConsentState: function (consentState) {
+    exec('addCCPAConsentState', [consentState])
+  },
+
+  removeCCPAConsentState: function () {
+    exec('removeCCPAConsentState', [])
+  },
+
   Impression: function (impressionListName, products) {
     this.impressionListName = impressionListName
     this.products = products
@@ -374,6 +390,52 @@ var mparticle = {
         'MParticle',
         'modify',
         [IdentityRequest])
+    }
+  },
+
+  GDPRConsent: function () {
+    this.setConsented = function (consented) {
+      this.consented = consented
+      return this
+    }
+    this.setDocument = function (document) {
+      this.document = document
+      return this
+    }
+    this.setTimestamp = function (timestamp) {
+      this.timestamp = timestamp
+      return this
+    }
+    this.setLocation = function (location) {
+      this.location = location
+      return this
+    }
+    this.setHardwareId = function (hardwareId) {
+      this.hardwareId = hardwareId
+      return this
+    }
+  },
+
+  CCPAConsent: function () {
+    this.setConsented = function (consented) {
+      this.consented = consented
+      return this
+    }
+    this.setDocument = function (document) {
+      this.document = document
+      return this
+    }
+    this.setTimestamp = function (timestamp) {
+      this.timestamp = timestamp
+      return this
+    }
+    this.setLocation = function (location) {
+      this.location = location
+      return this
+    }
+    this.setHardwareId = function (hardwareId) {
+      this.hardwareId = hardwareId
+      return this
     }
   }
 }
