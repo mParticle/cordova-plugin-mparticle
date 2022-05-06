@@ -13,7 +13,7 @@
             </feature>
         </config-file>
         <source-file src="src/android/src/main/java/com/mparticle/cordova/MParticleCordovaPlugin.java" target-dir="src/android/src/main/java/com/mparticle/cordova/MParticleCordovaPlugin.java" />
-        <framework src="com.mparticle:android-core:5.35.2"/>
+        <framework src="com.mparticle:android-core:5.38.1"/>
     </platform>
     <platform name="ios">
         <config-file target="config.xml" parent="/*">
