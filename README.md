@@ -104,28 +104,26 @@ Please see [Identity](http://docs.mparticle.com/developers/sdk/ios/identity/) fo
 
 2. Call `start` from the `onCreate` method of your app's `Application` class. It's crucial that the SDK be started here for proper session management. If you don't already have an `Application` class, create it and then specify its fully-qualified name in the `<application>` tag of your app's `AndroidManifest.xml`.
 
-```java
+```kotlin
 package com.example.myapp;
 
 import android.app.Application;
 import com.mparticle.MParticle;
 
-public class MyApplication extends Application {
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        MParticleOptions options = MParticleOptions.builder(this)
-            .credentials("REPLACE ME WITH KEY","REPLACE ME WITH SECRET")
-            .setLogLevel(MParticle.LogLevel.VERBOSE)
+class MyApplication : Application() {
+    override fun onCreate() {
+        super.onCreate()
+        val options: MParticleOptions = MParticleOptions.builder(this)
+            .credentials("REPLACE ME WITH KEY", "REPLACE ME WITH SECRET")
+            .logLevel(MParticle.LogLevel.VERBOSE)
             .identify(identifyRequest)
             .identifyTask(
-            new BaseIdentityTask()
-            .addFailureListener(this)
-            .addSuccessListener(this)
-        )
-        .build();
-
-        MParticle.start(options);
+                BaseIdentityTask()
+                    .addFailureListener() { response -> }
+                    .addSuccessListener { result -> }
+            )
+            .build()
+        MParticle.start(options)
     }
 }
 ```

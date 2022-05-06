@@ -9,7 +9,11 @@ import com.mparticle.commerce.Impression;
 import com.mparticle.commerce.Product;
 import com.mparticle.commerce.TransactionAttributes;
 import com.mparticle.commerce.Promotion;
+import com.mparticle.consent.CCPAConsent;
+import com.mparticle.consent.ConsentState;
+import com.mparticle.consent.GDPRConsent;
 import com.mparticle.identity.*;
+import com.mparticle.internal.Logger;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
@@ -18,7 +22,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -65,16 +72,24 @@ public class MParticleCordovaPlugin extends CordovaPlugin {
             getUserIdentities(args, callbackContext);
             return true;
         } else if (action.equals("addGDPRConsentState")) {
-            addGDPRConsentState(args, callbackContext);
+            try {
+                addGDPRConsentState(args);
+            } catch (ParseException e) {
+                Logger.warning(e, "failed to add GDPRConsentState");
+            }
             return true;
         } else if (action.equals("removeGDPRConsentState")) {
-            removeGDPRConsentState(args, callbackContext);
+            removeGDPRConsentState(args);
             return true;
         } else if (action.equals("addCCPAConsentState")) {
-            addCCPAConsentState(args, callbackContext);
+            try {
+                addCCPAConsentState(args);
+            } catch (ParseException e) {
+                Logger.warning(e, "failed to add CCPAConsentState");
+            }
             return true;
         } else if (action.equals("removeCCPAConsentState")) {
-            removeCCPAConsentState(args, callbackContext);
+            removeCCPAConsentState(args);
             return true;
         } else {
             return false;
@@ -338,49 +353,49 @@ public class MParticleCordovaPlugin extends CordovaPlugin {
         callbackContext.sendPluginResult(pluginResult);
     }
 
-    public void addGDPRConsentState(final JSONArray args) throws JSONException {
+    public void addGDPRConsentState(final JSONArray args) throws JSONException, ParseException {
         MParticleUser user = MParticle.getInstance().Identity().getCurrentUser();
         final JSONObject map = args.getJSONObject(0);
         String purpose = args.getString(1);
         if (user != null && map != null && purpose != null) {
-            newConsent = ConvertGDPRConsent(map);
+            GDPRConsent newConsent = ConvertGDPRConsent(map);
             ConsentState state = ConsentState.builder()
             .addGDPRConsentState(purpose, newConsent)
             .build();
 
-            user.setConsentState(newConsent);
+            user.setConsentState(state);
         }
     }
 
-    public void removeGDPRConsentState(final JSONArray args) throws JSONException {
+    public void removeGDPRConsentState(final JSONArray state) throws JSONException {
         MParticleUser user = MParticle.getInstance().Identity().getCurrentUser();
-        String purpose = args.getString(0);
+        String purpose = state.getString(0);
         if (user != null && purpose != null) {
-            ConsentState updatedState = ConsentState.withConsentState(state)
-            .removeGDPRConsentState("parental")
+            ConsentState updatedState = ConsentState.withConsentState(user.getConsentState())
+            .removeGDPRConsentState(purpose)
             .build();
 
             user.setConsentState(updatedState);
         }
     }
 
-    public void addCCPAConsentState(final JSONArray args) throws JSONException {
+    public void addCCPAConsentState(final JSONArray args) throws JSONException, ParseException {
         MParticleUser user = MParticle.getInstance().Identity().getCurrentUser();
         final JSONObject map = args.getJSONObject(0);
         if (user != null && map != null) {
-            newConsent = ConvertCCPAConsent(map);
+            CCPAConsent newConsent = ConvertCCPAConsent(map);
             ConsentState state = ConsentState.builder()
             .setCCPAConsentState(newConsent)
             .build();
             
-            user.setConsentState(newConsent);
+            user.setConsentState(state);
         }
     }
 
-    public void removeCCPAConsentState(final JSONArray args) throws JSONException {
+    public void removeCCPAConsentState(final JSONArray state) throws JSONException {
         MParticleUser user = MParticle.getInstance().Identity().getCurrentUser();
         if (user != null) {
-            ConsentState updatedState = ConsentState.withConsentState(state)
+            ConsentState updatedState = ConsentState.withConsentState(user.getConsentState())
             .removeCCPAConsentState()
             .build();
 
@@ -761,14 +776,14 @@ public class MParticleCordovaPlugin extends CordovaPlugin {
         }
     }
 
-    private static GDPRConsent ConvertGDPRConsent(JSONObject map) throws JSONException {
-        String dateStr = obj.getString("timestamp");
+    private static GDPRConsent ConvertGDPRConsent(JSONObject map) throws JSONException, ParseException {
+        String dateStr = map.getString("timestamp");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date timestamp = sdf.parse(dateStr);
         
         GDPRConsent consent = GDPRConsent.builder(map.getBoolean("consented"))
         .document(map.getString("document"))
-        .timestamp(timestamp)
+        .timestamp(timestamp.getTime())
         .location(map.getString("location"))
         .hardwareId(map.getString("hardwareId"))
         .build();
@@ -776,14 +791,14 @@ public class MParticleCordovaPlugin extends CordovaPlugin {
         return consent;
     }
 
-    private static GDPRConsent ConvertGDPRConsent(JSONObject map) throws JSONException {
-        String dateStr = obj.getString("timestamp");
+    private static CCPAConsent ConvertCCPAConsent(JSONObject map) throws JSONException, ParseException {
+        String dateStr = map.getString("timestamp");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date timestamp = sdf.parse(dateStr);
 
         CCPAConsent consent = CCPAConsent.builder(map.getBoolean("consented"))
         .document(map.getString("document"))
-        .timestamp(timestamp)
+        .timestamp(timestamp.getTime())
         .location(map.getString("location"))
         .hardwareId(map.getString("hardwareId"))
         .build();

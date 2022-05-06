@@ -1,25 +1,30 @@
-apply plugin: 'com.android.library'
+plugins {
+    id("com.android.library")
+}
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    compileSdk = 31
     defaultConfig {
-        minSdkVersion 15
-        targetSdkVersion 25
-        versionCode 1
-        versionName "1.0"
+        minSdk = 15
+        targetSdk = 31
+        versionCode = 1
+        versionName = "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-    }
-    buildTypes {
-
     }
 }
 
+repositories {
+    google()
+    mavenCentral()
+}
+
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.json:json:20080701'
-    testCompile "org.mockito:mockito-core:1.+"
-    provided 'org.apache.cordova:framework:7.1.0'
-    provided 'com.mparticle:android-core:5.27.0'
+    compileOnly("org.apache.cordova:framework:10.1.2")
+    compileOnly("com.mparticle:android-core:5.38.1")
+
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.json:json:20220320")
+    testImplementation("org.mockito:mockito-core:4.5.1")
+    testImplementation("org.apache.cordova:framework:10.1.2")
+    testImplementation("com.mparticle:android-core:5.38.1")
 }
