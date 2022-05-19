@@ -1,3 +1,10 @@
+## [2.2.1](https://github.com/mParticle/cordova-plugin-mparticle/compare/2.2.0...2.2.1) (2022-05-19)
+
+
+### Bug Fixes
+
+* update Android usage of info -> customAttributes ([#15](https://github.com/mParticle/cordova-plugin-mparticle/issues/15)) ([dc8830b](https://github.com/mParticle/cordova-plugin-mparticle/commit/dc8830b05ff8ae4401c3c731eb023cb3f4dfa200))
+
 # [2.2.0](https://github.com/mParticle/cordova-plugin-mparticle/compare/2.1.0...2.2.0) (2022-05-06)
 
 
