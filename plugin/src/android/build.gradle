@@ -20,11 +20,11 @@ repositories {
 
 dependencies {
     compileOnly("org.apache.cordova:framework:10.1.2")
-    compileOnly("com.mparticle:android-core:5.38.1")
+    compileOnly("com.mparticle:android-core:+")
 
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.json:json:20220320")
     testImplementation("org.mockito:mockito-core:4.5.1")
     testImplementation("org.apache.cordova:framework:10.1.2")
-    testImplementation("com.mparticle:android-core:5.38.1")
+    testImplementation("com.mparticle:android-core:+")
 }
