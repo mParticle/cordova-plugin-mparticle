@@ -107,7 +107,7 @@ public class MParticleCordovaPlugin extends CordovaPlugin {
         MParticle.EventType eventType = ConvertEventType(type);
 
         MPEvent event = new MPEvent.Builder(name, eventType)
-                .info(attributes)
+                .customAttributes(attributes)
                 .build();
 
         MParticle.getInstance().logEvent(event);
@@ -425,7 +425,7 @@ public class MParticleCordovaPlugin extends CordovaPlugin {
             }
             if (map.has("info")) {
                 Map<String, String> customInfo = ConvertStringMap(map.getJSONObject("info"));
-                builder.info(customInfo);
+                builder.customAttributes(customInfo);
             }
             if (map.has("customFlags")) {
                 Map<String, String> customFlags = ConvertStringMap(map.getJSONObject("customFlags"));

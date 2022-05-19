@@ -89,7 +89,7 @@ public class MParticleCordovaTests {
         attributes.put("Test key", "Test value");
         info.put("Test key", "Test value");
         MPEvent event = new MPEvent.Builder(eventName, eventType)
-                .info(attributes)
+                .customAttributes(attributes)
                 .build();
 
         MParticleCordovaPlugin plugin = new MParticleCordovaPlugin();
