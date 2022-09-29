@@ -1,3 +1,10 @@
+## [2.2.2](https://github.com/mParticle/cordova-plugin-mparticle/compare/2.2.1...2.2.2) (2022-09-29)
+
+
+### Bug Fixes
+
+* Fix ProductActions getting mapped to PromotionActions ([#16](https://github.com/mParticle/cordova-plugin-mparticle/issues/16)) ([85ab4c7](https://github.com/mParticle/cordova-plugin-mparticle/commit/85ab4c7c67a16e93879e8488760baeec3abda650))
+
 ## [2.2.1](https://github.com/mParticle/cordova-plugin-mparticle/compare/2.2.0...2.2.1) (2022-05-19)
 
 
