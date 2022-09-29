@@ -459,7 +459,7 @@ public class MParticleCordovaPlugin extends CordovaPlugin {
 
         if (isProductAction) {
             int productActionInt = map.getInt("productActionType");
-            String productAction = ConvertPromotionActionType(productActionInt);
+            String productAction = ConvertProductActionType(productActionInt);
             JSONArray productsArray = map.getJSONArray("products");
             JSONObject productMap = productsArray.getJSONObject(0);
             Product product = ConvertProduct(productMap);
