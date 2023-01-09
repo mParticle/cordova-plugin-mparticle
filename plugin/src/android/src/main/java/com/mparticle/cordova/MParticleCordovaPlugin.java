@@ -359,7 +359,7 @@ public class MParticleCordovaPlugin extends CordovaPlugin {
         String purpose = args.getString(1);
         if (user != null && map != null && purpose != null) {
             GDPRConsent newConsent = ConvertGDPRConsent(map);
-            ConsentState state = ConsentState.builder()
+            ConsentState state = ConsentState.withConsentState(user.getConsentState())
             .addGDPRConsentState(purpose, newConsent)
             .build();
 
@@ -384,7 +384,7 @@ public class MParticleCordovaPlugin extends CordovaPlugin {
         final JSONObject map = args.getJSONObject(0);
         if (user != null && map != null) {
             CCPAConsent newConsent = ConvertCCPAConsent(map);
-            ConsentState state = ConsentState.builder()
+            ConsentState state = ConsentState.withConsentState(user.getConsentState())
             .setCCPAConsentState(newConsent)
             .build();
             
