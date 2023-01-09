@@ -1,3 +1,10 @@
+## [2.2.3](https://github.com/mParticle/cordova-plugin-mparticle/compare/2.2.2...2.2.3) (2023-01-09)
+
+
+### Bug Fixes
+
+* Android Consent now retains previously Set Consent States ([#22](https://github.com/mParticle/cordova-plugin-mparticle/issues/22)) ([c5ce970](https://github.com/mParticle/cordova-plugin-mparticle/commit/c5ce97014b9cefc86c878f899472848c1d3fa6f7))
+
 ## [2.2.2](https://github.com/mParticle/cordova-plugin-mparticle/compare/2.2.1...2.2.2) (2022-09-29)
 
 
