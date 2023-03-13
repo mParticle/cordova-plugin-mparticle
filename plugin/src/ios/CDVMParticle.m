@@ -72,7 +72,7 @@
 - (void)addGDPRConsentState:(CDVInvokedUrlCommand*)command {
     [self.commandDelegate runInBackground:^{
         NSMutableDictionary *serializedConsent = [command.arguments objectAtIndex:0];
-        NSString *purpose = [command.arguments objectAtIndex:0];
+        NSString *purpose = [command.arguments objectAtIndex:1];
         
         MPGDPRConsent *consent = [CDVMParticle MPGDPRConsent:serializedConsent];
         MPConsentState *consentState = [[MParticle sharedInstance].identity.currentUser.consentState copy];
