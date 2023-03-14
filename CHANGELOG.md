@@ -1,3 +1,10 @@
+## [2.2.4](https://github.com/mParticle/cordova-plugin-mparticle/compare/2.2.3...2.2.4) (2023-03-14)
+
+
+### Bug Fixes
+
+* Setting DDPR Consents on iOS ([#23](https://github.com/mParticle/cordova-plugin-mparticle/issues/23)) ([c13eaa7](https://github.com/mParticle/cordova-plugin-mparticle/commit/c13eaa7f3e68fb3a510de75c25831c44ce716dc9))
+
 ## [2.2.3](https://github.com/mParticle/cordova-plugin-mparticle/compare/2.2.2...2.2.3) (2023-01-09)
 
 
