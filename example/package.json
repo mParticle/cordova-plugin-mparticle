@@ -17,7 +17,7 @@
     "eslint": "^4.19.1"
   },
   "devDependencies": {
-    "cordova-android": "^9.0.0",
+    "cordova-android": "^14.0.1",
     "cordova-ios": "^6.2.0",
     "cordova-plugin-mparticle": "file:../plugin"
   }
