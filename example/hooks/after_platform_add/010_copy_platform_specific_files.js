@@ -34,7 +34,7 @@ module.exports = function(context) {
     } else if (platform === 'ios') {
         // Copy AppDelegate.m
         var srcFile = path.join(context.opts.projectRoot, 'platform_overrides', 'ios', 'AppDelegate.m');
-        var destFile = path.join(context.opts.projectRoot, 'platforms', 'ios', 'MParticleExample', 'Classes', 'AppDelegate.m');
+        var destFile = path.join(context.opts.projectRoot, 'platforms', 'ios', 'MParticleExample', 'AppDelegate.m');
         
         if (fs.existsSync(srcFile)) {
             try {
