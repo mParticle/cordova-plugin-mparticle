@@ -1,5 +1,5 @@
 #import <Cordova/CDV.h>
-#import "mParticle.h"
+@import mParticle_Apple_SDK;
 
 @interface CDVMParticle : CDVPlugin
 @end
