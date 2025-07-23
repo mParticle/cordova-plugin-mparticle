@@ -30,7 +30,7 @@
 
 - (BOOL)application:(UIApplication*)application didFinishLaunchingWithOptions:(NSDictionary*)launchOptions
 {
-    MParticleOptions *mParticleOptions = [MParticleOptions optionsWithKey:@"REPLACE ME" secret:@"REPLACE ME"];
+    MParticleOptions *mParticleOptions = [MParticleOptions optionsWithKey:@"REPLACE_ME_API_KEY" secret:@"REPLACE_ME_API_SECRET"];
     
     //Please see the Identity page for more information on building this object
     MPIdentityApiRequest *request = [MPIdentityApiRequest requestWithEmptyUser];

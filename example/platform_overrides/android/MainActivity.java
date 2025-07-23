@@ -46,7 +46,7 @@ public class MainActivity extends CordovaActivity
                 .email("foo@example.com")
                 .build();
         MParticleOptions options = MParticleOptions.builder(this)
-                .credentials("REPLACE ME", "REPLACE ME")
+                .credentials("REPLACE_ME_API_KEY", "REPLACE_ME_API_SECRET")
                 .identify(identifyRequest)
                 .build();
         MParticle.start(options);
