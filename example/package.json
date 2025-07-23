@@ -2,6 +2,9 @@
   "name": "com.mparticle.example",
   "version": "1.0.0",
   "displayName": "MParticleExample",
+  "scripts": {
+    "clean": "node scripts/clean.js"
+  },
   "cordova": {
     "platforms": [
       "android",
