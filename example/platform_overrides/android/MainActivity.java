@@ -20,11 +20,9 @@
 package com.mparticle.example;
 
 import android.os.Bundle;
-
 import com.mparticle.MParticle;
 import com.mparticle.MParticleOptions;
 import com.mparticle.identity.IdentityApiRequest;
-
 import org.apache.cordova.*;
 
 public class MainActivity extends CordovaActivity
@@ -43,6 +41,7 @@ public class MainActivity extends CordovaActivity
         // Set by <content src="index.html" /> in config.xml
         loadUrl(launchUrl);
 
+        // Initialize MParticle
         IdentityApiRequest identifyRequest = IdentityApiRequest.withEmptyUser()
                 .email("foo@example.com")
                 .build();
