@@ -437,6 +437,36 @@ var mparticle = {
       this.hardwareId = hardwareId
       return this
     }
+  },
+
+  RoktColorMode: {
+    LIGHT: 'LIGHT',
+    DARK: 'DARK',
+    SYSTEM: 'SYSTEM'
+  },
+
+  selectPlacements: function(identifier, attributes, config) {
+    var defaultConfig = {
+      colorMode: this.RoktColorMode.SYSTEM,
+      cacheConfig: {
+        cacheDurationInSeconds: 5400,
+        cacheAttributes: {}
+      },
+      edgeToEdgeDisplay: true
+    };
+
+    var finalConfig = {
+      colorMode: {
+        value: (config && config.colorMode) || defaultConfig.colorMode
+      },
+      cacheConfig: {
+        cacheDurationInSeconds: (config && config.cacheConfig && config.cacheConfig.cacheDurationInSeconds) || defaultConfig.cacheConfig.cacheDurationInSeconds,
+        cacheAttributes: (config && config.cacheConfig && config.cacheConfig.cacheAttributes) || defaultConfig.cacheConfig.cacheAttributes
+      },
+      edgeToEdgeDisplay: (config && config.edgeToEdgeDisplay !== undefined) ? config.edgeToEdgeDisplay : defaultConfig.edgeToEdgeDisplay
+    };
+
+    exec('selectPlacements', [identifier, attributes || {}, finalConfig]);
   }
 }
 

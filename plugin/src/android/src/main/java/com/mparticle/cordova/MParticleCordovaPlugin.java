@@ -14,6 +14,8 @@ import com.mparticle.consent.ConsentState;
 import com.mparticle.consent.GDPRConsent;
 import com.mparticle.identity.*;
 import com.mparticle.internal.Logger;
+import com.mparticle.rokt.RoktConfig;
+import com.mparticle.rokt.CacheConfig;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
@@ -90,6 +92,9 @@ public class MParticleCordovaPlugin extends CordovaPlugin {
             return true;
         } else if (action.equals("removeCCPAConsentState")) {
             removeCCPAConsentState(args);
+            return true;
+        } else if (action.equals("selectPlacements")) {
+            selectPlacements(args);
             return true;
         } else {
             return false;
@@ -401,6 +406,40 @@ public class MParticleCordovaPlugin extends CordovaPlugin {
 
             user.setConsentState(updatedState);
         }
+    }
+
+    public void selectPlacements(final JSONArray args) throws JSONException {
+        final String identifier = args.getString(0);
+        final JSONObject attributesMap = args.getJSONObject(1);
+        final JSONObject configMap = args.getJSONObject(2);
+        
+
+        final Map<String, String> attributes = ConvertStringMap(attributesMap);
+
+        final RoktConfig.ColorMode colorMode = RoktConfig.ColorMode.valueOf(configMap.getJSONObject("colorMode").getString("value"));
+        
+        final JSONObject cacheConfigMap = configMap.getJSONObject("cacheConfig");
+        final CacheConfig cacheConfig = new CacheConfig(
+            cacheConfigMap.getLong("cacheDurationInSeconds"),
+            ConvertStringMap(cacheConfigMap.getJSONObject("cacheAttributes"))
+        );
+        
+        final boolean edgeToEdgeDisplay = configMap.getBoolean("edgeToEdgeDisplay");
+        
+        final RoktConfig roktConfig = new RoktConfig.Builder()
+            .colorMode(colorMode)
+            .cacheConfig(cacheConfig)
+            .edgeToEdgeDisplay(edgeToEdgeDisplay)
+            .build();
+
+        MParticle.getInstance().Rokt().selectPlacements(
+            identifier,
+            attributes,
+            null,  // callbacks not used in Cordova
+            null,  // embeddedViews not used in Cordova
+            null,  // fontTypefaces not used in Cordova
+            roktConfig
+        );
     }
 
     private static IdentityApiRequest ConvertIdentityAPIRequest(JSONObject map) throws JSONException {
