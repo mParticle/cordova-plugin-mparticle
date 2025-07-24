@@ -1,3 +1,5 @@
+document.getElementById("selectPlacementsBtn").addEventListener('click', selectPlacements, false);
+
 var app = {
     // Application Constructor
     initialize: function() {
@@ -77,5 +79,32 @@ var app = {
         console.log('Received Event: ' + id);
     }
 };
+
+function selectPlacements() {
+    console.log('MParticleCordova Plugin Example: Selecting Placements');
+    
+    var attributes = {
+        'email': 'j.smith@example.com',
+        'firstname': 'Jenny',
+        'lastname': 'Smith',
+        'billingzipcode': '90210',
+        'confirmationref': '54321'
+    };
+
+    var config = {
+        colorMode: mparticle.RoktColorMode.SYSTEM,
+        cacheConfig: {
+            cacheDurationInSeconds: 5400,
+            cacheAttributes: {}
+        },
+        edgeToEdgeDisplay: true
+    };
+
+    mparticle.selectPlacements(
+        'MSDKOverlayLayout',
+        attributes,
+        config
+    );
+}
 
 app.initialize();
