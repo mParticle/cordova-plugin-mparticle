@@ -34,7 +34,9 @@ var app = {
 
             user.setUserAttribute(mparticle.UserAttributeType.FirstName, 'Cordova Test first name');
             user.setUserAttributeArray(mparticle.UserAttributeType.FirstName, ['Cordova Test value 1', 'Cordova Test value 2']);
-            user.setUserTag('Cordova testUser');
+
+            // TODO: Uncomment this when a new version of mparticle-apple-integration-rokt is released
+            // user.setUserTag('Cordova testUser');
             user.removeUserAttribute(mparticle.UserAttributeType.FirstName);
             user.getUserIdentities(function(userIdenitities) {
                 console.log('User userIdentities: ' + userIdenitities);
@@ -42,7 +44,7 @@ var app = {
         });
 
         var request = new mparticle.IdentityRequest();
-        request.setEmail('cordova123@gmail.com');
+        request.setEmail('j.smith@example.com');
 
         identity.login(request, function (userID) {
             console.log('Login Success: ' + userID);
