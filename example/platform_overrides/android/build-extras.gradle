@@ -1,0 +1,3 @@
+dependencies {
+    implementation 'com.mparticle:android-rokt-kit:5.71.0'
+} 
