@@ -445,7 +445,7 @@ var mparticle = {
     SYSTEM: 'SYSTEM'
   },
 
-  selectPlacements: function(identifier, attributes, config) {
+  selectPlacements: function (identifier, attributes, config) {
     var defaultConfig = {
       colorMode: this.RoktColorMode.SYSTEM,
       cacheConfig: {
@@ -453,7 +453,7 @@ var mparticle = {
         cacheAttributes: {}
       },
       edgeToEdgeDisplay: true
-    };
+    }
 
     var finalConfig = {
       colorMode: {
@@ -464,9 +464,9 @@ var mparticle = {
         cacheAttributes: (config && config.cacheConfig && config.cacheConfig.cacheAttributes) || defaultConfig.cacheConfig.cacheAttributes
       },
       edgeToEdgeDisplay: (config && config.edgeToEdgeDisplay !== undefined) ? config.edgeToEdgeDisplay : defaultConfig.edgeToEdgeDisplay
-    };
+    }
 
-    exec('selectPlacements', [identifier, attributes || {}, finalConfig]);
+    exec('selectPlacements', [identifier, attributes || {}, finalConfig])
   }
 }
 
