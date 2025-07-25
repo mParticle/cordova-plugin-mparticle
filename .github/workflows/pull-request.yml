@@ -85,7 +85,7 @@ jobs:
 
   example-ios:
     name: Build Example iOS App
-    runs-on: macos-latest
+    runs-on: macos-15
     defaults:
       run:
         working-directory: ./example
@@ -96,6 +96,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
+      - name: Select Xcode Version
+        run: sudo xcode-select -s /Applications/Xcode_16.4.app
       - name: Install Cordova
         run: npm install -g cordova
       - name: Install Dependencies
@@ -103,7 +105,7 @@ jobs:
       - name: Add iOS Platform
         run: cordova platform add ios
       - name: Build iOS
-        run: cordova build ios
+        run: cordova build ios --verbose
 
   pr-notify:
     if: >
