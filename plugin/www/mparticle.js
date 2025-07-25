@@ -445,13 +445,13 @@ var mparticle = {
     SYSTEM: 'SYSTEM'
   },
 
-  validateRoktColorMode: function(colorMode) {
-    var validColorModes = Object.values(this.RoktColorMode);
+  validateRoktColorMode: function (colorMode) {
+    var validColorModes = Object.values(this.RoktColorMode)
     if (!validColorModes.includes(colorMode)) {
-      console.error('Invalid color mode value: ' + colorMode + '. Must be one of: ' + validColorModes.join(', '));
-      return this.RoktColorMode.SYSTEM;
+      console.error('Invalid color mode value: ' + colorMode + '. Must be one of: ' + validColorModes.join(', '))
+      return this.RoktColorMode.SYSTEM
     }
-    return colorMode;
+    return colorMode
   },
 
   selectPlacements: function (identifier, attributes, config) {
@@ -464,8 +464,8 @@ var mparticle = {
       edgeToEdgeDisplay: true
     }
 
-    var requestedColorMode = (config && config.colorMode) || defaultConfig.colorMode;
-    requestedColorMode = this.validateRoktColorMode(requestedColorMode);
+    var requestedColorMode = (config && config.colorMode) || defaultConfig.colorMode
+    requestedColorMode = this.validateRoktColorMode(requestedColorMode)
 
     var finalConfig = {
       colorMode: {
