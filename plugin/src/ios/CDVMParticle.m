@@ -323,6 +323,40 @@
     }];
 }
 
+- (void)selectPlacements:(CDVInvokedUrlCommand*)command {
+    [self.commandDelegate runInBackground:^{
+        NSString *identifier = [command.arguments objectAtIndex:0];
+        NSDictionary *attributes = [command.arguments objectAtIndex:1];
+        NSDictionary *configDict = [command.arguments objectAtIndex:2];
+
+        MPRoktConfig *config = [[MPRoktConfig alloc] init];
+
+        NSString *colorModeStr = configDict[@"colorMode"][@"value"];
+        if ([colorModeStr isEqualToString:@"LIGHT"]) {
+            config.colorMode = MPColorModeLight;
+        } else if ([colorModeStr isEqualToString:@"DARK"]) {
+            config.colorMode = MPColorModeDark;
+        } else {
+            config.colorMode = MPColorModeSystem;
+        }
+
+        NSDictionary *cacheConfig = configDict[@"cacheConfig"];
+        if (cacheConfig) {
+            config.cacheDuration = @([cacheConfig[@"cacheDurationInSeconds"] longLongValue]);
+            config.cacheAttributes = cacheConfig[@"cacheAttributes"];
+        }
+
+        [[MParticle sharedInstance].rokt selectPlacements:identifier
+                                             attributes:attributes
+                                          embeddedViews:nil
+                                                config:config
+                                             callbacks:nil];
+        
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }];
+}
+
 typedef NS_ENUM(NSUInteger, MPCDVCommerceEventAction) {
     MPCDVCommerceEventActionAddToCart = 1,
     MPCDVCommerceEventActionRemoveFromCart,
