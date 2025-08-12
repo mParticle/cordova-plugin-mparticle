@@ -27,7 +27,7 @@
                 <source url="https://cdn.cocoapods.org/"/>
             </config>
             <pods use-frameworks="true">
-                <pod name="mParticle-Apple-SDK" spec="8.35.0" />
+                <pod name="mParticle-Apple-SDK" spec="8.37.1" />
             </pods>
         </podspec>
     </platform>
