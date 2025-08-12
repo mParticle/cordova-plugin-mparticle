@@ -21,9 +21,6 @@
 //  AppDelegate.m
 //  MParticleExample
 //
-//  Created by ___FULLUSERNAME___ on ___DATE___.
-//  Copyright ___ORGANIZATIONNAME___ ___YEAR___. All rights reserved.
-//
 
 #import "AppDelegate.h"
 #import "MainViewController.h"
@@ -33,8 +30,8 @@
 
 - (BOOL)application:(UIApplication*)application didFinishLaunchingWithOptions:(NSDictionary*)launchOptions
 {
+    MParticleOptions *mParticleOptions = [MParticleOptions optionsWithKey:@"REPLACE_ME_API_KEY" secret:@"REPLACE_ME_API_SECRET"];
     
-    MParticleOptions *mParticleOptions = [MParticleOptions optionsWithKey:@"REPLACE ME" secret:@"REPLACE ME"];
     //Please see the Identity page for more information on building this object
     MPIdentityApiRequest *request = [MPIdentityApiRequest requestWithEmptyUser];
     request.email = @"email@example.com";

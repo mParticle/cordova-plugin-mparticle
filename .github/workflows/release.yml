@@ -19,7 +19,7 @@ jobs:
       GIT_COMMITTER_EMAIL: developers@mparticle.com
     steps:
       - name: "Checkout public main branch"
-        uses: actions/checkout@v2
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
           ref: main
@@ -66,12 +66,12 @@ jobs:
         working-directory: ./plugin
     steps:
       - name: "Checkout public main branch"
-        uses: actions/checkout@v2
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
           ref: main
       - name: "Install Node"
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v4
       - name: "NPM Build"
         run: |
           npm ci

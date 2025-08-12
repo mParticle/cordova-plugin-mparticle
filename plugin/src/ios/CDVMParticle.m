@@ -1,5 +1,5 @@
 #import <Cordova/CDV.h>
-#import "mParticle.h"
+@import mParticle_Apple_SDK;
 
 @interface CDVMParticle : CDVPlugin
 @end
@@ -307,7 +307,52 @@
         
         MParticleUser *selectedUser = [[[MParticle sharedInstance] identity] getUser:userId];
         
-        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:[selectedUser identities]];
+        // Convert the identities dictionary to use string keys instead of enum values
+        NSDictionary *identities = [selectedUser identities];
+        NSMutableDictionary *convertedIdentities = [NSMutableDictionary dictionary];
+        
+        [identities enumerateKeysAndObjectsUsingBlock:^(NSNumber *key, id value, BOOL *stop) {
+            NSString *stringKey = [CDVMParticle StringFromIdentityType:(MPIdentity)key.intValue];
+            if (stringKey) {
+                convertedIdentities[stringKey] = value;
+            }
+        }];
+        
+        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:convertedIdentities];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }];
+}
+
+- (void)selectPlacements:(CDVInvokedUrlCommand*)command {
+    [self.commandDelegate runInBackground:^{
+        NSString *identifier = [command.arguments objectAtIndex:0];
+        NSDictionary *attributes = [command.arguments objectAtIndex:1];
+        NSDictionary *configDict = [command.arguments objectAtIndex:2];
+
+        MPRoktConfig *config = [[MPRoktConfig alloc] init];
+
+        NSString *colorModeStr = configDict[@"colorMode"][@"value"];
+        if ([colorModeStr isEqualToString:@"LIGHT"]) {
+            config.colorMode = MPColorModeLight;
+        } else if ([colorModeStr isEqualToString:@"DARK"]) {
+            config.colorMode = MPColorModeDark;
+        } else {
+            config.colorMode = MPColorModeSystem;
+        }
+
+        NSDictionary *cacheConfig = configDict[@"cacheConfig"];
+        if (cacheConfig) {
+            config.cacheDuration = @([cacheConfig[@"cacheDurationInSeconds"] longLongValue]);
+            config.cacheAttributes = cacheConfig[@"cacheAttributes"];
+        }
+
+        [[MParticle sharedInstance].rokt selectPlacements:identifier
+                                             attributes:attributes
+                                          embeddedViews:nil
+                                                config:config
+                                             callbacks:nil];
+        
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }];
 }
@@ -611,6 +656,63 @@ typedef NS_ENUM(NSUInteger, MPCDVCommerceEventAction) {
     consentState.hardwareId = json[@"hardwareId"];
     
     return consentState;
+}
+
++ (NSString *)StringFromIdentityType:(MPIdentity)identityType {
+    switch (identityType) {
+        case MPIdentityCustomerId:
+            return @"customerId";
+        case MPIdentityFacebook:
+            return @"facebook";
+        case MPIdentityTwitter:
+            return @"twitter";
+        case MPIdentityGoogle:
+            return @"google";
+        case MPIdentityMicrosoft:
+            return @"microsoft";
+        case MPIdentityYahoo:
+            return @"yahoo";
+        case MPIdentityEmail:
+            return @"email";
+        case MPIdentityAlias:
+            return @"alias";
+        case MPIdentityFacebookCustomAudienceId:
+            return @"facebookCustom";
+        case MPIdentityOther2:
+            return @"other2";
+        case MPIdentityOther3:
+            return @"other3";
+        case MPIdentityOther4:
+            return @"other4";
+        case MPIdentityOther5:
+            return @"other5";
+        case MPIdentityOther6:
+            return @"other6";
+        case MPIdentityOther7:
+            return @"other7";
+        case MPIdentityOther8:
+            return @"other8";
+        case MPIdentityOther9:
+            return @"other9";
+        case MPIdentityOther10:
+            return @"other10";
+        case MPIdentityMobileNumber:
+            return @"mobileNumber";
+        case MPIdentityPhoneNumber2:
+            return @"phoneNumber2";
+        case MPIdentityPhoneNumber3:
+            return @"phoneNumber3";
+        case MPIdentityIOSAdvertiserId:
+            return @"iosIDFA";
+        case MPIdentityIOSVendorId:
+            return @"iosIDFV";
+        case MPIdentityPushToken:
+            return @"pushToken";
+        case MPIdentityDeviceApplicationStamp:
+            return @"deviceApplicationStamp";
+        default:
+            return @"other";
+    }
 }
 
 @end

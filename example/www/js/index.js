@@ -1,3 +1,5 @@
+document.getElementById("selectPlacementsBtn").addEventListener('click', selectPlacements, false);
+
 var app = {
     // Application Constructor
     initialize: function() {
@@ -9,26 +11,32 @@ var app = {
     // Bind any cordova events here. Common events are:
     // 'pause', 'resume', etc.
     onDeviceReady: function() {
+        console.log('MParticleCordova Plugin Example: Device ready');
         this.receivedEvent('deviceready');
-        mparticle.logEvent('Test event', mparticle.EventType.Other, {'Test key': 'Test value'});
+        mparticle.logEvent('Cordova Test event', mparticle.EventType.Other, {'Cordova Test key': 'Cordova Test value'});
 
-        var product = new mparticle.Product('Test viewed product', 5678, 29.99);
-        var impression = new mparticle.Impression('Test impression list name', [product]);
+        console.log('MParticleCordova Plugin Example: Product');
+        var product = new mparticle.Product('CordovaTest viewed product', 5678, 29.99);
+        var impression = new mparticle.Impression('CordovaTest impression list name', [product]);
         var event = mparticle.CommerceEvent.createImpressionEvent([impression]);
         mparticle.logCommerceEvent(event);
 
+        console.log('MParticleCordova Plugin Example: Screen');
         mparticle.logScreenEvent('Test screen', { 'Test key': 'Test value' });
 
         mparticle.setATTStatus(mparticle.MPATTStatus.Authorized, null);
 
+        console.log('MParticleCordova Plugin Example: Identity');
         var identity = new mparticle.Identity();
 
         identity.getCurrentUser(function(userID) {
             var user = new mparticle.User(userID);
 
-            user.setUserAttribute(mparticle.UserAttributeType.FirstName, 'Test first name');
-            user.setUserAttributeArray(mparticle.UserAttributeType.FirstName, ['Test value 1', 'Test value 2']);
-            user.setUserTag('testUser');
+            user.setUserAttribute(mparticle.UserAttributeType.FirstName, 'Cordova Test first name');
+            user.setUserAttributeArray(mparticle.UserAttributeType.FirstName, ['Cordova Test value 1', 'Cordova Test value 2']);
+
+            // TODO: Uncomment this when a new version of mparticle-apple-integration-rokt is released
+            // user.setUserTag('Cordova testUser');
             user.removeUserAttribute(mparticle.UserAttributeType.FirstName);
             user.getUserIdentities(function(userIdenitities) {
                 console.log('User userIdentities: ' + userIdenitities);
@@ -36,7 +44,7 @@ var app = {
         });
 
         var request = new mparticle.IdentityRequest();
-        request.setEmail('123@gmail.com');
+        request.setEmail('j.smith@example.com');
 
         identity.login(request, function (userID) {
             console.log('Login Success: ' + userID);
@@ -53,6 +61,7 @@ var app = {
             console.log('Modify Success: ' + userID);
         });
 
+        console.log('MParticleCordova Plugin Example: Logout');
         var logoutRequest = new mparticle.IdentityRequest();
 
         identity.logout(logoutRequest, function (userID) {
@@ -72,5 +81,32 @@ var app = {
         console.log('Received Event: ' + id);
     }
 };
+
+function selectPlacements() {
+    console.log('MParticleCordova Plugin Example: Selecting Placements');
+    
+    var attributes = {
+        'email': 'j.smith@example.com',
+        'firstname': 'Jenny',
+        'lastname': 'Smith',
+        'billingzipcode': '90210',
+        'confirmationref': '54321'
+    };
+
+    var config = {
+        colorMode: mparticle.RoktColorMode.SYSTEM,
+        cacheConfig: {
+            cacheDurationInSeconds: 5400,
+            cacheAttributes: {}
+        },
+        edgeToEdgeDisplay: true
+    };
+
+    mparticle.selectPlacements(
+        'MSDKOverlayLayout',
+        attributes,
+        config
+    );
+}
 
 app.initialize();

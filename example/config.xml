@@ -20,8 +20,16 @@
         <allow-intent href="market:*" />
     </platform>
     <platform name="ios">
+        <preference name="deployment-target" value="12.0" />
         <allow-intent href="itms:*" />
         <allow-intent href="itms-apps:*" />
     </platform>
+    
+    <!-- Platform-specific file copy hook -->
+    <hook type="after_platform_add" src="hooks/after_platform_add/010_copy_platform_specific_files.js" />
+    <!-- Run pod install for iOS -->
+    <hook type="after_platform_add" src="hooks/after_platform_add/020_run_pod_install.js" />
+    <!-- Update Android Gradle dependencies -->
+    <hook type="after_platform_add" src="hooks/after_platform_add/030_update_android_gradle.js" />
     <plugin name="cordova-plugin-mparticle" spec="../plugin" />
 </widget>
