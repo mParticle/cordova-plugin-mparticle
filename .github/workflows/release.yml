@@ -71,7 +71,7 @@ jobs:
           fetch-depth: 0
           ref: main
       - name: "Install Node"
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
       - name: "NPM Build"
         run: |
           npm ci

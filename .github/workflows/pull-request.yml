@@ -25,7 +25,7 @@ jobs:
       - name: Checkout Branch
         uses: actions/checkout@v5
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
       - name: "NPM Build"
@@ -48,7 +48,7 @@ jobs:
           distribution: zulu
           java-version: 11
       - name: Install NPM
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
       - name: NPM Build
         run: |
           npm ci
@@ -71,7 +71,7 @@ jobs:
           distribution: zulu
           java-version: 17
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 22
       - name: Install Cordova
@@ -93,7 +93,7 @@ jobs:
       - name: Checkout Branch
         uses: actions/checkout@v5
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 22
       - name: Select Xcode Version
