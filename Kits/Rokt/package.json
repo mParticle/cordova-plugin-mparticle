@@ -1,0 +1,15 @@
+{
+  "name": "cordova-plugin-mparticle-kits-rokt",
+  "version": "2.2.4",
+  "description": "Adds support for Rokt to your Cordova project",
+  "homepage": "https://www.mparticle.com",
+  "repository": "mParticle/cordova-plugin-mparticle",
+  "license": "Apache-2.0",
+  "cordova": {
+    "id": "cordova-plugin-mparticle-kits-rokt",
+    "platforms": [
+      "android",
+      "ios"
+    ]
+  }
+}

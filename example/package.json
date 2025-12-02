@@ -12,7 +12,8 @@
     ],
     "plugins": {
       "cordova-plugin-whitelist": {},
-      "cordova-plugin-mparticle": {}
+      "cordova-plugin-mparticle": {},
+      "cordova-plugin-mparticle-kits-rokt": {}
     }
   },
   "dependencies": {
@@ -22,6 +23,7 @@
   "devDependencies": {
     "cordova-android": "^14.0.1",
     "cordova-ios": "^7.1.1",
-    "cordova-plugin-mparticle": "file:../plugin"
+    "cordova-plugin-mparticle": "file:../plugin",
+    "cordova-plugin-mparticle-kits-rokt": "file:../Kits/Rokt"
   }
 }

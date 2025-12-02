@@ -25,7 +25,20 @@ npm install
      - `REPLACE_ME_API_KEY` with your iOS API key
      - `REPLACE_ME_API_SECRET` with your iOS API secret
 
-3. Add platforms:
+3. (Optional) Add mParticle kit dependencies:
+   
+   Install kit plugins to add native dependencies. For example, to add the Rokt kit:
+   
+   ```bash
+   cordova plugin add ../Kits/Rokt
+   ```
+   
+   Or add it directly in `config.xml`:
+   ```xml
+   <plugin name="cordova-plugin-mparticle-kits-rokt" spec="../Kits/Rokt" />
+   ```
+
+4. Add platforms:
 ```bash
 cordova platform add android
 cordova platform add ios
@@ -64,8 +77,10 @@ cordova platform add android ios
 
 ## Project Structure
 
-- `platform_overrides/` - Contains platform-specific customizations
-  - `android/` - Android-specific files (MainActivity.java)
-  - `ios/` - iOS-specific files (AppDelegate.m)
+- `platform_overrides/` - Platform-specific files that are automatically copied during platform setup
+  - `android/MainActivity.java` - Android app entry point
+  - `ios/AppDelegate.m` - iOS app delegate
+- `Kits/` - mParticle kit dependency plugins
+  - `Rokt/` - Rokt kit plugin (adds native dependencies)
 - `www/` - Web assets and Cordova application code
 - `hooks/` - Scripts that run during Cordova commands
