@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin xmlns="http://cordova.apache.org/ns/plugins/1.0"
            id="cordova-plugin-mparticle-kits-rokt"
-           version="1.0.0">
+           version="2.2.4">
     <name>MParticle Rokt Kit</name>
     <description>Adds support for Rokt to your Cordova project</description>
     <platform name="android">

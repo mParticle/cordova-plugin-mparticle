@@ -49,7 +49,7 @@ jobs:
         working-directory: plugin
         run: npm ci
 
-      - name: Test Plugin    
+      - name: Test Plugin
         working-directory: plugin
         run: npm test
 
@@ -58,7 +58,7 @@ jobs:
         run: npm publish
 
       - name: Install Rokt Kit dependencies
-        working-directory: plugin
+        working-directory: Kits/Rokt
         run: npm ci
 
       - name: Publish Rokt Kit to npm
