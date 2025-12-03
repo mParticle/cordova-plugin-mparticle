@@ -11,6 +11,7 @@ document.getElementById("setUserTagBtn").addEventListener('click', setUserTag, f
 document.getElementById("setATTStatusBtn").addEventListener('click', setATTStatus, false);
 document.getElementById("loginBtn").addEventListener('click', login, false);
 document.getElementById("logoutBtn").addEventListener('click', logout, false);
+document.getElementById("trackConversionBtn").addEventListener('click', trackConversion, false);
 
 var app = {
     // Application Constructor
@@ -213,6 +214,34 @@ function logout() {
     identity.logout(logoutRequest, function (userID) {
         console.log('Logout Success: ' + userID);
     });
+}
+
+function trackConversion() {
+    console.log('MParticleCordova Plugin Example: Tracking Conversion');
+
+    var identity = new mparticle.Identity();
+
+    identity.getCurrentUser(function(userID) {
+        var user = new mparticle.User(userID);
+
+        user.setUserAttribute(mparticle.UserAttributeType.FirstName, 'Jane');
+        user.setUserAttribute(mparticle.UserAttributeType.LastName, 'Smith');
+        user.setUserAttribute(mparticle.UserAttributeType.Zipcode, '123456');
+        user.setUserAttribute(mparticle.UserAttributeType.MobileNumber, '3125551515');
+    });
+    
+    mparticle.logEvent(
+        'conversion',
+        mparticle.EventType.Transaction,
+        {
+            'conversiontype': 'signup', // type of conversion
+            'confirmationref': '54321', // Transaction ID / Order ID
+            'amount': '',               // Transaction amount e.g. 300.5
+            'currency': '',             // Transaction currency e.g. USD
+            // You can track your own custom event attributes!
+            'CUSTOM_EVENT_ATTRIBUTE_NAME' : 'CUSTOM_EVENT_ATTRIBUTE_VALUE'
+        }
+    );
 }
 
 app.initialize();
