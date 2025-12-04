@@ -54,7 +54,7 @@ function selectPlacements() {
     };
 
     var config = {
-        colorMode: mparticle.RoktColorMode.SYSTEM,
+        colorMode: mparticle.Rokt.ColorMode.SYSTEM,
         cacheConfig: {
             cacheDurationInSeconds: 5400,
             cacheAttributes: {}
@@ -62,7 +62,7 @@ function selectPlacements() {
         edgeToEdgeDisplay: true
     };
 
-    mparticle.selectPlacements(
+    mparticle.Rokt.selectPlacements(
         'MSDKOverlayLayout',
         attributes,
         config
