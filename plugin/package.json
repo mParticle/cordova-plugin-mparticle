@@ -3,8 +3,17 @@
   "version": "2.2.4",
   "description": "Cordova plugin for mParticle",
   "homepage": "https://www.mparticle.com",
-  "repository": "mParticle/cordova-plugin-mparticle",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mParticle/cordova-plugin-mparticle",
+    "directory": "plugin"
+  },
   "license": "Apache-2.0",
+  "publishConfig": {
+      "access": "public",
+      "provenance": true,
+      "registry": "https://registry.npmjs.org/"
+  },
   "main": "www/mparticle.js",
   "scripts": {
     "test": "npm run-script eslint",
