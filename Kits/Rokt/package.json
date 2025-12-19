@@ -5,6 +5,9 @@
   "homepage": "https://www.mparticle.com",
   "repository": "mParticle/cordova-plugin-mparticle",
   "license": "Apache-2.0",
+  "publishConfig": {
+    "access": "public"
+  },
   "cordova": {
     "id": "cordova-plugin-mparticle-kits-rokt",
     "platforms": [
