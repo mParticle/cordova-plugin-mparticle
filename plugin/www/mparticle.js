@@ -473,7 +473,9 @@ var mparticle = {
           value: requestedColorMode
         },
         cacheConfig: {
-          cacheDurationInSeconds: (config && config.cacheConfig && config.cacheConfig.cacheDurationInSeconds) || defaultConfig.cacheConfig.cacheDurationInSeconds,
+          cacheDurationInSeconds: (config && config.cacheConfig && config.cacheConfig.cacheDurationInSeconds != null) 
+    ? config.cacheConfig.cacheDurationInSeconds 
+    : defaultConfig.cacheConfig.cacheDurationInSeconds,
           cacheAttributes: (config && config.cacheConfig && config.cacheConfig.cacheAttributes) || defaultConfig.cacheConfig.cacheAttributes
         },
         edgeToEdgeDisplay: (config && config.edgeToEdgeDisplay !== undefined) ? config.edgeToEdgeDisplay : defaultConfig.edgeToEdgeDisplay
