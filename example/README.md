@@ -35,7 +35,7 @@ npm install
    
    Or add it directly in `config.xml`:
    ```xml
-   <plugin name="cordova-plugin-mparticle-kits-rokt" spec="../Kits/Rokt" />
+   <plugin name="@mparticle/cordova-rokt-kit" spec="../Kits/Rokt" />
    ```
 
 4. Add platforms:

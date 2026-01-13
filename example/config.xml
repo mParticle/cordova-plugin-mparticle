@@ -28,6 +28,6 @@
     
     <!-- Platform-specific file copy hook -->
     <hook type="after_platform_add" src="hooks/after_platform_add/010_copy_platform_specific_files.js" />
-    <plugin name="cordova-plugin-mparticle" spec="../plugin" />
-    <plugin name="cordova-plugin-mparticle-kits-rokt" spec="../Kits/Rokt" />
+    <plugin name="@mparticle/cordova-sdk" spec="../plugin" />
+    <plugin name="@mparticle/cordova-rokt-kit" spec="../Kits/Rokt" />
 </widget>
