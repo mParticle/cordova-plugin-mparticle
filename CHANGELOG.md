@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.0] - 2026-01-13
+
 ### Added
 
 - Added support for Rokt Kit plugin
@@ -49,7 +51,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add GDPR and CCPA Consent ([#13](https://github.com/mParticle/cordova-plugin-mparticle/issues/13)) ([60368be](https://github.com/mParticle/cordova-plugin-mparticle/commit/60368be9d9ec8f471bc8d5a7b479ed0ce7d9f05e))
 
-[unreleased]: https://github.com/mParticle/cordova-plugin-mparticle/compare/2.2.4...HEAD
+[unreleased]: https://github.com/mParticle/cordova-plugin-mparticle/compare/3.0.0...HEAD
+[3.0.0]: https://github.com/mParticle/cordova-plugin-mparticle/compare/2.2.4...3.0.0
 [2.2.4]: https://github.com/mParticle/cordova-plugin-mparticle/compare/2.2.3...2.2.4
 [2.2.3]: https://github.com/mParticle/cordova-plugin-mparticle/compare/2.2.2...2.2.3
 [2.2.2]: https://github.com/mParticle/cordova-plugin-mparticle/compare/2.2.1...2.2.2
