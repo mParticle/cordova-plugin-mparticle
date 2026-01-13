@@ -31,7 +31,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 #6.0.0
         with:
-          node-version: 22
+          node-version: 24
 
       - name: Get current version
         id: version-file
@@ -97,8 +97,8 @@ jobs:
         with:
           token: ${{ steps.generate-token.outputs.token }}
           commit-message: 'Prepare release ${{ steps.bump-version.outputs.new_version }}'
-          branch: release/${{ steps.bump-version.outputs.new_version }}
-          title: 'Prepare release ${{ steps.bump-version.outputs.new_version }}'
+          branch: chore/release/${{ steps.bump-version.outputs.new_version }}
+          title: 'chore: Prepare release ${{ steps.bump-version.outputs.new_version }}'
           base: main
           body: |
             Preparing for release ${{ steps.bump-version.outputs.new_version }}

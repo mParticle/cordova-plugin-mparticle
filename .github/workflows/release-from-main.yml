@@ -37,7 +37,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 #6.0.0
         with:
-          node-version: 22
+          node-version: 24
           registry-url: https://registry.npmjs.org
 
       - name: Install Plugin dependencies
@@ -50,7 +50,7 @@ jobs:
 
       - name: Publish Plugin to npm
         working-directory: plugin
-        run: npm publish
+        run: npm publish --access public
 
       - name: Install Rokt Kit dependencies
         working-directory: Kits/Rokt
@@ -58,7 +58,7 @@ jobs:
 
       - name: Publish Rokt Kit to npm
         working-directory: Kits/Rokt
-        run: npm publish
+        run: npm publish --access public
 
       - uses: ffurrer2/extract-release-notes@9989ccec43d726ef05aa1cd7b2854fb96b6df6ab # v2.2.0
         id: extract-release-notes
