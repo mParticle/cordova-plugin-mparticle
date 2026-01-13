@@ -1,6 +1,6 @@
 {
   "name": "cordova-plugin-mparticle",
-  "version": "2.2.4",
+  "version": "3.0.0",
   "description": "Cordova plugin for mParticle",
   "homepage": "https://www.mparticle.com",
   "repository": {
@@ -10,9 +10,9 @@
   },
   "license": "Apache-2.0",
   "publishConfig": {
-      "access": "public",
-      "provenance": true,
-      "registry": "https://registry.npmjs.org/"
+    "access": "public",
+    "provenance": true,
+    "registry": "https://registry.npmjs.org/"
   },
   "main": "www/mparticle.js",
   "scripts": {
