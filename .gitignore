@@ -62,3 +62,6 @@ node_modules
 
 example/platforms
 example/plugins
+
+# The README.md for the plugin is copied from root during prepublishOnly script
+plugin/README.md

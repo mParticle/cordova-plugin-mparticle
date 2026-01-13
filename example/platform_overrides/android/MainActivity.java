@@ -48,6 +48,7 @@ public class MainActivity extends CordovaActivity
         MParticleOptions options = MParticleOptions.builder(this)
                 .credentials("REPLACE_ME_API_KEY", "REPLACE_ME_API_SECRET")
                 .identify(identifyRequest)
+                .logLevel(MParticle.LogLevel.VERBOSE)
                 .build();
         MParticle.start(options);
     }

@@ -439,46 +439,50 @@ var mparticle = {
     }
   },
 
-  RoktColorMode: {
-    LIGHT: 'LIGHT',
-    DARK: 'DARK',
-    SYSTEM: 'SYSTEM'
-  },
+  Rokt: {
+    ColorMode: {
+      LIGHT: 'LIGHT',
+      DARK: 'DARK',
+      SYSTEM: 'SYSTEM'
+    },
 
-  validateRoktColorMode: function (colorMode) {
-    var validColorModes = Object.values(this.RoktColorMode)
-    if (!validColorModes.includes(colorMode)) {
-      console.error('Invalid color mode value: ' + colorMode + '. Must be one of: ' + validColorModes.join(', '))
-      return this.RoktColorMode.SYSTEM
+    validateColorMode: function (colorMode) {
+      var validColorModes = Object.values(mparticle.Rokt.ColorMode)
+      if (!validColorModes.includes(colorMode)) {
+        console.error('Invalid color mode value: ' + colorMode + '. Must be one of: ' + validColorModes.join(', '))
+        return mparticle.Rokt.ColorMode.SYSTEM
+      }
+      return colorMode
+    },
+
+    selectPlacements: function (identifier, attributes, config) {
+      var defaultConfig = {
+        colorMode: mparticle.Rokt.ColorMode.SYSTEM,
+        cacheConfig: {
+          cacheDurationInSeconds: 5400,
+          cacheAttributes: {}
+        },
+        edgeToEdgeDisplay: true
+      }
+
+      var requestedColorMode = (config && config.colorMode) || defaultConfig.colorMode
+      requestedColorMode = mparticle.Rokt.validateColorMode(requestedColorMode)
+
+      var finalConfig = {
+        colorMode: {
+          value: requestedColorMode
+        },
+        cacheConfig: {
+          cacheDurationInSeconds: (config && config.cacheConfig && config.cacheConfig.cacheDurationInSeconds != null)
+            ? config.cacheConfig.cacheDurationInSeconds
+            : defaultConfig.cacheConfig.cacheDurationInSeconds,
+          cacheAttributes: (config && config.cacheConfig && config.cacheConfig.cacheAttributes) || defaultConfig.cacheConfig.cacheAttributes
+        },
+        edgeToEdgeDisplay: (config && config.edgeToEdgeDisplay !== undefined) ? config.edgeToEdgeDisplay : defaultConfig.edgeToEdgeDisplay
+      }
+
+      exec('selectPlacements', [identifier, attributes || {}, finalConfig])
     }
-    return colorMode
-  },
-
-  selectPlacements: function (identifier, attributes, config) {
-    var defaultConfig = {
-      colorMode: this.RoktColorMode.SYSTEM,
-      cacheConfig: {
-        cacheDurationInSeconds: 5400,
-        cacheAttributes: {}
-      },
-      edgeToEdgeDisplay: true
-    }
-
-    var requestedColorMode = (config && config.colorMode) || defaultConfig.colorMode
-    requestedColorMode = this.validateRoktColorMode(requestedColorMode)
-
-    var finalConfig = {
-      colorMode: {
-        value: requestedColorMode
-      },
-      cacheConfig: {
-        cacheDurationInSeconds: (config && config.cacheConfig && config.cacheConfig.cacheDurationInSeconds) || defaultConfig.cacheConfig.cacheDurationInSeconds,
-        cacheAttributes: (config && config.cacheConfig && config.cacheConfig.cacheAttributes) || defaultConfig.cacheConfig.cacheAttributes
-      },
-      edgeToEdgeDisplay: (config && config.edgeToEdgeDisplay !== undefined) ? config.edgeToEdgeDisplay : defaultConfig.edgeToEdgeDisplay
-    }
-
-    exec('selectPlacements', [identifier, attributes || {}, finalConfig])
   }
 }
 

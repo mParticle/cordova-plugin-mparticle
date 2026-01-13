@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://cordova.apache.org/ns/plugins/1.0"
+           id="cordova-plugin-mparticle-kits-rokt"
+           version="2.2.4">
+    <name>MParticle Rokt Kit</name>
+    <description>Adds support for Rokt to your Cordova project</description>
+    <platform name="android">
+        <framework src="com.mparticle:android-rokt-kit:5.71.0"/>
+    </platform>
+    <platform name="ios">
+        <podspec>
+            <config>
+                <source url="https://cdn.cocoapods.org/"/>
+            </config>
+            <pods use-frameworks="true">
+                <pod name="mParticle-Rokt" spec="8.3.0" />
+            </pods>
+        </podspec>
+    </platform>
+</plugin>
