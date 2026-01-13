@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin xmlns="http://cordova.apache.org/ns/plugins/1.0"
-           id="cordova-plugin-mparticle"
-           version="2.0.0">
+           id="@mparticle/cordova-sdk"
+           version="3.0.0">
     <name>MParticle</name>
     <js-module src="www/mparticle.js" name="mparticle">
         <clobbers target="mparticle" />
