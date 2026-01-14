@@ -12,8 +12,8 @@
     ],
     "plugins": {
       "cordova-plugin-whitelist": {},
-      "cordova-plugin-mparticle": {},
-      "cordova-plugin-mparticle-kits-rokt": {}
+      "@mparticle/cordova-sdk": {},
+      "@mparticle/cordova-rokt-kit": {}
     }
   },
   "dependencies": {
