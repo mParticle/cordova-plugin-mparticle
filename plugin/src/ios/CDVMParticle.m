@@ -1,10 +1,16 @@
 #import <Cordova/CDV.h>
 @import mParticle_Apple_SDK;
+@import mParticle_Apple_SDK_ObjC;
+@import RoktContracts;
 
 @interface CDVMParticle : CDVPlugin
 @end
 
 @implementation CDVMParticle
+
+- (void)pluginInitialize {
+    [MParticle _setWrapperSdk_internal:MPWrapperSdkCordova version:@""];
+}
 
 - (void)logEvent:(CDVInvokedUrlCommand*)command {
     [self.commandDelegate runInBackground:^{
@@ -323,35 +329,56 @@
     }];
 }
 
+- (RoktConfig *)buildRoktConfigFromDict:(NSDictionary *)configDict {
+    if (configDict == nil || configDict.count == 0) {
+        return nil;
+    }
+
+    RoktConfigBuilder *builder = [[RoktConfigBuilder alloc] init];
+    BOOL isConfigEmpty = YES;
+
+    NSString *colorModeStr = configDict[@"colorMode"][@"value"];
+    if (colorModeStr) {
+        isConfigEmpty = NO;
+        if ([colorModeStr isEqualToString:@"LIGHT"]) {
+            [builder colorMode:RoktColorModeLight];
+        } else if ([colorModeStr isEqualToString:@"DARK"]) {
+            [builder colorMode:RoktColorModeDark];
+        } else {
+            [builder colorMode:RoktColorModeSystem];
+        }
+    }
+
+    NSDictionary *cacheConfigDict = configDict[@"cacheConfig"];
+    if (cacheConfigDict) {
+        isConfigEmpty = NO;
+        NSNumber *cacheDuration = cacheConfigDict[@"cacheDurationInSeconds"];
+        if (!cacheDuration) {
+            cacheDuration = @0;
+        }
+        NSDictionary *cacheAttrs = cacheConfigDict[@"cacheAttributes"];
+        RoktCacheConfig *cacheConfig = [[RoktCacheConfig alloc] initWithCacheDuration:[cacheDuration doubleValue]
+                                                                      cacheAttributes:cacheAttrs ?: @{}];
+        [builder cacheConfig:cacheConfig];
+    }
+
+    return isConfigEmpty ? nil : [builder build];
+}
+
 - (void)selectPlacements:(CDVInvokedUrlCommand*)command {
     [self.commandDelegate runInBackground:^{
         NSString *identifier = [command.arguments objectAtIndex:0];
         NSDictionary *attributes = [command.arguments objectAtIndex:1];
         NSDictionary *configDict = [command.arguments objectAtIndex:2];
 
-        MPRoktConfig *config = [[MPRoktConfig alloc] init];
-
-        NSString *colorModeStr = configDict[@"colorMode"][@"value"];
-        if ([colorModeStr isEqualToString:@"LIGHT"]) {
-            config.colorMode = MPColorModeLight;
-        } else if ([colorModeStr isEqualToString:@"DARK"]) {
-            config.colorMode = MPColorModeDark;
-        } else {
-            config.colorMode = MPColorModeSystem;
-        }
-
-        NSDictionary *cacheConfig = configDict[@"cacheConfig"];
-        if (cacheConfig) {
-            config.cacheDuration = @([cacheConfig[@"cacheDurationInSeconds"] longLongValue]);
-            config.cacheAttributes = cacheConfig[@"cacheAttributes"];
-        }
+        RoktConfig *config = [self buildRoktConfigFromDict:configDict];
 
         [[MParticle sharedInstance].rokt selectPlacements:identifier
                                              attributes:attributes
                                           embeddedViews:nil
                                                 config:config
-                                             callbacks:nil];
-        
+                                               onEvent:nil];
+
         CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }];
