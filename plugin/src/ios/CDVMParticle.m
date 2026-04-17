@@ -8,6 +8,10 @@
 
 @implementation CDVMParticle
 
+- (void)pluginInitialize {
+    [MParticle _setWrapperSdk_internal:MPWrapperSdkCordova version:@""];
+}
+
 - (void)logEvent:(CDVInvokedUrlCommand*)command {
     [self.commandDelegate runInBackground:^{
         NSString *eventName = [command.arguments objectAtIndex:0];
@@ -362,24 +366,22 @@
 }
 
 - (void)selectPlacements:(CDVInvokedUrlCommand*)command {
-    NSString *identifier = [command.arguments objectAtIndex:0];
-    NSDictionary *attributes = [command.arguments objectAtIndex:1];
-    NSDictionary *configDict = [command.arguments objectAtIndex:2];
+    [self.commandDelegate runInBackground:^{
+        NSString *identifier = [command.arguments objectAtIndex:0];
+        NSDictionary *attributes = [command.arguments objectAtIndex:1];
+        NSDictionary *configDict = [command.arguments objectAtIndex:2];
 
-    RoktConfig *config = [self buildRoktConfigFromDict:configDict];
+        RoktConfig *config = [self buildRoktConfigFromDict:configDict];
 
-    [MParticle _setWrapperSdk_internal:MPWrapperSdkCordova version:@""];
-
-    dispatch_async(dispatch_get_main_queue(), ^{
         [[MParticle sharedInstance].rokt selectPlacements:identifier
                                              attributes:attributes
                                           embeddedViews:nil
                                                 config:config
                                                onEvent:nil];
-    });
 
-    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }];
 }
 
 typedef NS_ENUM(NSUInteger, MPCDVCommerceEventAction) {
