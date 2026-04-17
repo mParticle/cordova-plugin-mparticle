@@ -1,5 +1,7 @@
 #import <Cordova/CDV.h>
 @import mParticle_Apple_SDK;
+@import mParticle_Apple_SDK_ObjC;
+@import RoktContracts;
 
 @interface CDVMParticle : CDVPlugin
 @end
@@ -323,38 +325,61 @@
     }];
 }
 
-- (void)selectPlacements:(CDVInvokedUrlCommand*)command {
-    [self.commandDelegate runInBackground:^{
-        NSString *identifier = [command.arguments objectAtIndex:0];
-        NSDictionary *attributes = [command.arguments objectAtIndex:1];
-        NSDictionary *configDict = [command.arguments objectAtIndex:2];
+- (RoktConfig *)buildRoktConfigFromDict:(NSDictionary *)configDict {
+    if (configDict == nil || configDict.count == 0) {
+        return nil;
+    }
 
-        MPRoktConfig *config = [[MPRoktConfig alloc] init];
+    RoktConfigBuilder *builder = [[RoktConfigBuilder alloc] init];
+    BOOL isConfigEmpty = YES;
 
-        NSString *colorModeStr = configDict[@"colorMode"][@"value"];
+    NSString *colorModeStr = configDict[@"colorMode"][@"value"];
+    if (colorModeStr && [colorModeStr isKindOfClass:[NSString class]]) {
+        isConfigEmpty = NO;
         if ([colorModeStr isEqualToString:@"LIGHT"]) {
-            config.colorMode = MPColorModeLight;
+            [builder colorMode:RoktColorModeLight];
         } else if ([colorModeStr isEqualToString:@"DARK"]) {
-            config.colorMode = MPColorModeDark;
+            [builder colorMode:RoktColorModeDark];
         } else {
-            config.colorMode = MPColorModeSystem;
+            [builder colorMode:RoktColorModeSystem];
         }
+    }
 
-        NSDictionary *cacheConfig = configDict[@"cacheConfig"];
-        if (cacheConfig) {
-            config.cacheDuration = @([cacheConfig[@"cacheDurationInSeconds"] longLongValue]);
-            config.cacheAttributes = cacheConfig[@"cacheAttributes"];
+    NSDictionary *cacheConfigDict = configDict[@"cacheConfig"];
+    if (cacheConfigDict && [cacheConfigDict isKindOfClass:[NSDictionary class]]) {
+        isConfigEmpty = NO;
+        NSNumber *cacheDuration = cacheConfigDict[@"cacheDurationInSeconds"];
+        if (!cacheDuration) {
+            cacheDuration = @0;
         }
+        NSDictionary *cacheAttrs = cacheConfigDict[@"cacheAttributes"];
+        RoktCacheConfig *cacheConfig = [[RoktCacheConfig alloc] initWithCacheDuration:[cacheDuration doubleValue]
+                                                                      cacheAttributes:cacheAttrs ?: @{}];
+        [builder cacheConfig:cacheConfig];
+    }
 
+    return isConfigEmpty ? nil : [builder build];
+}
+
+- (void)selectPlacements:(CDVInvokedUrlCommand*)command {
+    NSString *identifier = [command.arguments objectAtIndex:0];
+    NSDictionary *attributes = [command.arguments objectAtIndex:1];
+    NSDictionary *configDict = [command.arguments objectAtIndex:2];
+
+    RoktConfig *config = [self buildRoktConfigFromDict:configDict];
+
+    [MParticle _setWrapperSdk_internal:MPWrapperSdkCordova version:@""];
+
+    dispatch_async(dispatch_get_main_queue(), ^{
         [[MParticle sharedInstance].rokt selectPlacements:identifier
                                              attributes:attributes
                                           embeddedViews:nil
                                                 config:config
-                                             callbacks:nil];
-        
-        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-    }];
+                                               onEvent:nil];
+    });
+
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
 typedef NS_ENUM(NSUInteger, MPCDVCommerceEventAction) {
