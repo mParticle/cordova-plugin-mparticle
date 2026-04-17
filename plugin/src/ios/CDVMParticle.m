@@ -338,7 +338,7 @@
     BOOL isConfigEmpty = YES;
 
     NSString *colorModeStr = configDict[@"colorMode"][@"value"];
-    if (colorModeStr && [colorModeStr isKindOfClass:[NSString class]]) {
+    if (colorModeStr) {
         isConfigEmpty = NO;
         if ([colorModeStr isEqualToString:@"LIGHT"]) {
             [builder colorMode:RoktColorModeLight];
@@ -350,7 +350,7 @@
     }
 
     NSDictionary *cacheConfigDict = configDict[@"cacheConfig"];
-    if (cacheConfigDict && [cacheConfigDict isKindOfClass:[NSDictionary class]]) {
+    if (cacheConfigDict) {
         isConfigEmpty = NO;
         NSNumber *cacheDuration = cacheConfigDict[@"cacheDurationInSeconds"];
         if (!cacheDuration) {
