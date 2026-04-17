@@ -259,9 +259,18 @@ function selectShoppableAds() {
         'confirmationref': '54321'
     };
 
+    var config = {
+        colorMode: mparticle.Rokt.ColorMode.SYSTEM,
+        cacheConfig: {
+            cacheDurationInSeconds: 5400,
+            cacheAttributes: {}
+        }
+    };
+
     mparticle.Rokt.selectShoppableAds(
         'StgRoktShoppableAds',
-        attributes
+        attributes,
+        config
     );
 }
 
