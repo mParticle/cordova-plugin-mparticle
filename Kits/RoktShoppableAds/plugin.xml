@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://cordova.apache.org/ns/plugins/1.0"
+           id="@mparticle/cordova-rokt-shoppable-ads-kit"
+           version="3.0.0">
+    <name>MParticle Rokt Shoppable Ads Kit</name>
+    <description>Adds Rokt Shoppable Ads payment extension support to your Cordova project</description>
+    <platform name="ios">
+        <podspec>
+            <config>
+                <source url="https://cdn.cocoapods.org/"/>
+            </config>
+            <pods use-frameworks="true">
+                <pod name="RoktStripePaymentExtension" spec="~> 0.1" />
+            </pods>
+        </podspec>
+    </platform>
+</plugin>

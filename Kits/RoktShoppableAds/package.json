@@ -1,0 +1,23 @@
+{
+  "name": "@mparticle/cordova-rokt-shoppable-ads-kit",
+  "version": "3.0.0",
+  "description": "Adds Rokt Shoppable Ads payment extension support to your Cordova project",
+  "homepage": "https://www.mparticle.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mParticle/cordova-plugin-mparticle",
+    "directory": "Kits/RoktShoppableAds"
+  },
+  "license": "Apache-2.0",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true,
+    "registry": "https://registry.npmjs.org/"
+  },
+  "cordova": {
+    "id": "@mparticle/cordova-rokt-shoppable-ads-kit",
+    "platforms": [
+      "ios"
+    ]
+  }
+}
