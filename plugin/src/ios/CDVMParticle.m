@@ -330,7 +330,7 @@
 }
 
 - (RoktConfig *)buildRoktConfigFromDict:(NSDictionary *)configDict {
-    if (configDict == nil || configDict.count == 0) {
+    if (configDict == nil || [configDict isKindOfClass:[NSNull class]] || configDict.count == 0) {
         return nil;
     }
 
@@ -378,6 +378,39 @@
                                           embeddedViews:nil
                                                 config:config
                                                onEvent:nil];
+
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }];
+}
+
+- (void)selectShoppableAds:(CDVInvokedUrlCommand*)command {
+    [self.commandDelegate runInBackground:^{
+        NSString *identifier = [command.arguments objectAtIndex:0];
+        NSDictionary *attributes = [command.arguments objectAtIndex:1];
+        NSDictionary *configDict = [command.arguments objectAtIndex:2];
+
+        RoktConfig *config = [self buildRoktConfigFromDict:configDict];
+
+        [[MParticle sharedInstance].rokt selectShoppableAds:identifier
+                                                attributes:attributes
+                                                    config:config
+                                                   onEvent:nil];
+
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }];
+}
+
+- (void)purchaseFinalized:(CDVInvokedUrlCommand*)command {
+    [self.commandDelegate runInBackground:^{
+        NSString *identifier = [command.arguments objectAtIndex:0];
+        NSString *catalogItemId = [command.arguments objectAtIndex:1];
+        BOOL success = [[command.arguments objectAtIndex:2] boolValue];
+
+        [[MParticle sharedInstance].rokt purchaseFinalized:identifier
+                                            catalogItemId:catalogItemId
+                                                  success:success];
 
         CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];

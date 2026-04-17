@@ -482,6 +482,35 @@ var mparticle = {
       }
 
       exec('selectPlacements', [identifier, attributes || {}, finalConfig])
+    },
+
+    selectShoppableAds: function (identifier, attributes, config) {
+      var finalConfig = null
+      if (config) {
+        var requestedColorMode = config.colorMode || mparticle.Rokt.ColorMode.SYSTEM
+        requestedColorMode = mparticle.Rokt.validateColorMode(requestedColorMode)
+
+        finalConfig = {
+          colorMode: {
+            value: requestedColorMode
+          }
+        }
+
+        if (config.cacheConfig) {
+          finalConfig.cacheConfig = {
+            cacheDurationInSeconds: config.cacheConfig.cacheDurationInSeconds != null
+              ? config.cacheConfig.cacheDurationInSeconds
+              : 5400,
+            cacheAttributes: config.cacheConfig.cacheAttributes || {}
+          }
+        }
+      }
+
+      exec('selectShoppableAds', [identifier, attributes || {}, finalConfig])
+    },
+
+    purchaseFinalized: function (placementId, catalogItemId, success) {
+      exec('purchaseFinalized', [placementId, catalogItemId, !!success])
     }
   }
 }
