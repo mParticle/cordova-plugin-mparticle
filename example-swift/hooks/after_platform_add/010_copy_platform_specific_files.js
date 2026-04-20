@@ -38,35 +38,32 @@ module.exports = function(context) {
             'custom MainActivity.java'
         );
     } else if (platform === 'ios') {
-        copyFile(
-            path.join('platform_overrides', 'ios', 'AppDelegate.m'),
-            path.join('platforms', 'ios', 'MParticleExample', 'AppDelegate.m'),
-            'custom AppDelegate.m'
-        );
-
-        copyFile(
-            path.join('platform_overrides', 'ios', 'RoktPaymentSetup.swift'),
-            path.join('platforms', 'ios', 'MParticleExample', 'RoktPaymentSetup.swift'),
-            'RoktPaymentSetup.swift'
-        );
-
-        // Create bridging header for Swift/ObjC interop
-        var bridgingHeaderPath = path.join(context.opts.projectRoot, 'platforms', 'ios', 'MParticleExample', 'MParticleExample-Bridging-Header.h');
-        if (!fs.existsSync(bridgingHeaderPath)) {
-            try {
-                fs.writeFileSync(bridgingHeaderPath, '// Bridging header for Swift/ObjC interop\n');
-                console.log('Created bridging header');
-            } catch (err) {
-                console.error('Error creating bridging header:', err);
-                process.exitCode = 1;
-            }
+        // Replace ObjC AppDelegate with Swift version
+        var objcAppDelegate = path.join(context.opts.projectRoot, 'platforms', 'ios', 'MParticleExample', 'AppDelegate.m');
+        if (fs.existsSync(objcAppDelegate)) {
+            fs.unlinkSync(objcAppDelegate);
+            console.log('Removed ObjC AppDelegate.m');
+        }
+        var objcAppDelegateHeader = path.join(context.opts.projectRoot, 'platforms', 'ios', 'MParticleExample', 'AppDelegate.h');
+        if (fs.existsSync(objcAppDelegateHeader)) {
+            fs.unlinkSync(objcAppDelegateHeader);
+            console.log('Removed ObjC AppDelegate.h');
         }
 
-        // NOTE: RoktStripePaymentExtension pod is added automatically by the
-        // @mparticle/cordova-rokt-shoppable-ads kit declared in config.xml.
-        // If using a kit, no manual Podfile manipulation is needed here.
+        copyFile(
+            path.join('platform_overrides', 'ios', 'AppDelegate.swift'),
+            path.join('platforms', 'ios', 'MParticleExample', 'AppDelegate.swift'),
+            'custom AppDelegate.swift'
+        );
 
-        // Add Swift file to Xcode project and configure Swift settings
+        // Replace main.m to remove AppDelegate.h import
+        copyFile(
+            path.join('platform_overrides', 'ios', 'main.m'),
+            path.join('platforms', 'ios', 'MParticleExample', 'main.m'),
+            'custom main.m'
+        );
+
+        // Configure Xcode project for Swift AppDelegate
         var iosPath = path.join(context.opts.projectRoot, 'platforms', 'ios');
         var configureXcodeScript = path.join(context.opts.projectRoot, 'hooks', 'after_platform_add', 'configure_xcode_swift.rb');
         try {
