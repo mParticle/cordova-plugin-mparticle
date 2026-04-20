@@ -30,5 +30,5 @@
     <hook type="after_platform_add" src="hooks/after_platform_add/010_copy_platform_specific_files.js" />
     <plugin name="@mparticle/cordova-sdk" spec="../plugin" />
     <plugin name="@mparticle/cordova-rokt-kit" spec="../Kits/Rokt" />
-    <plugin name="@mparticle/cordova-rokt-shoppable-ads-kit" spec="../Kits/RoktShoppableAds" />
+    <plugin name="@mparticle/cordova-rokt-stripe-payment-kit" spec="../Kits/RoktStripePayment" />
 </widget>

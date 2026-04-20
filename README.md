@@ -318,6 +318,18 @@ Shoppable Ads enable post-purchase upsell offers with instant checkout via Apple
 
 The `RoktStripePaymentExtension` must be registered in your native iOS code after SDK initialization and before calling `selectShoppableAds`.
 
+**Swift** (see `example-swift/`):
+
+```swift
+import RoktStripePaymentExtension
+
+// After MParticle.sharedInstance().start(with: options):
+if let stripeExt = RoktStripePaymentExtension(applePayMerchantId: "merchant.com.yourapp.rokt") {
+    MParticle.sharedInstance().rokt.register(stripeExt)
+}
+```
+
+**Objective-C** (see `example/`):
 Since `RoktStripePaymentExtension` is Swift-only, ObjC apps need a bridging class. See `example/platform_overrides/ios/RoktPaymentSetup.swift` for the wrapper, then call from your AppDelegate:
 
 ```objc
@@ -346,6 +358,11 @@ var attributes = {
 
 mparticle.Rokt.selectShoppableAds('YourPlacementIdentifier', attributes);
 ```
+
+### Example Apps
+
+- **`example/`** — Objective-C AppDelegate with RoktPaymentSetup bridging class
+- **`example-swift/`** — Swift AppDelegate with direct RoktStripePaymentExtension import
 
 # License
 
