@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <!--
+        Customize this policy to fit your own app's needs. For more guidance, see:
+            https://github.com/apache/cordova-plugin-whitelist/blob/master/README.md#content-security-policy
+        Some notes:
+            * gap: is required only on iOS (when using UIWebView) and is needed for JS->native communication
+            * https://ssl.gstatic.com is required only on Android and is needed for TalkBack to function properly
+            * Disables use of inline scripts in order to mitigate risk of XSS vulnerabilities. To change this:
+                * Enable inline JS: add 'unsafe-inline' to default-src
+        -->
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data: content:;">
+        <meta name="format-detection" content="telephone=no">
+        <meta name="msapplication-tap-highlight" content="no">
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+        <link rel="stylesheet" type="text/css" href="css/index.css">
+        <title>Hello World</title>
+    </head>
+    <body>
+        <div class="app">
+            <h1>Apache Cordova</h1>
+            <div id="deviceready" class="blink">
+                <p class="event listening">Connecting to Device</p>
+                <p class="event received">Device is Ready</p>
+            </div>
+
+            <h2>mParticle</h2>
+            <button id="setUserAttributeBtn" class="button">Set User Attribute</button>
+            <button id="identifyUserBtn" class="button">Identify User</button>
+            <button id="modifyUserBtn" class="button">Modify User</button>
+            <button id="logEventBtn" class="button">Log Event</button>
+            <button id="logScreenEventBtn" class="button">Log Screen Event</button>
+            <button id="logCommerceEventBtn" class="button">Log Commerce Event</button>
+            <button id="removeUserAttributeBtn" class="button">Remove User Attribute</button>
+            <button id="getUserIdentitiesBtn" class="button">Get User Identities</button>
+            <button id="setUserTagBtn" class="button">Set User Tag</button>
+            <button id="setATTStatusBtn" class="button">Set ATT Status</button>
+            <button id="loginBtn" class="button">Login</button>
+            <button id="logoutBtn" class="button">Logout</button>
+            <button id="trackConversionBtn" class="button">Track Conversion</button>
+
+            <hr>
+            <h2>Rokt</h2>
+            <button id="selectPlacementsBtn" class="button">Select Placements</button>
+            <button id="selectShoppableAdsBtn" class="button">Select Shoppable Ads</button>
+            <button id="purchaseFinalizedBtn" class="button">Purchase Finalized</button>
+        </div>
+        <script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+    </body>
+</html>

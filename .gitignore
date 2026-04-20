@@ -62,6 +62,8 @@ node_modules
 
 example/platforms
 example/plugins
+example-swift/platforms
+example-swift/plugins
 
 # The README.md for the plugin is copied from root during prepublishOnly script
 plugin/README.md
