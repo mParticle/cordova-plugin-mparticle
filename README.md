@@ -271,7 +271,7 @@ identity.modify(request, function (userId) => {
 Add the Rokt kit to your `config.xml`:
 
 ```xml
-<plugin name="@mparticle/cordova-rokt-kit" spec="~> 3.0" />
+<plugin name="@mparticle/cordova-rokt-kit" spec="^3.0.0" />
 ```
 
 ### Select Placements
@@ -311,7 +311,7 @@ Shoppable Ads enable post-purchase upsell offers with instant checkout via Apple
 #### 1. Add the Stripe payment kit
 
 ```xml
-<plugin name="@mparticle/cordova-rokt-stripe-payment-kit" spec="~> 3.0" />
+<plugin name="@mparticle/cordova-rokt-stripe-payment-kit" spec="^3.0.0" />
 ```
 
 #### 2. Register the payment extension
