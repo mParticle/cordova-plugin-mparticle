@@ -20,7 +20,7 @@ cordova plugin add @mparticle/cordova-sdk
 **Install the SDK** using CocoaPods:
 
 ```bash
-$ # Update your Podfile to depend on 'mParticle-Apple-SDK' version 8.5.2 or later
+$ # Update your Podfile to depend on 'mParticle-Apple-SDK' version 9.0 or later
 $ pod install
 ```
 
@@ -263,6 +263,107 @@ identity.modify(request, function (userId) => {
     console.debug(userId);
 });
 ```
+
+## Rokt
+
+### Installation
+
+Add the Rokt kit to your `config.xml`:
+
+```xml
+<plugin name="@mparticle/cordova-rokt-kit" spec="~> 3.0" />
+```
+
+### Select Placements
+
+Display a Rokt overlay placement on your confirmation or thank-you page:
+
+```js
+var attributes = {
+    'email': 'j.smith@example.com',
+    'firstname': 'Jenny',
+    'lastname': 'Smith',
+    'confirmationref': '54321',
+    'country': 'US'
+};
+
+mparticle.Rokt.selectPlacements('YourPlacementIdentifier', attributes);
+```
+
+You can optionally pass a configuration object:
+
+```js
+var config = {
+    colorMode: mparticle.Rokt.ColorMode.SYSTEM,  // LIGHT, DARK, or SYSTEM
+    cacheConfig: {
+        cacheDurationInSeconds: 5400,
+        cacheAttributes: {}
+    }
+};
+
+mparticle.Rokt.selectPlacements('YourPlacementIdentifier', attributes, config);
+```
+
+### Shoppable Ads
+
+Shoppable Ads enable post-purchase upsell offers with instant checkout via Apple Pay or Stripe. Currently supported on **iOS only**.
+
+#### 1. Add the Shoppable Ads kit
+
+```xml
+<plugin name="@mparticle/cordova-rokt-shoppable-ads-kit" spec="~> 3.0" />
+```
+
+#### 2. Register the payment extension
+
+The `RoktStripePaymentExtension` must be registered in your native iOS code after SDK initialization and before calling `selectShoppableAds`.
+
+**Swift** (see `example-swift/`):
+
+```swift
+import RoktStripePaymentExtension
+
+// After MParticle.sharedInstance().start(with: options):
+if let stripeExt = RoktStripePaymentExtension(applePayMerchantId: "merchant.com.yourapp.rokt") {
+    MParticle.sharedInstance().rokt.register(stripeExt)
+}
+```
+
+**Objective-C** (see `example/`):
+
+Since `RoktStripePaymentExtension` is Swift-only, ObjC apps need a bridging class. See `example/platform_overrides/ios/RoktPaymentSetup.swift` for the wrapper, then call from your AppDelegate:
+
+```objc
+#import "YourApp-Swift.h"
+
+[RoktPaymentSetup registerPaymentExtensionWithMerchantId:@"merchant.com.yourapp.rokt"];
+```
+
+#### 3. Display Shoppable Ads
+
+```js
+var attributes = {
+    'email': 'j.smith@example.com',
+    'firstname': 'Jenny',
+    'lastname': 'Smith',
+    'confirmationref': 'ORD-8829-XK2',
+    'amount': '52.25',
+    'currency': 'USD',
+    'paymenttype': 'visa',
+    'shippingaddress1': '123 Main St',
+    'shippingcity': 'Brooklyn',
+    'shippingstate': 'NY',
+    'shippingzipcode': '11201',
+    'shippingcountry': 'US'
+};
+
+mparticle.Rokt.selectShoppableAds('YourPlacementIdentifier', attributes);
+```
+
+### Example Apps
+
+- **`example/`** — Objective-C AppDelegate with RoktPaymentSetup bridging class
+- **`example-swift/`** — Swift AppDelegate with direct RoktStripePaymentExtension import
 
 # License
 
