@@ -12,6 +12,8 @@ document.getElementById("setATTStatusBtn").addEventListener('click', setATTStatu
 document.getElementById("loginBtn").addEventListener('click', login, false);
 document.getElementById("logoutBtn").addEventListener('click', logout, false);
 document.getElementById("trackConversionBtn").addEventListener('click', trackConversion, false);
+document.getElementById("selectShoppableAdsBtn").addEventListener('click', selectShoppableAds, false);
+document.getElementById("purchaseFinalizedBtn").addEventListener('click', purchaseFinalized, false);
 
 var app = {
     // Application Constructor
@@ -242,6 +244,39 @@ function trackConversion() {
             'CUSTOM_EVENT_ATTRIBUTE_NAME' : 'CUSTOM_EVENT_ATTRIBUTE_VALUE'
         }
     );
+}
+
+function selectShoppableAds() {
+    console.log('MParticleCordova Plugin Example: Selecting Shoppable Ads');
+
+    var attributes = {
+        'email': 'j.smith@example.com',
+        'firstname': 'Jenny',
+        'lastname': 'Smith',
+        'country': 'US',
+        'shippingstate': 'NY',
+        'shippingzipcode': '10001',
+        'confirmationref': '54321'
+    };
+
+    var config = {
+        colorMode: mparticle.Rokt.ColorMode.SYSTEM,
+        cacheConfig: {
+            cacheDurationInSeconds: 5400,
+            cacheAttributes: {}
+        }
+    };
+
+    mparticle.Rokt.selectShoppableAds(
+        'StgRoktShoppableAds',
+        attributes,
+        config
+    );
+}
+
+function purchaseFinalized() {
+    console.log('MParticleCordova Plugin Example: Purchase Finalized');
+    mparticle.Rokt.purchaseFinalized('StgRoktShoppableAds', 'catalog-item-123', true);
 }
 
 app.initialize();

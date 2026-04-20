@@ -96,6 +96,12 @@ public class MParticleCordovaPlugin extends CordovaPlugin {
         } else if (action.equals("selectPlacements")) {
             selectPlacements(args);
             return true;
+        } else if (action.equals("selectShoppableAds")) {
+            selectShoppableAds(args);
+            return true;
+        } else if (action.equals("purchaseFinalized")) {
+            purchaseFinalized(args);
+            return true;
         } else {
             return false;
         }
@@ -440,6 +446,18 @@ public class MParticleCordovaPlugin extends CordovaPlugin {
             null,  // fontTypefaces not used in Cordova
             roktConfig
         );
+    }
+
+    public void selectShoppableAds(final JSONArray args) throws JSONException {
+        Logger.warning("selectShoppableAds is not yet supported on Android");
+    }
+
+    public void purchaseFinalized(final JSONArray args) throws JSONException {
+        final String placementId = args.getString(0);
+        final String catalogItemId = args.getString(1);
+        final boolean success = args.getBoolean(2);
+
+        MParticle.getInstance().Rokt().purchaseFinalized(placementId, catalogItemId, success);
     }
 
     private static IdentityApiRequest ConvertIdentityAPIRequest(JSONObject map) throws JSONException {

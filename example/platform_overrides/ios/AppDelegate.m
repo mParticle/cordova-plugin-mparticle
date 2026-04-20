@@ -25,6 +25,7 @@
 #import "AppDelegate.h"
 #import "MainViewController.h"
 #import "mParticle.h"
+#import "MParticleExample-Swift.h"
 
 @implementation AppDelegate
 
@@ -41,8 +42,11 @@
     };
     
     [[MParticle sharedInstance] startWithOptions:mParticleOptions];
-    
+
     [MParticle sharedInstance].logLevel = MPILogLevelVerbose;
+
+    // Register Rokt Stripe payment extension for Shoppable Ads
+    [RoktPaymentSetup registerPaymentExtensionWithMerchantId:@"merchant.com.mparticle.example"];
     
     self.viewController = [[MainViewController alloc] init];
     return [super application:application didFinishLaunchingWithOptions:launchOptions];
