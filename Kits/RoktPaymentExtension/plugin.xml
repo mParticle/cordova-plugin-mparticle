@@ -10,7 +10,7 @@
                 <source url="https://cdn.cocoapods.org/"/>
             </config>
             <pods use-frameworks="true">
-                <pod name="RoktPaymentExtension" spec="~> 0.1" />
+                <pod name="RoktPaymentExtension" spec="~> 1.0" />
             </pods>
         </podspec>
     </platform>
