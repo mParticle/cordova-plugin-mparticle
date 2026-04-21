@@ -306,19 +306,19 @@ mparticle.Rokt.selectPlacements('YourPlacementIdentifier', attributes, config);
 
 ### Shoppable Ads
 
-Shoppable Ads enable post-purchase upsell offers with instant checkout via Apple Pay or Stripe. Currently supported on **iOS only**.
+Shoppable Ads enable post-purchase upsell offers with instant checkout. Currently supported on **iOS only**.
 
-#### 1. Add the Stripe payment kit
+#### 1. Add the payment extension kit
 
 ```xml
-<plugin name="@mparticle/cordova-rokt-stripe-payment-kit" spec="~> 3.0" />
+<plugin name="@mparticle/cordova-rokt-payment-extension-kit" spec="^3.0.0" />
 ```
 
 #### 2. Register the payment extension
 
-The `RoktStripePaymentExtension` must be registered in your native iOS code after SDK initialization and before calling `selectShoppableAds`.
+The `RoktPaymentExtension` must be registered in your native iOS code after SDK initialization and before calling `selectShoppableAds`.
 
-Since `RoktStripePaymentExtension` is Swift-only, ObjC apps need a bridging class. See `example/platform_overrides/ios/RoktPaymentSetup.swift` for the wrapper, then call from your AppDelegate:
+Since `RoktPaymentExtension` is Swift-only, ObjC apps need a bridging class. See `example/platform_overrides/ios/RoktPaymentSetup.swift` for the wrapper, then call from your AppDelegate:
 
 ```objc
 #import "YourApp-Swift.h"

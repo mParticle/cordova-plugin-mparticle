@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin xmlns="http://cordova.apache.org/ns/plugins/1.0"
-           id="@mparticle/cordova-rokt-stripe-payment-kit"
+           id="@mparticle/cordova-rokt-payment-extension-kit"
            version="3.0.0">
-    <name>MParticle Rokt Stripe Payment Kit</name>
-    <description>Adds Rokt Stripe payment extension (Apple Pay) support to your Cordova project</description>
+    <name>MParticle Rokt Payment Extension Kit</name>
+    <description>Adds Rokt payment extension support to your Cordova project</description>
     <platform name="ios">
         <podspec>
             <config>
                 <source url="https://cdn.cocoapods.org/"/>
             </config>
             <pods use-frameworks="true">
-                <pod name="RoktStripePaymentExtension" spec="~> 0.1" />
+                <pod name="RoktPaymentExtension" spec="~> 0.1" />
             </pods>
         </podspec>
     </platform>
