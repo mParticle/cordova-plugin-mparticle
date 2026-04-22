@@ -311,7 +311,7 @@ Shoppable Ads enable post-purchase upsell offers with instant checkout. Currentl
 #### 1. Add the payment extension kit
 
 ```xml
-<plugin name="@mparticle/cordova-rokt-payment-extension-kit" spec="^3.0.0" />
+<plugin name="@mparticle/cordova-rokt-payment-extension" spec="^3.0.0" />
 ```
 
 #### 2. Register the payment extension

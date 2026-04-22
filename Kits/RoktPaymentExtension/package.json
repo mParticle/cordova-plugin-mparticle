@@ -1,5 +1,5 @@
 {
-  "name": "@mparticle/cordova-rokt-payment-extension-kit",
+  "name": "@mparticle/cordova-rokt-payment-extension",
   "version": "3.0.0",
   "description": "Adds Rokt payment extension support to your Cordova project",
   "homepage": "https://www.mparticle.com",
@@ -15,7 +15,7 @@
     "registry": "https://registry.npmjs.org/"
   },
   "cordova": {
-    "id": "@mparticle/cordova-rokt-payment-extension-kit",
+    "id": "@mparticle/cordova-rokt-payment-extension",
     "platforms": [
       "ios"
     ]
