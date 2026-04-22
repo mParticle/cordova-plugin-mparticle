@@ -268,7 +268,13 @@ identity.modify(request, function (userId) => {
 
 ### Installation
 
-Add the Rokt kit to your `config.xml`:
+Add the Rokt kit with the Cordova CLI:
+
+```bash
+cordova plugin add @mparticle/cordova-rokt-kit
+```
+
+Or declare it in your `config.xml`:
 
 ```xml
 <plugin name="@mparticle/cordova-rokt-kit" spec="~> 3.0" />
@@ -308,7 +314,15 @@ mparticle.Rokt.selectPlacements('YourPlacementIdentifier', attributes, config);
 
 Shoppable Ads enable post-purchase upsell offers with instant checkout. Currently supported on **iOS only**.
 
-#### 1. Add the payment extension kit
+#### 1. Add the payment extension
+
+With the Cordova CLI:
+
+```bash
+cordova plugin add @mparticle/cordova-rokt-payment-extension
+```
+
+Or declare it in your `config.xml`:
 
 ```xml
 <plugin name="@mparticle/cordova-rokt-payment-extension" spec="^3.0.0" />
