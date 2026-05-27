@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.0.1] - 2026-05-27
 
+### Fixed
+
+- Adjusted range upper bound to prevent next major pull ([0a1d968](https://github.com/mParticle/cordova-plugin-mparticle/commit/0a1d968a19d7a87f615d85444d146588883662b9))
+
 ## [3.0.0] - 2026-01-13
 
 ### Added
