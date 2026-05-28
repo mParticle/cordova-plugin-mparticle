@@ -68,6 +68,11 @@ jobs:
         run: |
           npm version ${{ steps.bump-version.outputs.new_version }} --no-git-tag-version
 
+      - name: Update plugin.xml versions
+        run: |
+          sed -i '' "s/version=\"[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\"/version=\"${{ steps.bump-version.outputs.new_version }}\"/" plugin/plugin.xml
+          sed -i '' "s/version=\"[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\"/version=\"${{ steps.bump-version.outputs.new_version }}\"/" Kits/Rokt/plugin.xml
+
       - name: Publish Plugin to npm (dry-run)
         working-directory: plugin
         run: npm publish --dry-run
@@ -103,9 +108,11 @@ jobs:
           body: |
             Preparing for release ${{ steps.bump-version.outputs.new_version }}
 
-            There should be 4 files that have been updated:
+            There should be 6 files that have been updated:
             - plugin/package.json
+            - plugin/plugin.xml
             - Kits/Rokt/package.json
+            - Kits/Rokt/plugin.xml
             - CHANGELOG.md
             - VERSION
 
