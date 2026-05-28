@@ -62,8 +62,8 @@ module.exports = function(context) {
             }
         }
 
-        // NOTE: RoktStripePaymentExtension pod is added automatically by the
-        // @mparticle/cordova-rokt-stripe-payment-kit declared in config.xml.
+        // NOTE: RoktPaymentExtension pod is added automatically by the
+        // @mparticle/cordova-rokt-payment-extension declared in config.xml.
         // If using a kit, no manual Podfile manipulation is needed here.
 
         // Add Swift file to Xcode project and configure Swift settings
