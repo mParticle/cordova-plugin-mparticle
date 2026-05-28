@@ -511,6 +511,51 @@ var mparticle = {
 
     purchaseFinalized: function (placementId, catalogItemId, success) {
       exec('purchaseFinalized', [placementId, catalogItemId, !!success])
+    },
+
+    /**
+     * Set the Rokt session id to use for the next select call. Useful when
+     * the partner already holds a session id (e.g. from a WebView leg) and
+     * wants the native and web legs of the same flow to share it.
+     *
+     * Empty strings are ignored.
+     */
+    setSessionId: function (sessionId) {
+      exec('setSessionId', [sessionId || ''])
+    },
+
+    /**
+     * Get the current Rokt session id, e.g. to forward into a WebView leg.
+     * The completion callback receives the string id, or `null`/`undefined`
+     * if no session is active.
+     */
+    getSessionId: function (completion) {
+      cordova.exec(completion,
+        function (error) { console.log(error) },
+        'MParticle',
+        'getSessionId',
+        [])
+    },
+
+    /**
+     * Forward an incoming deep-link URL to the Rokt SDK so redirect-based
+     * payment flows (AfterPay, PayPal, etc.) can resume. Call from your
+     * native AppDelegate's `application:openURL:options:` (iOS) — the
+     * Cordova bridge accepts a string URL, marshals it to NSURL, and asks
+     * the Rokt payment extension(s) to claim it.
+     *
+     * iOS only; the Rokt Android SDK doesn't yet expose this hook, so the
+     * Android bridge logs a warning and resolves to `false`.
+     *
+     * The completion callback receives a boolean indicating whether a
+     * registered payment extension handled the URL.
+     */
+    handleURLCallback: function (url, completion) {
+      cordova.exec(completion || function () {},
+        function (error) { console.log(error) },
+        'MParticle',
+        'handleURLCallback',
+        [url || ''])
     }
   }
 }

@@ -417,6 +417,45 @@
     }];
 }
 
+- (void)setSessionId:(CDVInvokedUrlCommand*)command {
+    [self.commandDelegate runInBackground:^{
+        NSString *sessionId = [command.arguments objectAtIndex:0];
+        if (sessionId.length > 0) {
+            [[MParticle sharedInstance].rokt setSessionId:sessionId];
+        }
+        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }];
+}
+
+- (void)getSessionId:(CDVInvokedUrlCommand*)command {
+    [self.commandDelegate runInBackground:^{
+        NSString *sessionId = [[MParticle sharedInstance].rokt getSessionId];
+        CDVPluginResult *pluginResult;
+        if (sessionId) {
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:sessionId];
+        } else {
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        }
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }];
+}
+
+- (void)handleURLCallback:(CDVInvokedUrlCommand*)command {
+    [self.commandDelegate runInBackground:^{
+        NSString *urlString = [command.arguments objectAtIndex:0];
+        BOOL handled = NO;
+        if (urlString.length > 0) {
+            NSURL *url = [NSURL URLWithString:urlString];
+            if (url) {
+                handled = [[MParticle sharedInstance].rokt handleURLCallback:url];
+            }
+        }
+        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:handled];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }];
+}
+
 typedef NS_ENUM(NSUInteger, MPCDVCommerceEventAction) {
     MPCDVCommerceEventActionAddToCart = 1,
     MPCDVCommerceEventActionRemoveFromCart,
