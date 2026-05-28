@@ -20,7 +20,7 @@ cordova plugin add @mparticle/cordova-sdk
 **Install the SDK** using CocoaPods:
 
 ```bash
-$ # Update your Podfile to depend on 'mParticle-Apple-SDK' version 9.0 or later
+$ # Update your Podfile to depend on 'mParticle-Apple-SDK' version 9.2.0 or later
 $ pod install
 ```
 
