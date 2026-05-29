@@ -13,7 +13,8 @@
     "plugins": {
       "cordova-plugin-whitelist": {},
       "@mparticle/cordova-sdk": {},
-      "@mparticle/cordova-rokt-kit": {}
+      "@mparticle/cordova-rokt-kit": {},
+      "@mparticle/cordova-rokt-payment-extension": {}
     }
   },
   "dependencies": {
@@ -24,6 +25,7 @@
     "cordova-android": "^14.0.1",
     "cordova-ios": "^7.1.1",
     "@mparticle/cordova-sdk": "file:../plugin",
-    "@mparticle/cordova-rokt-kit": "file:../Kits/Rokt"
+    "@mparticle/cordova-rokt-kit": "file:../Kits/Rokt",
+    "@mparticle/cordova-rokt-payment-extension": "../Kits/RoktPaymentExtension"
   }
 }
