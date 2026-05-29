@@ -249,20 +249,21 @@ function trackConversion() {
 function selectShoppableAds() {
     console.log('MParticleCordova Plugin Example: Selecting Shoppable Ads');
 
+    var uniqueRef = 'ORD-' + Date.now() + '-' + Math.floor(Math.random() * 10000);
     var attributes = {
-        'email': 'j.smith@example.com',
+        'email': 'j.smith+' + Date.now() + '@example.com',
         'firstname': 'Jenny',
         'lastname': 'Smith',
         'country': 'US',
         'shippingstate': 'NY',
         'shippingzipcode': '10001',
-        'confirmationref': '54321'
+        'confirmationref': uniqueRef
     };
 
     var config = {
         colorMode: mparticle.Rokt.ColorMode.SYSTEM,
         cacheConfig: {
-            cacheDurationInSeconds: 5400,
+            cacheDurationInSeconds: 0,
             cacheAttributes: {}
         }
     };
