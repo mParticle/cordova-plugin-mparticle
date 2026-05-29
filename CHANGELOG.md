@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- README examples for configuring a custom CNAME endpoint on iOS (`MPNetworkOptions.customBaseURL`) and Android (`NetworkOptions.withNetworkOptions`).
+
 ## [3.0.1] - 2026-05-27
 
 ### Fixed
