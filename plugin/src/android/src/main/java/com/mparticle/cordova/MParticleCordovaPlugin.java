@@ -102,6 +102,15 @@ public class MParticleCordovaPlugin extends CordovaPlugin {
         } else if (action.equals("purchaseFinalized")) {
             purchaseFinalized(args);
             return true;
+        } else if (action.equals("setSessionId")) {
+            setSessionId(args, callbackContext);
+            return true;
+        } else if (action.equals("getSessionId")) {
+            getSessionId(callbackContext);
+            return true;
+        } else if (action.equals("handleURLCallback")) {
+            handleURLCallback(callbackContext);
+            return true;
         } else {
             return false;
         }
@@ -458,6 +467,30 @@ public class MParticleCordovaPlugin extends CordovaPlugin {
         final boolean success = args.getBoolean(2);
 
         MParticle.getInstance().Rokt().purchaseFinalized(placementId, catalogItemId, success);
+    }
+
+    public void setSessionId(final JSONArray args, final CallbackContext callbackContext) throws JSONException {
+        final String sessionId = args.getString(0);
+        if (sessionId != null && sessionId.length() > 0) {
+            MParticle.getInstance().Rokt().setSessionId(sessionId);
+        }
+        callbackContext.success();
+    }
+
+    public void getSessionId(final CallbackContext callbackContext) {
+        String sessionId = MParticle.getInstance().Rokt().getSessionId();
+        if (sessionId != null) {
+            callbackContext.success(sessionId);
+        } else {
+            callbackContext.success();
+        }
+    }
+
+    public void handleURLCallback(final CallbackContext callbackContext) {
+        // The Rokt Android SDK does not yet expose a redirect-URL callback;
+        // matches the no-op behaviour of the sibling RN and Flutter wrappers.
+        Logger.warning("handleURLCallback is not yet supported on Android");
+        callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, false));
     }
 
     private static IdentityApiRequest ConvertIdentityAPIRequest(JSONObject map) throws JSONException {
