@@ -51,14 +51,6 @@
     // the host only supplies the Apple Pay merchant identifier here.
     [RoktPaymentSetup registerPaymentExtensionWithMerchantId:@"merchant.com.mparticle.example"];
 
-    // Diagnostic: subscribe to every Rokt event the SDK emits so the
-    // simulator log shows PlacementFailure (and any reason string),
-    // ShowLoadingIndicator / HideLoadingIndicator timing, PlacementReady,
-    // CartItem* events for Shoppable Ads, etc. Strip before commit.
-    [[MParticle sharedInstance].rokt globalEvents:^(RoktEvent * _Nonnull event) {
-        NSLog(@"[Rokt globalEvents] %@: %@", NSStringFromClass([(id)event class]), event);
-    }];
-    
     self.viewController = [[MainViewController alloc] init];
     return [super application:application didFinishLaunchingWithOptions:launchOptions];
 }
