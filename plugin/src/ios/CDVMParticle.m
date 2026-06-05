@@ -9,7 +9,7 @@
 @implementation CDVMParticle
 
 - (void)pluginInitialize {
-    [MParticle _setWrapperSdk_internal:MPWrapperSdkCordova version:@""];
+    [MParticle _setWrapperSdk_internal:MPWrapperSdkCordova version:@"3.0.1"];
 }
 
 - (void)logEvent:(CDVInvokedUrlCommand*)command {

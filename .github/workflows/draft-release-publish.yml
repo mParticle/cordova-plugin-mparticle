@@ -68,10 +68,20 @@ jobs:
         run: |
           npm version ${{ steps.bump-version.outputs.new_version }} --no-git-tag-version
 
+      - name: Update Rokt Payment Extension package.json
+        working-directory: Kits/RoktPaymentExtension
+        run: |
+          npm version ${{ steps.bump-version.outputs.new_version }} --no-git-tag-version
+
       - name: Update plugin.xml versions
         run: |
           sed -i '' "s/version=\"[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\"/version=\"${{ steps.bump-version.outputs.new_version }}\"/" plugin/plugin.xml
           sed -i '' "s/version=\"[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\"/version=\"${{ steps.bump-version.outputs.new_version }}\"/" Kits/Rokt/plugin.xml
+          sed -i '' "s/version=\"[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\"/version=\"${{ steps.bump-version.outputs.new_version }}\"/" Kits/RoktPaymentExtension/plugin.xml
+
+      - name: Update iOS wrapper SDK version
+        run: |
+          sed -i '' "s/_setWrapperSdk_internal:MPWrapperSdkCordova version:@\"[0-9.]*\"/_setWrapperSdk_internal:MPWrapperSdkCordova version:@\"${{ steps.bump-version.outputs.new_version }}\"/" plugin/src/ios/CDVMParticle.m
 
       - name: Publish Plugin to npm (dry-run)
         working-directory: plugin
@@ -79,6 +89,10 @@ jobs:
 
       - name: Publish Rokt Kit to npm (dry-run)
         working-directory: Kits/Rokt
+        run: npm publish --dry-run
+
+      - name: Publish Rokt Payment Extension to npm (dry-run)
+        working-directory: Kits/RoktPaymentExtension
         run: npm publish --dry-run
 
       - name: Update changelog
@@ -108,14 +122,17 @@ jobs:
           body: |
             Preparing for release ${{ steps.bump-version.outputs.new_version }}
 
-            There should be 6 files that have been updated:
+            There should be 9 files that have been updated:
             - plugin/package.json
             - plugin/plugin.xml
+            - plugin/src/ios/CDVMParticle.m
             - Kits/Rokt/package.json
             - Kits/Rokt/plugin.xml
+            - Kits/RoktPaymentExtension/package.json
+            - Kits/RoktPaymentExtension/plugin.xml
             - CHANGELOG.md
             - VERSION
 
-            Additionally a dry-run publish was successfully run for the plugin and Rokt kit.
+            Additionally a dry-run publish was successfully run for the plugin, Rokt kit, and Rokt payment extension.
           labels: |
             release
