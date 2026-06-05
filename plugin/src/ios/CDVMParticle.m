@@ -456,6 +456,109 @@
     }];
 }
 
+- (NSDictionary *)dictionaryFromRoktEvent:(RoktEvent *)event {
+    NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+
+    if ([event isKindOfClass:[RoktInitComplete class]]) {
+        dict[@"event"] = @"InitComplete";
+        dict[@"success"] = @(((RoktInitComplete *)event).success);
+    } else if ([event isKindOfClass:[RoktShowLoadingIndicator class]]) {
+        dict[@"event"] = @"ShowLoadingIndicator";
+    } else if ([event isKindOfClass:[RoktHideLoadingIndicator class]]) {
+        dict[@"event"] = @"HideLoadingIndicator";
+    } else if ([event isKindOfClass:[RoktPlacementInteractive class]]) {
+        dict[@"event"] = @"PlacementInteractive";
+        dict[@"placementId"] = ((RoktPlacementInteractive *)event).identifier ?: [NSNull null];
+    } else if ([event isKindOfClass:[RoktPlacementReady class]]) {
+        dict[@"event"] = @"PlacementReady";
+        dict[@"placementId"] = ((RoktPlacementReady *)event).identifier ?: [NSNull null];
+    } else if ([event isKindOfClass:[RoktPlacementClosed class]]) {
+        dict[@"event"] = @"PlacementClosed";
+        dict[@"placementId"] = ((RoktPlacementClosed *)event).identifier ?: [NSNull null];
+    } else if ([event isKindOfClass:[RoktPlacementCompleted class]]) {
+        dict[@"event"] = @"PlacementCompleted";
+        dict[@"placementId"] = ((RoktPlacementCompleted *)event).identifier ?: [NSNull null];
+    } else if ([event isKindOfClass:[RoktPlacementFailure class]]) {
+        dict[@"event"] = @"PlacementFailure";
+        dict[@"placementId"] = ((RoktPlacementFailure *)event).identifier ?: [NSNull null];
+    } else if ([event isKindOfClass:[RoktOfferEngagement class]]) {
+        dict[@"event"] = @"OfferEngagement";
+        dict[@"placementId"] = ((RoktOfferEngagement *)event).identifier ?: [NSNull null];
+    } else if ([event isKindOfClass:[RoktPositiveEngagement class]]) {
+        dict[@"event"] = @"PositiveEngagement";
+        dict[@"placementId"] = ((RoktPositiveEngagement *)event).identifier ?: [NSNull null];
+    } else if ([event isKindOfClass:[RoktFirstPositiveEngagement class]]) {
+        dict[@"event"] = @"FirstPositiveEngagement";
+        dict[@"placementId"] = ((RoktFirstPositiveEngagement *)event).identifier ?: [NSNull null];
+    } else if ([event isKindOfClass:[RoktOpenUrl class]]) {
+        RoktOpenUrl *openUrl = (RoktOpenUrl *)event;
+        dict[@"event"] = @"OpenUrl";
+        dict[@"placementId"] = openUrl.identifier ?: [NSNull null];
+        dict[@"url"] = openUrl.url ?: @"";
+    } else if ([event isKindOfClass:[RoktEmbeddedSizeChanged class]]) {
+        RoktEmbeddedSizeChanged *sized = (RoktEmbeddedSizeChanged *)event;
+        dict[@"event"] = @"EmbeddedSizeChanged";
+        dict[@"placementId"] = sized.identifier;
+        dict[@"updatedHeight"] = @(sized.updatedHeight);
+    } else if ([event isKindOfClass:[RoktCartItemInstantPurchaseInitiated class]]) {
+        RoktCartItemInstantPurchaseInitiated *initiated = (RoktCartItemInstantPurchaseInitiated *)event;
+        dict[@"event"] = @"CartItemInstantPurchaseInitiated";
+        dict[@"placementId"] = initiated.identifier;
+        dict[@"catalogItemId"] = initiated.catalogItemId;
+        dict[@"cartItemId"] = initiated.cartItemId;
+    } else if ([event isKindOfClass:[RoktCartItemInstantPurchase class]]) {
+        RoktCartItemInstantPurchase *purchase = (RoktCartItemInstantPurchase *)event;
+        dict[@"event"] = @"CartItemInstantPurchase";
+        dict[@"placementId"] = purchase.identifier;
+        dict[@"cartItemId"] = purchase.cartItemId;
+        dict[@"catalogItemId"] = purchase.catalogItemId;
+        dict[@"currency"] = purchase.currency;
+        dict[@"description"] = [purchase description] ?: @"";
+        dict[@"providerData"] = purchase.providerData;
+        dict[@"linkedProductId"] = purchase.linkedProductId ?: [NSNull null];
+        dict[@"name"] = purchase.name ?: [NSNull null];
+        dict[@"quantity"] = purchase.quantity ?: [NSNull null];
+        dict[@"totalPrice"] = purchase.totalPrice ?: [NSNull null];
+        dict[@"unitPrice"] = purchase.unitPrice ?: [NSNull null];
+    } else if ([event isKindOfClass:[RoktCartItemInstantPurchaseFailure class]]) {
+        RoktCartItemInstantPurchaseFailure *failure = (RoktCartItemInstantPurchaseFailure *)event;
+        dict[@"event"] = @"CartItemInstantPurchaseFailure";
+        dict[@"placementId"] = failure.identifier;
+        dict[@"catalogItemId"] = failure.catalogItemId;
+        dict[@"cartItemId"] = failure.cartItemId;
+        dict[@"error"] = failure.error ?: [NSNull null];
+    } else if ([event isKindOfClass:[RoktInstantPurchaseDismissal class]]) {
+        dict[@"event"] = @"InstantPurchaseDismissal";
+        dict[@"placementId"] = ((RoktInstantPurchaseDismissal *)event).identifier;
+    } else if ([event isKindOfClass:[RoktCartItemDevicePay class]]) {
+        RoktCartItemDevicePay *devicePay = (RoktCartItemDevicePay *)event;
+        dict[@"event"] = @"CartItemDevicePay";
+        dict[@"placementId"] = devicePay.identifier;
+        dict[@"catalogItemId"] = devicePay.catalogItemId;
+        dict[@"cartItemId"] = devicePay.cartItemId;
+        dict[@"paymentProvider"] = devicePay.paymentProvider;
+    } else {
+        dict[@"event"] = NSStringFromClass([event class]);
+    }
+
+    return dict;
+}
+
+- (void)roktEvents:(CDVInvokedUrlCommand*)command {
+    NSString *identifier = [command.arguments objectAtIndex:0];
+    NSString *callbackId = command.callbackId;
+    __weak __typeof(self) weakSelf = self;
+
+    [[MParticle sharedInstance].rokt events:identifier onEvent:^(RoktEvent * _Nonnull event) {
+        __typeof(self) strongSelf = weakSelf;
+        if (!strongSelf) { return; }
+        NSDictionary *eventDict = [strongSelf dictionaryFromRoktEvent:event];
+        CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:eventDict];
+        [result setKeepCallback:@YES];
+        [strongSelf.commandDelegate sendPluginResult:result callbackId:callbackId];
+    }];
+}
+
 typedef NS_ENUM(NSUInteger, MPCDVCommerceEventAction) {
     MPCDVCommerceEventActionAddToCart = 1,
     MPCDVCommerceEventActionRemoveFromCart,

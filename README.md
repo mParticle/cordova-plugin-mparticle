@@ -304,6 +304,57 @@ var config = {
 mparticle.Rokt.selectPlacements('YourPlacementIdentifier', attributes, config);
 ```
 
+### Placement Events
+
+Subscribe to lifecycle and engagement events for a specific placement. The callback fires every time the SDK emits an event for the given identifier — call once after `deviceready` and keep the subscription alive for the lifetime of your view.
+
+```js
+mparticle.Rokt.events('YourPlacementIdentifier', function (event) {
+    switch (event.event) {
+        case mparticle.Rokt.EventType.PlacementInteractive:
+            // placement rendered and is interactable
+            break;
+        case mparticle.Rokt.EventType.OfferEngagement:
+        case mparticle.Rokt.EventType.PositiveEngagement:
+            // user engaged with the offer
+            break;
+        case mparticle.Rokt.EventType.PlacementClosed:
+        case mparticle.Rokt.EventType.PlacementCompleted:
+        case mparticle.Rokt.EventType.PlacementFailure:
+            // placement finished — show your next-page content
+            break;
+    }
+});
+```
+
+Each event delivered to your callback is an object with an `event` discriminator string plus event-specific fields. Cross-platform event types:
+
+| Event | Fields | Notes |
+| --- | --- | --- |
+| `ShowLoadingIndicator` | — | About to call the Rokt backend. |
+| `HideLoadingIndicator` | — | Backend responded (success or failure). |
+| `InitComplete` | `success` | SDK finished initialization. |
+| `PlacementReady` | `placementId` | Placement ready but not yet rendered. |
+| `PlacementInteractive` | `placementId` | Rendered and ready for user interaction. |
+| `PlacementClosed` | `placementId` | User dismissed the placement. |
+| `PlacementCompleted` | `placementId` | No more offers to display. |
+| `PlacementFailure` | `placementId` (nullable) | Could not be displayed. |
+| `OfferEngagement` | `placementId` | User engaged with an offer. |
+| `PositiveEngagement` | `placementId` | User accepted an offer. |
+| `FirstPositiveEngagement` | `placementId` | First positive engagement in the session. |
+| `OpenUrl` | `placementId`, `url` | Passthrough link requested. |
+| `CartItemInstantPurchase` | `placementId`, `cartItemId`, `catalogItemId`, `currency`, `description`, `linkedProductId`, `totalPrice`, `quantity`, `unitPrice` | Shoppable Ads purchase completed. |
+
+The following event types are **iOS only** (no Android equivalent in the underlying SDK):
+
+| Event | Fields |
+| --- | --- |
+| `EmbeddedSizeChanged` | `placementId`, `updatedHeight` |
+| `CartItemInstantPurchaseInitiated` | `placementId`, `cartItemId`, `catalogItemId` |
+| `CartItemInstantPurchaseFailure` | `placementId`, `cartItemId`, `catalogItemId`, `error` |
+| `InstantPurchaseDismissal` | `placementId` |
+| `CartItemDevicePay` | `placementId`, `cartItemId`, `catalogItemId`, `paymentProvider` |
+
 ### Shoppable Ads
 
 Shoppable Ads enable post-purchase upsell offers with instant checkout (Apple Pay, AfterPay/Clearpay, PayPal via Stripe). Currently supported on **iOS only** — `selectShoppableAds` is a logged no-op on Android, matching the React Native and Flutter wrappers.
