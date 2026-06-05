@@ -455,6 +455,28 @@ var mparticle = {
       return colorMode
     },
 
+    EventType: {
+      ShowLoadingIndicator: 'ShowLoadingIndicator',
+      HideLoadingIndicator: 'HideLoadingIndicator',
+      PlacementReady: 'PlacementReady',
+      PlacementInteractive: 'PlacementInteractive',
+      PlacementClosed: 'PlacementClosed',
+      PlacementCompleted: 'PlacementCompleted',
+      PlacementFailure: 'PlacementFailure',
+      OfferEngagement: 'OfferEngagement',
+      PositiveEngagement: 'PositiveEngagement',
+      FirstPositiveEngagement: 'FirstPositiveEngagement',
+      InitComplete: 'InitComplete',
+      OpenUrl: 'OpenUrl',
+      CartItemInstantPurchase: 'CartItemInstantPurchase',
+      // iOS only
+      EmbeddedSizeChanged: 'EmbeddedSizeChanged',
+      CartItemInstantPurchaseInitiated: 'CartItemInstantPurchaseInitiated',
+      CartItemInstantPurchaseFailure: 'CartItemInstantPurchaseFailure',
+      InstantPurchaseDismissal: 'InstantPurchaseDismissal',
+      CartItemDevicePay: 'CartItemDevicePay'
+    },
+
     selectPlacements: function (identifier, attributes, config) {
       var defaultConfig = {
         colorMode: mparticle.Rokt.ColorMode.SYSTEM,
@@ -507,6 +529,20 @@ var mparticle = {
       }
 
       exec('selectShoppableAds', [identifier, attributes || {}, finalConfig])
+    },
+
+    events: function (identifier, onEvent) {
+      if (typeof onEvent !== 'function') {
+        console.error('mparticle.Rokt.events requires an onEvent callback function')
+        return
+      }
+      cordova.exec(function (event) {
+        if (event && typeof event === 'object') {
+          onEvent(event)
+        }
+      }, function (error) {
+        console.log(error)
+      }, 'MParticle', 'roktEvents', [identifier])
     },
 
     purchaseFinalized: function (placementId, catalogItemId, success) {
