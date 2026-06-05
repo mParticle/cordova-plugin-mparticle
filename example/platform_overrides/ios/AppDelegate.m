@@ -45,9 +45,12 @@
 
     [MParticle sharedInstance].logLevel = MPILogLevelVerbose;
 
-    // Register Rokt Stripe payment extension for Shoppable Ads
+    // Register Rokt payment extension for Shoppable Ads.
+    // The Rokt kit reads `stripePublishableKey` from mParticle dashboard
+    // config and forwards it to Rokt as `stripeKey` at registration time;
+    // the host only supplies the Apple Pay merchant identifier here.
     [RoktPaymentSetup registerPaymentExtensionWithMerchantId:@"merchant.com.mparticle.example"];
-    
+
     self.viewController = [[MainViewController alloc] init];
     return [super application:application didFinishLaunchingWithOptions:launchOptions];
 }

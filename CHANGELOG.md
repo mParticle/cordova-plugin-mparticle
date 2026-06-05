@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Bumped Android native dependencies to `com.mparticle:android-core:5.79.0` and `com.mparticle:android-rokt-kit:5.79.0`.
+- Bumped iOS pod specs to `mParticle-Apple-SDK ~> 9.2` and `mParticle-Rokt ~> 9.2`.
+- Renamed the Stripe-specific payment kit to a unified one: `Kits/RoktStripePayment/` → `Kits/RoktPaymentExtension/`, npm id `@mparticle/cordova-rokt-stripe-payment-kit` → `@mparticle/cordova-rokt-payment-extension`, pod `RoktStripePaymentExtension ~> 0.1` → `RoktPaymentExtension ~> 2.0`. The new pod internally routes to Stripe for Apple Pay / card / AfterPay / Clearpay / PayPal.
+- Example app's Swift bridge constructs the unified `RoktPaymentExtension(applePayMerchantId:)` instead of `RoktStripePaymentExtension`. The Rokt kit now reads `stripePublishableKey` from mParticle dashboard configuration, so partners no longer need to thread `stripeKey` through JS.
+
+### Added
+
+- `mparticle.Rokt.setSessionId(sessionId)` / `mparticle.Rokt.getSessionId(completion)` — bridged to `MPRokt.setSessionId:` / `-getSessionId` on iOS and `MParticle.getInstance().Rokt().setSessionId / .getSessionId` on Android. Useful for keeping the native and WebView legs of a flow on the same Rokt session.
+- `mparticle.Rokt.handleURLCallback(url, completion)` — bridged to `[MPRokt handleURLCallback:]` on iOS so the host AppDelegate can hand redirect-based payment callbacks (AfterPay, PayPal) back to the registered Rokt payment extension. Android is a logged no-op until the Android SDK ships the same hook.
+
 ## [3.0.1] - 2026-05-27
 
 ### Fixed

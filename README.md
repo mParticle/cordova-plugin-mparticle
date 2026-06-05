@@ -20,7 +20,7 @@ cordova plugin add @mparticle/cordova-sdk
 **Install the SDK** using CocoaPods:
 
 ```bash
-$ # Update your Podfile to depend on 'mParticle-Apple-SDK' version 9.0 or later
+$ # Update your Podfile to depend on 'mParticle-Apple-SDK' version 9.2.0 or later
 $ pod install
 ```
 
@@ -306,25 +306,43 @@ mparticle.Rokt.selectPlacements('YourPlacementIdentifier', attributes, config);
 
 ### Shoppable Ads
 
-Shoppable Ads enable post-purchase upsell offers with instant checkout via Apple Pay or Stripe. Currently supported on **iOS only**.
+Shoppable Ads enable post-purchase upsell offers with instant checkout (Apple Pay, AfterPay/Clearpay, PayPal via Stripe). Currently supported on **iOS only** — `selectShoppableAds` is a logged no-op on Android, matching the React Native and Flutter wrappers.
 
-#### 1. Add the Stripe payment kit
+#### 1. Add the payment extension kit
 
 ```xml
-<plugin name="@mparticle/cordova-rokt-stripe-payment-kit" spec="~> 3.0" />
+<plugin name="@mparticle/cordova-rokt-payment-extension" spec="~> 3.0" />
 ```
 
-#### 2. Register the payment extension
+This contributes the `RoktPaymentExtension` CocoaPod (`~> 2.0`) to your iOS target. There is no Android artefact.
 
-The `RoktStripePaymentExtension` must be registered in your native iOS code after SDK initialization and before calling `selectShoppableAds`.
+#### 2. Register the payment extension from your AppDelegate
 
-Since `RoktStripePaymentExtension` is Swift-only, ObjC apps need a bridging class. See `example/platform_overrides/ios/RoktPaymentSetup.swift` for the wrapper, then call from your AppDelegate:
+`RoktPaymentExtension` is a pure-Swift class whose failable initialiser isn't `@objc`-exported, so ObjC AppDelegates need a small Swift shim. See [`example/platform_overrides/ios/RoktPaymentSetup.swift`](example/platform_overrides/ios/RoktPaymentSetup.swift) for the working example:
+
+```swift
+import Foundation
+import RoktPaymentExtension
+import mParticle_Apple_SDK_ObjC
+
+@objc public class RoktPaymentSetup: NSObject {
+    @objc public static func registerPaymentExtension(merchantId: String) {
+        if let paymentExt = RoktPaymentExtension(applePayMerchantId: merchantId) {
+            MParticle.sharedInstance().rokt.register(paymentExt)
+        }
+    }
+}
+```
+
+Then call from your AppDelegate after `startWithOptions:`:
 
 ```objc
 #import "YourApp-Swift.h"
 
 [RoktPaymentSetup registerPaymentExtensionWithMerchantId:@"merchant.com.yourapp.rokt"];
 ```
+
+The Rokt kit on mParticle Apple SDK 9.2 reads `stripePublishableKey` from kit configuration in the mParticle dashboard and forwards it to Rokt as `stripeKey` at registration time — the host only supplies the Apple Pay merchant identifier above.
 
 #### 3. Display Shoppable Ads
 
@@ -345,6 +363,48 @@ var attributes = {
 };
 
 mparticle.Rokt.selectShoppableAds('YourPlacementIdentifier', attributes);
+```
+
+#### 4. Handle redirect-based payment callbacks (AfterPay, PayPal)
+
+For payment methods that bounce out to a web flow and return via a custom URL scheme, forward the callback into Rokt:
+
+```objc
+// iOS — AppDelegate's application:openURL:options:
+- (BOOL)application:(UIApplication *)application
+            openURL:(NSURL *)url
+            options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
+    if ([[MParticle sharedInstance].rokt handleURLCallback:url]) {
+        return YES;
+    }
+    // fall through to your existing URL routing…
+    return NO;
+}
+```
+
+Or from JS (when the host has already received the URL and just wants to hand it off):
+
+```js
+mparticle.Rokt.handleURLCallback(urlString, function (handled) {
+    if (!handled) {
+        // route the URL via your own deep-link handler
+    }
+});
+```
+
+`handleURLCallback` is iOS-only; the Android bridge logs a warning and resolves to `false`.
+
+#### 5. Session continuity with WebViews (optional)
+
+If you have a WebView leg of the same flow and want it to share the Rokt session:
+
+```js
+mparticle.Rokt.getSessionId(function (sessionId) {
+    // pass sessionId into your WebView URL / postMessage
+});
+
+// or, when starting a native flow with a session from elsewhere:
+mparticle.Rokt.setSessionId('your-session-id');
 ```
 
 # License

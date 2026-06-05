@@ -5,7 +5,7 @@
     <name>MParticle Rokt Kit</name>
     <description>Adds support for Rokt to your Cordova project</description>
     <platform name="android">
-        <framework src="com.mparticle:android-rokt-kit:5.71.0"/>
+        <framework src="com.mparticle:android-rokt-kit:5.79.1"/>
     </platform>
     <platform name="ios">
         <podspec>
@@ -13,7 +13,7 @@
                 <source url="https://cdn.cocoapods.org/"/>
             </config>
             <pods use-frameworks="true">
-                <pod name="mParticle-Rokt" spec="~> 9.0" />
+                <pod name="mParticle-Rokt" spec="~> 9.2" />
             </pods>
         </podspec>
     </platform>
