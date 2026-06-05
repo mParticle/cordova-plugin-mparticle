@@ -114,10 +114,10 @@ public class MParticleCordovaPlugin extends CordovaPlugin {
             selectPlacements(args);
             return true;
         } else if (action.equals("selectShoppableAds")) {
-            selectShoppableAds(args);
+            selectShoppableAds(args, callbackContext);
             return true;
         } else if (action.equals("purchaseFinalized")) {
-            purchaseFinalized(args);
+            purchaseFinalized(args, callbackContext);
             return true;
         } else if (action.equals("setSessionId")) {
             setSessionId(args, callbackContext);
@@ -477,16 +477,17 @@ public class MParticleCordovaPlugin extends CordovaPlugin {
         );
     }
 
-    public void selectShoppableAds(final JSONArray args) throws JSONException {
+    public void selectShoppableAds(final JSONArray args, final CallbackContext callbackContext) throws JSONException {
         Logger.warning("selectShoppableAds is not yet supported on Android");
+        callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, false));
     }
 
-    public void purchaseFinalized(final JSONArray args) throws JSONException {
-        final String placementId = args.getString(0);
-        final String catalogItemId = args.getString(1);
-        final boolean success = args.getBoolean(2);
-
-        MParticle.getInstance().Rokt().purchaseFinalized(placementId, catalogItemId, success);
+    public void purchaseFinalized(final JSONArray args, final CallbackContext callbackContext) throws JSONException {
+        // Shoppable Ads (selectShoppableAds) is not yet supported on Android, so there is no
+        // active shoppable session to finalize. No-op rather than calling the Rokt SDK without
+        // a session; matches the no-op pattern of handleURLCallback.
+        Logger.warning("purchaseFinalized is not yet supported on Android");
+        callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, false));
     }
 
     public void setSessionId(final JSONArray args, final CallbackContext callbackContext) throws JSONException {

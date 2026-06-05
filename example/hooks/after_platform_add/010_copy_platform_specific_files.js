@@ -70,7 +70,7 @@ module.exports = function(context) {
         var iosPath = path.join(context.opts.projectRoot, 'platforms', 'ios');
         var configureXcodeScript = path.join(context.opts.projectRoot, 'hooks', 'after_platform_add', 'configure_xcode_swift.rb');
         try {
-            shell.execSync('cd ' + iosPath + ' && ruby ' + configureXcodeScript, { stdio: 'inherit' });
+            shell.execSync('cd "' + iosPath + '" && ruby "' + configureXcodeScript + '"', { stdio: 'inherit' });
         } catch (err) {
             console.error('Error configuring Xcode project for Swift:', err);
             process.exitCode = 1;
