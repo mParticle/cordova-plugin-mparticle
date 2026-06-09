@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `mparticle.Rokt.setSessionId(sessionId)` / `mparticle.Rokt.getSessionId(completion)` — bridged to `MPRokt.setSessionId:` / `-getSessionId` on iOS and `MParticle.getInstance().Rokt().setSessionId / .getSessionId` on Android. Useful for keeping the native and WebView legs of a flow on the same Rokt session.
 - `mparticle.Rokt.handleURLCallback(url, completion)` — bridged to `[MPRokt handleURLCallback:]` on iOS so the host AppDelegate can hand redirect-based payment callbacks (AfterPay, PayPal) back to the registered Rokt payment extension. Android is a logged no-op until the Android SDK ships the same hook.
+- README examples for configuring a custom CNAME endpoint on iOS (`MPNetworkOptions.customBaseURL`) and Android (`NetworkOptions.withNetworkOptions`).
 
 ## [3.0.1] - 2026-05-27
 
