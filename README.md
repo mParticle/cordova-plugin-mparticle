@@ -95,7 +95,7 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 }
 ```
 
-Optional: if your team uses a custom CNAME endpoint, configure `MPNetworkOptions` separately:
+Routing the Rokt SDK+ through your own domain reduces the risk of ad blockers and browsers from blocking ads or data. You can configure this with `MPNetworkOptions`:
 
 ```swift
 let networkOptions = MPNetworkOptions()
@@ -128,7 +128,7 @@ class MyApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         val options: MParticleOptions = MParticleOptions.builder(this)
-            .credentials("REPLACE ME WITH KEY", "REPLACE ME WITH SECRET")
+            .credentials("REPLACE_ME_WITH_KEY", "REPLACE_ME_WITH_SECRET")
             .logLevel(MParticle.LogLevel.VERBOSE)
             .identify(identifyRequest)
             .identifyTask(
@@ -142,13 +142,13 @@ class MyApplication : Application() {
 }
 ```
 
-Optional: if your team uses a custom CNAME endpoint, configure `NetworkOptions` separately:
+Routing the Rokt SDK+ through your own domain reduces the risk of ad blockers and browsers from blocking ads or data. You can configure this with `NetworkOptions`:
 
 ```java
 import com.mparticle.networking.NetworkOptions;
 
 MParticleOptions options = MParticleOptions.builder(this)
-    .credentials("REPLACE ME WITH KEY", "REPLACE ME WITH SECRET")
+    .credentials("REPLACE_ME_WITH_KEY", "REPLACE_ME_WITH_SECRET")
     .networkOptions(NetworkOptions.withNetworkOptions("https://rkt.example.com"))
     .build();
 ```
@@ -157,7 +157,7 @@ MParticleOptions options = MParticleOptions.builder(this)
 import com.mparticle.networking.NetworkOptions
 
 val options = MParticleOptions.builder(this)
-    .credentials("REPLACE ME WITH KEY", "REPLACE ME WITH SECRET")
+    .credentials("REPLACE_ME_WITH_KEY", "REPLACE_ME_WITH_SECRET")
     .networkOptions(NetworkOptions.withNetworkOptions("https://rkt.example.com"))
     .build()
 ```
