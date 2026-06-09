@@ -95,6 +95,20 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 }
 ```
 
+Routing the Rokt SDK+ through your own domain reduces the risk of ad blockers and browsers from blocking ads or data. You can configure this with `MPNetworkOptions`:
+
+```swift
+let networkOptions = MPNetworkOptions()
+networkOptions.customBaseURL = URL(string: "https://rkt.example.com")
+mParticleOptions.networkOptions = networkOptions
+```
+
+```objective-c
+MPNetworkOptions *networkOptions = [MPNetworkOptions new];
+networkOptions.customBaseURL = [NSURL URLWithString:@"https://rkt.example.com"];
+mParticleOptions.networkOptions = networkOptions;
+```
+
 Please see [Identity](http://docs.mparticle.com/developers/sdk/ios/identity/) for more information on supplying an `MPIdentityApiRequest` object during SDK initialization.
 
 
@@ -114,7 +128,7 @@ class MyApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         val options: MParticleOptions = MParticleOptions.builder(this)
-            .credentials("REPLACE ME WITH KEY", "REPLACE ME WITH SECRET")
+            .credentials("REPLACE_ME_WITH_KEY", "REPLACE_ME_WITH_SECRET")
             .logLevel(MParticle.LogLevel.VERBOSE)
             .identify(identifyRequest)
             .identifyTask(
@@ -126,6 +140,26 @@ class MyApplication : Application() {
         MParticle.start(options)
     }
 }
+```
+
+Routing the Rokt SDK+ through your own domain reduces the risk of ad blockers and browsers from blocking ads or data. You can configure this with `NetworkOptions`:
+
+```java
+import com.mparticle.networking.NetworkOptions;
+
+MParticleOptions options = MParticleOptions.builder(this)
+    .credentials("REPLACE_ME_WITH_KEY", "REPLACE_ME_WITH_SECRET")
+    .networkOptions(NetworkOptions.withNetworkOptions("https://rkt.example.com"))
+    .build();
+```
+
+```kotlin
+import com.mparticle.networking.NetworkOptions
+
+val options = MParticleOptions.builder(this)
+    .credentials("REPLACE_ME_WITH_KEY", "REPLACE_ME_WITH_SECRET")
+    .networkOptions(NetworkOptions.withNetworkOptions("https://rkt.example.com"))
+    .build()
 ```
 
 > **Warning:** It's generally not a good idea to log events in your `Application.onCreate()`. Android may instantiate your `Application` class for a lot of reasons, in the background, while the user isn't even using their device.
