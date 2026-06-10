@@ -12,8 +12,8 @@
                 <param name="android-package" value="com.mparticle.cordova.MParticleCordovaPlugin"/>
             </feature>
         </config-file>
-        <source-file src="src/android/src/main/java/com/mparticle/cordova/MParticleCordovaPlugin.java" target-dir="src/android/src/main/java/com/mparticle/cordova/MParticleCordovaPlugin.java" />
-        <framework src="com.mparticle:android-core:5.71.0"/>
+        <source-file src="src/android/src/main/java/com/mparticle/cordova/MParticleCordovaPlugin.java" target-dir="src/com/mparticle/cordova" />
+        <framework src="com.mparticle:android-core:5.79.1"/>
     </platform>
     <platform name="ios">
         <config-file target="config.xml" parent="/*">
@@ -27,7 +27,7 @@
                 <source url="https://cdn.cocoapods.org/"/>
             </config>
             <pods use-frameworks="true">
-                <pod name="mParticle-Apple-SDK" spec="8.37.1" />
+                <pod name="mParticle-Apple-SDK" spec="~> 9.2" />
             </pods>
         </podspec>
     </platform>

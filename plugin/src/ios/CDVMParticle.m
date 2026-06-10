@@ -1,10 +1,16 @@
 #import <Cordova/CDV.h>
 @import mParticle_Apple_SDK;
+@import mParticle_Apple_SDK_ObjC;
+@import RoktContracts;
 
 @interface CDVMParticle : CDVPlugin
 @end
 
 @implementation CDVMParticle
+
+- (void)pluginInitialize {
+    [MParticle _setWrapperSdk_internal:MPWrapperSdkCordova version:@"3.0.1"];
+}
 
 - (void)logEvent:(CDVInvokedUrlCommand*)command {
     [self.commandDelegate runInBackground:^{
@@ -323,37 +329,233 @@
     }];
 }
 
+- (RoktConfig *)buildRoktConfigFromDict:(NSDictionary *)configDict {
+    if (configDict == nil || [configDict isKindOfClass:[NSNull class]] || configDict.count == 0) {
+        return nil;
+    }
+
+    RoktConfigBuilder *builder = [[RoktConfigBuilder alloc] init];
+    BOOL isConfigEmpty = YES;
+
+    NSString *colorModeStr = configDict[@"colorMode"][@"value"];
+    if (colorModeStr) {
+        isConfigEmpty = NO;
+        if ([colorModeStr isEqualToString:@"LIGHT"]) {
+            [builder colorMode:RoktColorModeLight];
+        } else if ([colorModeStr isEqualToString:@"DARK"]) {
+            [builder colorMode:RoktColorModeDark];
+        } else {
+            [builder colorMode:RoktColorModeSystem];
+        }
+    }
+
+    NSDictionary *cacheConfigDict = configDict[@"cacheConfig"];
+    if (cacheConfigDict) {
+        isConfigEmpty = NO;
+        NSNumber *cacheDuration = cacheConfigDict[@"cacheDurationInSeconds"];
+        if (!cacheDuration) {
+            cacheDuration = @0;
+        }
+        NSDictionary *cacheAttrs = cacheConfigDict[@"cacheAttributes"];
+        RoktCacheConfig *cacheConfig = [[RoktCacheConfig alloc] initWithCacheDuration:[cacheDuration doubleValue]
+                                                                      cacheAttributes:cacheAttrs ?: @{}];
+        [builder cacheConfig:cacheConfig];
+    }
+
+    return isConfigEmpty ? nil : [builder build];
+}
+
 - (void)selectPlacements:(CDVInvokedUrlCommand*)command {
     [self.commandDelegate runInBackground:^{
         NSString *identifier = [command.arguments objectAtIndex:0];
         NSDictionary *attributes = [command.arguments objectAtIndex:1];
         NSDictionary *configDict = [command.arguments objectAtIndex:2];
 
-        MPRoktConfig *config = [[MPRoktConfig alloc] init];
-
-        NSString *colorModeStr = configDict[@"colorMode"][@"value"];
-        if ([colorModeStr isEqualToString:@"LIGHT"]) {
-            config.colorMode = MPColorModeLight;
-        } else if ([colorModeStr isEqualToString:@"DARK"]) {
-            config.colorMode = MPColorModeDark;
-        } else {
-            config.colorMode = MPColorModeSystem;
-        }
-
-        NSDictionary *cacheConfig = configDict[@"cacheConfig"];
-        if (cacheConfig) {
-            config.cacheDuration = @([cacheConfig[@"cacheDurationInSeconds"] longLongValue]);
-            config.cacheAttributes = cacheConfig[@"cacheAttributes"];
-        }
+        RoktConfig *config = [self buildRoktConfigFromDict:configDict];
 
         [[MParticle sharedInstance].rokt selectPlacements:identifier
                                              attributes:attributes
                                           embeddedViews:nil
                                                 config:config
-                                             callbacks:nil];
-        
+                                               onEvent:nil];
+
         CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }];
+}
+
+- (void)selectShoppableAds:(CDVInvokedUrlCommand*)command {
+    [self.commandDelegate runInBackground:^{
+        NSString *identifier = [command.arguments objectAtIndex:0];
+        NSDictionary *attributes = [command.arguments objectAtIndex:1];
+        NSDictionary *configDict = [command.arguments objectAtIndex:2];
+
+        RoktConfig *config = [self buildRoktConfigFromDict:configDict];
+
+        [[MParticle sharedInstance].rokt selectShoppableAds:identifier
+                                                attributes:attributes
+                                                    config:config
+                                                   onEvent:nil];
+
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }];
+}
+
+- (void)purchaseFinalized:(CDVInvokedUrlCommand*)command {
+    [self.commandDelegate runInBackground:^{
+        NSString *identifier = [command.arguments objectAtIndex:0];
+        NSString *catalogItemId = [command.arguments objectAtIndex:1];
+        BOOL success = [[command.arguments objectAtIndex:2] boolValue];
+
+        [[MParticle sharedInstance].rokt purchaseFinalized:identifier
+                                            catalogItemId:catalogItemId
+                                                  success:success];
+
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }];
+}
+
+- (void)setSessionId:(CDVInvokedUrlCommand*)command {
+    [self.commandDelegate runInBackground:^{
+        NSString *sessionId = [command.arguments objectAtIndex:0];
+        if (sessionId.length > 0) {
+            [[MParticle sharedInstance].rokt setSessionId:sessionId];
+        }
+        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }];
+}
+
+- (void)getSessionId:(CDVInvokedUrlCommand*)command {
+    [self.commandDelegate runInBackground:^{
+        NSString *sessionId = [[MParticle sharedInstance].rokt getSessionId];
+        CDVPluginResult *pluginResult;
+        if (sessionId) {
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:sessionId];
+        } else {
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        }
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }];
+}
+
+- (void)handleURLCallback:(CDVInvokedUrlCommand*)command {
+    [self.commandDelegate runInBackground:^{
+        NSString *urlString = [command.arguments objectAtIndex:0];
+        BOOL handled = NO;
+        if (urlString.length > 0) {
+            NSURL *url = [NSURL URLWithString:urlString];
+            if (url) {
+                handled = [[MParticle sharedInstance].rokt handleURLCallback:url];
+            }
+        }
+        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:handled];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }];
+}
+
+- (NSDictionary *)dictionaryFromRoktEvent:(RoktEvent *)event {
+    NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+
+    if ([event isKindOfClass:[RoktInitComplete class]]) {
+        dict[@"event"] = @"InitComplete";
+        dict[@"success"] = @(((RoktInitComplete *)event).success);
+    } else if ([event isKindOfClass:[RoktShowLoadingIndicator class]]) {
+        dict[@"event"] = @"ShowLoadingIndicator";
+    } else if ([event isKindOfClass:[RoktHideLoadingIndicator class]]) {
+        dict[@"event"] = @"HideLoadingIndicator";
+    } else if ([event isKindOfClass:[RoktPlacementInteractive class]]) {
+        dict[@"event"] = @"PlacementInteractive";
+        dict[@"placementId"] = ((RoktPlacementInteractive *)event).identifier ?: [NSNull null];
+    } else if ([event isKindOfClass:[RoktPlacementReady class]]) {
+        dict[@"event"] = @"PlacementReady";
+        dict[@"placementId"] = ((RoktPlacementReady *)event).identifier ?: [NSNull null];
+    } else if ([event isKindOfClass:[RoktPlacementClosed class]]) {
+        dict[@"event"] = @"PlacementClosed";
+        dict[@"placementId"] = ((RoktPlacementClosed *)event).identifier ?: [NSNull null];
+    } else if ([event isKindOfClass:[RoktPlacementCompleted class]]) {
+        dict[@"event"] = @"PlacementCompleted";
+        dict[@"placementId"] = ((RoktPlacementCompleted *)event).identifier ?: [NSNull null];
+    } else if ([event isKindOfClass:[RoktPlacementFailure class]]) {
+        dict[@"event"] = @"PlacementFailure";
+        dict[@"placementId"] = ((RoktPlacementFailure *)event).identifier ?: [NSNull null];
+    } else if ([event isKindOfClass:[RoktOfferEngagement class]]) {
+        dict[@"event"] = @"OfferEngagement";
+        dict[@"placementId"] = ((RoktOfferEngagement *)event).identifier ?: [NSNull null];
+    } else if ([event isKindOfClass:[RoktPositiveEngagement class]]) {
+        dict[@"event"] = @"PositiveEngagement";
+        dict[@"placementId"] = ((RoktPositiveEngagement *)event).identifier ?: [NSNull null];
+    } else if ([event isKindOfClass:[RoktFirstPositiveEngagement class]]) {
+        dict[@"event"] = @"FirstPositiveEngagement";
+        dict[@"placementId"] = ((RoktFirstPositiveEngagement *)event).identifier ?: [NSNull null];
+    } else if ([event isKindOfClass:[RoktOpenUrl class]]) {
+        RoktOpenUrl *openUrl = (RoktOpenUrl *)event;
+        dict[@"event"] = @"OpenUrl";
+        dict[@"placementId"] = openUrl.identifier ?: [NSNull null];
+        dict[@"url"] = openUrl.url ?: @"";
+    } else if ([event isKindOfClass:[RoktEmbeddedSizeChanged class]]) {
+        RoktEmbeddedSizeChanged *sized = (RoktEmbeddedSizeChanged *)event;
+        dict[@"event"] = @"EmbeddedSizeChanged";
+        dict[@"placementId"] = sized.identifier;
+        dict[@"updatedHeight"] = @(sized.updatedHeight);
+    } else if ([event isKindOfClass:[RoktCartItemInstantPurchaseInitiated class]]) {
+        RoktCartItemInstantPurchaseInitiated *initiated = (RoktCartItemInstantPurchaseInitiated *)event;
+        dict[@"event"] = @"CartItemInstantPurchaseInitiated";
+        dict[@"placementId"] = initiated.identifier;
+        dict[@"catalogItemId"] = initiated.catalogItemId;
+        dict[@"cartItemId"] = initiated.cartItemId;
+    } else if ([event isKindOfClass:[RoktCartItemInstantPurchase class]]) {
+        RoktCartItemInstantPurchase *purchase = (RoktCartItemInstantPurchase *)event;
+        dict[@"event"] = @"CartItemInstantPurchase";
+        dict[@"placementId"] = purchase.identifier;
+        dict[@"cartItemId"] = purchase.cartItemId;
+        dict[@"catalogItemId"] = purchase.catalogItemId;
+        dict[@"currency"] = purchase.currency;
+        dict[@"description"] = [purchase description] ?: @"";
+        dict[@"providerData"] = purchase.providerData;
+        dict[@"linkedProductId"] = purchase.linkedProductId ?: [NSNull null];
+        dict[@"name"] = purchase.name ?: [NSNull null];
+        dict[@"quantity"] = purchase.quantity ?: [NSNull null];
+        dict[@"totalPrice"] = purchase.totalPrice ?: [NSNull null];
+        dict[@"unitPrice"] = purchase.unitPrice ?: [NSNull null];
+    } else if ([event isKindOfClass:[RoktCartItemInstantPurchaseFailure class]]) {
+        RoktCartItemInstantPurchaseFailure *failure = (RoktCartItemInstantPurchaseFailure *)event;
+        dict[@"event"] = @"CartItemInstantPurchaseFailure";
+        dict[@"placementId"] = failure.identifier;
+        dict[@"catalogItemId"] = failure.catalogItemId;
+        dict[@"cartItemId"] = failure.cartItemId;
+        dict[@"error"] = failure.error ?: [NSNull null];
+    } else if ([event isKindOfClass:[RoktInstantPurchaseDismissal class]]) {
+        dict[@"event"] = @"InstantPurchaseDismissal";
+        dict[@"placementId"] = ((RoktInstantPurchaseDismissal *)event).identifier;
+    } else if ([event isKindOfClass:[RoktCartItemDevicePay class]]) {
+        RoktCartItemDevicePay *devicePay = (RoktCartItemDevicePay *)event;
+        dict[@"event"] = @"CartItemDevicePay";
+        dict[@"placementId"] = devicePay.identifier;
+        dict[@"catalogItemId"] = devicePay.catalogItemId;
+        dict[@"cartItemId"] = devicePay.cartItemId;
+        dict[@"paymentProvider"] = devicePay.paymentProvider;
+    } else {
+        dict[@"event"] = NSStringFromClass([event class]);
+    }
+
+    return dict;
+}
+
+- (void)roktEvents:(CDVInvokedUrlCommand*)command {
+    NSString *identifier = [command.arguments objectAtIndex:0];
+    NSString *callbackId = command.callbackId;
+    __weak __typeof(self) weakSelf = self;
+
+    [[MParticle sharedInstance].rokt events:identifier onEvent:^(RoktEvent * _Nonnull event) {
+        __typeof(self) strongSelf = weakSelf;
+        if (!strongSelf) { return; }
+        NSDictionary *eventDict = [strongSelf dictionaryFromRoktEvent:event];
+        CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:eventDict];
+        [result setKeepCallback:@YES];
+        [strongSelf.commandDelegate sendPluginResult:result callbackId:callbackId];
     }];
 }
 

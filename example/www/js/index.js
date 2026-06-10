@@ -12,6 +12,9 @@ document.getElementById("setATTStatusBtn").addEventListener('click', setATTStatu
 document.getElementById("loginBtn").addEventListener('click', login, false);
 document.getElementById("logoutBtn").addEventListener('click', logout, false);
 document.getElementById("trackConversionBtn").addEventListener('click', trackConversion, false);
+document.getElementById("selectShoppableAdsBtn").addEventListener('click', selectShoppableAds, false);
+document.getElementById("purchaseFinalizedBtn").addEventListener('click', purchaseFinalized, false);
+document.getElementById("subscribeEventsBtn").addEventListener('click', subscribeEvents, false);
 
 var app = {
     // Application Constructor
@@ -242,6 +245,67 @@ function trackConversion() {
             'CUSTOM_EVENT_ATTRIBUTE_NAME' : 'CUSTOM_EVENT_ATTRIBUTE_VALUE'
         }
     );
+}
+
+function selectShoppableAds() {
+    console.log('MParticleCordova Plugin Example: Selecting Shoppable Ads');
+
+    var uniqueRef = 'ORD-' + Date.now() + '-' + Math.floor(Math.random() * 10000);
+    var attributes = {
+        'email': 'j.smith+' + Date.now() + '@example.com',
+        'firstname': 'Jenny',
+        'lastname': 'Smith',
+        'country': 'US',
+        'shippingstate': 'NY',
+        'shippingzipcode': '10001',
+        'confirmationref': uniqueRef
+    };
+
+    var config = {
+        colorMode: mparticle.Rokt.ColorMode.SYSTEM,
+        cacheConfig: {
+            cacheDurationInSeconds: 0,
+            cacheAttributes: {}
+        }
+    };
+
+    mparticle.Rokt.selectShoppableAds(
+        'StgRoktShoppableAds',
+        attributes,
+        config
+    );
+}
+
+function purchaseFinalized() {
+    console.log('MParticleCordova Plugin Example: Purchase Finalized');
+    mparticle.Rokt.purchaseFinalized('StgRoktShoppableAds', 'catalog-item-123', true);
+}
+
+function subscribeEvents() {
+    console.log('MParticleCordova Plugin Example: Subscribing to Rokt events');
+
+    mparticle.Rokt.events('MSDKOverlayLayout', function (event) {
+        switch (event.event) {
+            case mparticle.Rokt.EventType.ShowLoadingIndicator:
+            case mparticle.Rokt.EventType.HideLoadingIndicator:
+                console.log('Rokt loading state:', event.event);
+                break;
+            case mparticle.Rokt.EventType.PlacementInteractive:
+                console.log('Rokt placement interactive:', event.placementId);
+                break;
+            case mparticle.Rokt.EventType.OfferEngagement:
+            case mparticle.Rokt.EventType.PositiveEngagement:
+                console.log('Rokt engagement (' + event.event + '):', event.placementId);
+                break;
+            case mparticle.Rokt.EventType.PlacementClosed:
+            case mparticle.Rokt.EventType.PlacementCompleted:
+            case mparticle.Rokt.EventType.PlacementFailure:
+                console.log('Rokt placement ended (' + event.event + '):', event.placementId);
+                break;
+            default:
+                console.log('Rokt event:', event);
+        }
+    });
 }
 
 app.initialize();

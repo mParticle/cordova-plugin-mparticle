@@ -455,6 +455,28 @@ var mparticle = {
       return colorMode
     },
 
+    EventType: {
+      ShowLoadingIndicator: 'ShowLoadingIndicator',
+      HideLoadingIndicator: 'HideLoadingIndicator',
+      PlacementReady: 'PlacementReady',
+      PlacementInteractive: 'PlacementInteractive',
+      PlacementClosed: 'PlacementClosed',
+      PlacementCompleted: 'PlacementCompleted',
+      PlacementFailure: 'PlacementFailure',
+      OfferEngagement: 'OfferEngagement',
+      PositiveEngagement: 'PositiveEngagement',
+      FirstPositiveEngagement: 'FirstPositiveEngagement',
+      InitComplete: 'InitComplete',
+      OpenUrl: 'OpenUrl',
+      CartItemInstantPurchase: 'CartItemInstantPurchase',
+      // iOS only
+      EmbeddedSizeChanged: 'EmbeddedSizeChanged',
+      CartItemInstantPurchaseInitiated: 'CartItemInstantPurchaseInitiated',
+      CartItemInstantPurchaseFailure: 'CartItemInstantPurchaseFailure',
+      InstantPurchaseDismissal: 'InstantPurchaseDismissal',
+      CartItemDevicePay: 'CartItemDevicePay'
+    },
+
     selectPlacements: function (identifier, attributes, config) {
       var defaultConfig = {
         colorMode: mparticle.Rokt.ColorMode.SYSTEM,
@@ -482,6 +504,94 @@ var mparticle = {
       }
 
       exec('selectPlacements', [identifier, attributes || {}, finalConfig])
+    },
+
+    selectShoppableAds: function (identifier, attributes, config) {
+      var finalConfig = null
+      if (config) {
+        var requestedColorMode = config.colorMode || mparticle.Rokt.ColorMode.SYSTEM
+        requestedColorMode = mparticle.Rokt.validateColorMode(requestedColorMode)
+
+        finalConfig = {
+          colorMode: {
+            value: requestedColorMode
+          }
+        }
+
+        if (config.cacheConfig) {
+          finalConfig.cacheConfig = {
+            cacheDurationInSeconds: config.cacheConfig.cacheDurationInSeconds != null
+              ? config.cacheConfig.cacheDurationInSeconds
+              : 5400,
+            cacheAttributes: config.cacheConfig.cacheAttributes || {}
+          }
+        }
+      }
+
+      exec('selectShoppableAds', [identifier, attributes || {}, finalConfig])
+    },
+
+    events: function (identifier, onEvent) {
+      if (typeof onEvent !== 'function') {
+        console.error('mparticle.Rokt.events requires an onEvent callback function')
+        return
+      }
+      cordova.exec(function (event) {
+        if (event && typeof event === 'object') {
+          onEvent(event)
+        }
+      }, function (error) {
+        console.log(error)
+      }, 'MParticle', 'roktEvents', [identifier])
+    },
+
+    purchaseFinalized: function (placementId, catalogItemId, success) {
+      exec('purchaseFinalized', [placementId, catalogItemId, !!success])
+    },
+
+    /**
+     * Set the Rokt session id to use for the next select call. Useful when
+     * the partner already holds a session id (e.g. from a WebView leg) and
+     * wants the native and web legs of the same flow to share it.
+     *
+     * Empty strings are ignored.
+     */
+    setSessionId: function (sessionId) {
+      exec('setSessionId', [sessionId || ''])
+    },
+
+    /**
+     * Get the current Rokt session id, e.g. to forward into a WebView leg.
+     * The completion callback receives the string id, or `null`/`undefined`
+     * if no session is active.
+     */
+    getSessionId: function (completion) {
+      cordova.exec(completion,
+        function (error) { console.log(error) },
+        'MParticle',
+        'getSessionId',
+        [])
+    },
+
+    /**
+     * Forward an incoming deep-link URL to the Rokt SDK so redirect-based
+     * payment flows (AfterPay, PayPal, etc.) can resume. Call from your
+     * native AppDelegate's `application:openURL:options:` (iOS) — the
+     * Cordova bridge accepts a string URL, marshals it to NSURL, and asks
+     * the Rokt payment extension(s) to claim it.
+     *
+     * iOS only; the Rokt Android SDK doesn't yet expose this hook, so the
+     * Android bridge logs a warning and resolves to `false`.
+     *
+     * The completion callback receives a boolean indicating whether a
+     * registered payment extension handled the URL.
+     */
+    handleURLCallback: function (url, completion) {
+      cordova.exec(completion || function () {},
+        function (error) { console.log(error) },
+        'MParticle',
+        'handleURLCallback',
+        [url || ''])
     }
   }
 }

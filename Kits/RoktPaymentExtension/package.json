@@ -1,0 +1,23 @@
+{
+  "name": "@mparticle/cordova-rokt-payment-extension",
+  "version": "3.0.1",
+  "description": "Adds Rokt payment extension support (Apple Pay, AfterPay/Clearpay, PayPal via Stripe) to your Cordova project",
+  "homepage": "https://www.mparticle.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mParticle/cordova-plugin-mparticle",
+    "directory": "Kits/RoktPaymentExtension"
+  },
+  "license": "Apache-2.0",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true,
+    "registry": "https://registry.npmjs.org/"
+  },
+  "cordova": {
+    "id": "@mparticle/cordova-rokt-payment-extension",
+    "platforms": [
+      "ios"
+    ]
+  }
+}

@@ -23,6 +23,9 @@ dependencies {
     // Bounded range avoids resolving to 6.0.0-rc.1+ on Maven Central, which
     // removed deprecated symbols this plugin relies on. See mparticle-android-sdk#710.
     compileOnly("com.mparticle:android-core:[5.0,6.0)")
+    // roktEvents() collects the events() Flow via kotlinx-coroutines. The host app
+    // provides it at runtime (transitively via android-core/Rokt), so keep it compileOnly.
+    compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
 
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.json:json:20220320")

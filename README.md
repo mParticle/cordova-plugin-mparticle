@@ -20,7 +20,7 @@ cordova plugin add @mparticle/cordova-sdk
 **Install the SDK** using CocoaPods:
 
 ```bash
-$ # Update your Podfile to depend on 'mParticle-Apple-SDK' version 8.5.2 or later
+$ # Update your Podfile to depend on 'mParticle-Apple-SDK' version 9.2.0 or later
 $ pod install
 ```
 
@@ -296,6 +296,200 @@ var identity = new mparticle.Identity();
 identity.modify(request, function (userId) => {
     console.debug(userId);
 });
+```
+
+## Rokt
+
+### Installation
+
+Add the Rokt kit to your `config.xml`:
+
+```xml
+<plugin name="@mparticle/cordova-rokt-kit" spec="~> 3.0" />
+```
+
+### Select Placements
+
+Display a Rokt overlay placement on your confirmation or thank-you page:
+
+```js
+var attributes = {
+    'email': 'j.smith@example.com',
+    'firstname': 'Jenny',
+    'lastname': 'Smith',
+    'confirmationref': '54321',
+    'country': 'US'
+};
+
+mparticle.Rokt.selectPlacements('YourPlacementIdentifier', attributes);
+```
+
+You can optionally pass a configuration object:
+
+```js
+var config = {
+    colorMode: mparticle.Rokt.ColorMode.SYSTEM,  // LIGHT, DARK, or SYSTEM
+    cacheConfig: {
+        cacheDurationInSeconds: 5400,
+        cacheAttributes: {}
+    }
+};
+
+mparticle.Rokt.selectPlacements('YourPlacementIdentifier', attributes, config);
+```
+
+### Placement Events
+
+Subscribe to lifecycle and engagement events for a specific placement. The callback fires every time the SDK emits an event for the given identifier — call once after `deviceready` and keep the subscription alive for the lifetime of your view.
+
+```js
+mparticle.Rokt.events('YourPlacementIdentifier', function (event) {
+    switch (event.event) {
+        case mparticle.Rokt.EventType.PlacementInteractive:
+            // placement rendered and is interactable
+            break;
+        case mparticle.Rokt.EventType.OfferEngagement:
+        case mparticle.Rokt.EventType.PositiveEngagement:
+            // user engaged with the offer
+            break;
+        case mparticle.Rokt.EventType.PlacementClosed:
+        case mparticle.Rokt.EventType.PlacementCompleted:
+        case mparticle.Rokt.EventType.PlacementFailure:
+            // placement finished — show your next-page content
+            break;
+    }
+});
+```
+
+Each event delivered to your callback is an object with an `event` discriminator string plus event-specific fields. Cross-platform event types:
+
+| Event | Fields | Notes |
+| --- | --- | --- |
+| `ShowLoadingIndicator` | — | About to call the Rokt backend. |
+| `HideLoadingIndicator` | — | Backend responded (success or failure). |
+| `InitComplete` | `success` | SDK finished initialization. |
+| `PlacementReady` | `placementId` | Placement ready but not yet rendered. |
+| `PlacementInteractive` | `placementId` | Rendered and ready for user interaction. |
+| `PlacementClosed` | `placementId` | User dismissed the placement. |
+| `PlacementCompleted` | `placementId` | No more offers to display. |
+| `PlacementFailure` | `placementId` (nullable) | Could not be displayed. |
+| `OfferEngagement` | `placementId` | User engaged with an offer. |
+| `PositiveEngagement` | `placementId` | User accepted an offer. |
+| `FirstPositiveEngagement` | `placementId` | First positive engagement in the session. |
+| `OpenUrl` | `placementId`, `url` | Passthrough link requested. |
+| `CartItemInstantPurchase` | `placementId`, `cartItemId`, `catalogItemId`, `currency`, `description`, `linkedProductId`, `totalPrice`, `quantity`, `unitPrice` | Shoppable Ads purchase completed. |
+
+The following event types are **iOS only** (no Android equivalent in the underlying SDK):
+
+| Event | Fields |
+| --- | --- |
+| `EmbeddedSizeChanged` | `placementId`, `updatedHeight` |
+| `CartItemInstantPurchaseInitiated` | `placementId`, `cartItemId`, `catalogItemId` |
+| `CartItemInstantPurchaseFailure` | `placementId`, `cartItemId`, `catalogItemId`, `error` |
+| `InstantPurchaseDismissal` | `placementId` |
+| `CartItemDevicePay` | `placementId`, `cartItemId`, `catalogItemId`, `paymentProvider` |
+
+### Shoppable Ads
+
+Shoppable Ads enable post-purchase upsell offers with instant checkout (Apple Pay, AfterPay/Clearpay, PayPal via Stripe). Currently supported on **iOS only** — `selectShoppableAds` is a logged no-op on Android, matching the React Native and Flutter wrappers.
+
+#### 1. Add the payment extension kit
+
+```xml
+<plugin name="@mparticle/cordova-rokt-payment-extension" spec="~> 3.0" />
+```
+
+This contributes the `RoktPaymentExtension` CocoaPod (`~> 2.0`) to your iOS target. There is no Android artefact.
+
+#### 2. Register the payment extension from your AppDelegate
+
+`RoktPaymentExtension` is a pure-Swift class whose failable initialiser isn't `@objc`-exported, so ObjC AppDelegates need a small Swift shim. See [`example/platform_overrides/ios/RoktPaymentSetup.swift`](example/platform_overrides/ios/RoktPaymentSetup.swift) for the working example:
+
+```swift
+import Foundation
+import RoktPaymentExtension
+import mParticle_Apple_SDK_ObjC
+
+@objc public class RoktPaymentSetup: NSObject {
+    @objc public static func registerPaymentExtension(merchantId: String) {
+        if let paymentExt = RoktPaymentExtension(applePayMerchantId: merchantId) {
+            MParticle.sharedInstance().rokt.register(paymentExt)
+        }
+    }
+}
+```
+
+Then call from your AppDelegate after `startWithOptions:`:
+
+```objc
+#import "YourApp-Swift.h"
+
+[RoktPaymentSetup registerPaymentExtensionWithMerchantId:@"merchant.com.yourapp.rokt"];
+```
+
+The Rokt kit on mParticle Apple SDK 9.2 reads `stripePublishableKey` from kit configuration in the mParticle dashboard and forwards it to Rokt as `stripeKey` at registration time — the host only supplies the Apple Pay merchant identifier above.
+
+#### 3. Display Shoppable Ads
+
+```js
+var attributes = {
+    'email': 'j.smith@example.com',
+    'firstname': 'Jenny',
+    'lastname': 'Smith',
+    'confirmationref': 'ORD-8829-XK2',
+    'amount': '52.25',
+    'currency': 'USD',
+    'paymenttype': 'visa',
+    'shippingaddress1': '123 Main St',
+    'shippingcity': 'Brooklyn',
+    'shippingstate': 'NY',
+    'shippingzipcode': '11201',
+    'shippingcountry': 'US'
+};
+
+mparticle.Rokt.selectShoppableAds('YourPlacementIdentifier', attributes);
+```
+
+#### 4. Handle redirect-based payment callbacks (AfterPay, PayPal)
+
+For payment methods that bounce out to a web flow and return via a custom URL scheme, forward the callback into Rokt:
+
+```objc
+// iOS — AppDelegate's application:openURL:options:
+- (BOOL)application:(UIApplication *)application
+            openURL:(NSURL *)url
+            options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
+    if ([[MParticle sharedInstance].rokt handleURLCallback:url]) {
+        return YES;
+    }
+    // fall through to your existing URL routing…
+    return NO;
+}
+```
+
+Or from JS (when the host has already received the URL and just wants to hand it off):
+
+```js
+mparticle.Rokt.handleURLCallback(urlString, function (handled) {
+    if (!handled) {
+        // route the URL via your own deep-link handler
+    }
+});
+```
+
+`handleURLCallback` is iOS-only; the Android bridge logs a warning and resolves to `false`.
+
+#### 5. Session continuity with WebViews (optional)
+
+If you have a WebView leg of the same flow and want it to share the Rokt session:
+
+```js
+mparticle.Rokt.getSessionId(function (sessionId) {
+    // pass sessionId into your WebView URL / postMessage
+});
+
+// or, when starting a native flow with a session from elsewhere:
+mparticle.Rokt.setSessionId('your-session-id');
 ```
 
 # License
