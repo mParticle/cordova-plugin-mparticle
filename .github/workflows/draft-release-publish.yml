@@ -122,8 +122,9 @@ jobs:
           body: |
             Preparing for release ${{ steps.bump-version.outputs.new_version }}
 
-            There should be 9 files that have been updated:
+            There should be 10 files that have been updated:
             - plugin/package.json
+            - plugin/package-lock.json
             - plugin/plugin.xml
             - plugin/src/ios/CDVMParticle.m
             - Kits/Rokt/package.json
