@@ -65,3 +65,13 @@ example/plugins
 
 # The README.md for the plugin is copied from root during prepublishOnly script
 plugin/README.md
+
+# The Rokt kits are metadata-only Cordova wrappers with no npm dependencies, so
+# they carry no package-lock.json. These are ignored to stop an empty/spurious
+# lock from being committed (and bumped by the release workflow's `npm version`).
+# When a kit first gains a real npm dependency, remove its line below and commit
+# the regenerated lock — plus a CI job that runs `npm ci` against the kit.
+# NOTE: plugin/package-lock.json is intentionally NOT ignored; it is tracked and
+# enforced by the JS Tests CI job.
+Kits/Rokt/package-lock.json
+Kits/RoktPaymentExtension/package-lock.json
