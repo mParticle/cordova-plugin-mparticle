@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.0.0] - 2026-06-11
+
 - Bumped Android native dependencies to `com.mparticle:android-core:5.79.0` and `com.mparticle:android-rokt-kit:5.79.0`.
 - Bumped iOS pod specs to `mParticle-Apple-SDK ~> 9.2` and `mParticle-Rokt ~> 9.2`.
 - Renamed the Stripe-specific payment kit to a unified one: `Kits/RoktStripePayment/` → `Kits/RoktPaymentExtension/`, npm id `@mparticle/cordova-rokt-stripe-payment-kit` → `@mparticle/cordova-rokt-payment-extension`, pod `RoktStripePaymentExtension ~> 0.1` → `RoktPaymentExtension ~> 2.0`. The new pod internally routes to Stripe for Apple Pay / card / AfterPay / Clearpay / PayPal.
@@ -68,7 +70,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add GDPR and CCPA Consent ([#13](https://github.com/mParticle/cordova-plugin-mparticle/issues/13)) ([60368be](https://github.com/mParticle/cordova-plugin-mparticle/commit/60368be9d9ec8f471bc8d5a7b479ed0ce7d9f05e))
 
-[unreleased]: https://github.com/mParticle/cordova-plugin-mparticle/compare/3.0.1...HEAD
+[unreleased]: https://github.com/mParticle/cordova-plugin-mparticle/compare/4.0.0...HEAD
+[4.0.0]: https://github.com/mParticle/cordova-plugin-mparticle/compare/3.0.1...4.0.0
 [3.0.1]: https://github.com/mParticle/cordova-plugin-mparticle/compare/3.0.0...3.0.1
 [3.0.0]: https://github.com/mParticle/cordova-plugin-mparticle/compare/2.2.4...3.0.0
 [2.2.4]: https://github.com/mParticle/cordova-plugin-mparticle/compare/2.2.3...2.2.4
