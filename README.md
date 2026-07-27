@@ -14,7 +14,7 @@ This release targets the following native SDKs:
 | iOS | `mParticle-Apple-SDK` | `~> 9.3` ([v9.3.1](https://github.com/mParticle/mparticle-apple-sdk/releases/tag/v9.3.1)) |
 | Android | `com.mparticle:android-core` | `6.0.0` ([release](https://github.com/mParticle/mparticle-android-sdk/releases/tag/6.0.0)) |
 
-When using Rokt, also install `@mparticle/cordova-rokt-kit`, which pins `mParticle-Rokt ~> 9.3` on iOS and `com.mparticle:android-rokt-kit:6.0.0` on Android.
+When using Rokt, also install `@mparticle/cordova-rokt-kit`, which pins `mParticle-Rokt ~> 9.3` on iOS and `com.mparticle:android-rokt-kit:6.0.0` on Android. On Android, the core plugin compiles against the Rokt kit via `compileOnly` and guards Rokt APIs at runtime — apps without the kit build successfully, and Rokt method calls return an error until the kit is installed.
 
 # Installation
 

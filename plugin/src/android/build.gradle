@@ -21,10 +21,8 @@ repositories {
 dependencies {
     compileOnly("org.apache.cordova:framework:10.1.2")
     compileOnly("com.mparticle:android-core:6.0.0")
-    // Rokt facade and contracts moved out of android-core in 6.0.0.
+    // compileOnly matches cordova.gradle: Rokt kit is optional at runtime for integrators.
     compileOnly("com.mparticle:android-rokt-kit:6.0.0")
-    // roktEvents() collects the events() Flow via kotlinx-coroutines. The host app
-    // provides it at runtime (transitively via android-core/Rokt), so keep it compileOnly.
     compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
 
     testImplementation("junit:junit:4.13.2")
@@ -32,6 +30,4 @@ dependencies {
     testImplementation("org.mockito:mockito-core:4.5.1")
     testImplementation("org.apache.cordova:framework:10.1.2")
     testImplementation("com.mparticle:android-core:6.0.0")
-    // Rokt kit stays compileOnly: pulling it into unit-test runtime pulls Jetpack Compose
-    // transitively (roktux), which AGP 7.1.3 cannot resolve for debugUnitTestRuntimeClasspath.
 }

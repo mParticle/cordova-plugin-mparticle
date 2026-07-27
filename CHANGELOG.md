@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bumped Android native dependencies to `com.mparticle:android-core:6.0.0` and `com.mparticle:android-rokt-kit:6.0.0`.
 - Bumped iOS pod specs to `mParticle-Apple-SDK ~> 9.3` and `mParticle-Rokt ~> 9.3`.
 - Migrated the Android Rokt bridge for SDK 6.0.0: Rokt moved out of `android-core` into `android-rokt-kit` and `com.rokt.roktsdk` contracts (`MParticleRoktKt.getRokt()`, `com.rokt.roktsdk.RoktEvent`, `com.rokt.roktsdk.RoktConfig`, etc.).
+- Android Rokt integration is now optional: the core plugin compiles against `android-rokt-kit` via `compileOnly` and guards Rokt APIs at runtime (`RoktKitAvailability`). Apps without `@mparticle/cordova-rokt-kit` build successfully; Rokt method calls return a clear error until the kit is installed.
 
 ### Added
 
