@@ -449,29 +449,47 @@ public class MParticleCordovaPlugin extends CordovaPlugin {
     }
 
     private RoktConfig buildRoktConfig(final JSONObject configMap) throws JSONException {
-        final RoktConfig.ColorMode colorMode = RoktConfig.ColorMode.valueOf(
-            configMap.getJSONObject("colorMode").getString("value")
-        );
+        if (configMap == null || configMap == JSONObject.NULL || configMap.length() == 0) {
+            return null;
+        }
 
-        final JSONObject cacheConfigMap = configMap.getJSONObject("cacheConfig");
-        final CacheConfig cacheConfig = new CacheConfig(
-            cacheConfigMap.getLong("cacheDurationInSeconds"),
-            ConvertStringMap(cacheConfigMap.getJSONObject("cacheAttributes"))
-        );
+        final RoktConfig.Builder builder = new RoktConfig.Builder();
+        boolean hasConfig = false;
 
-        final boolean edgeToEdgeDisplay = configMap.getBoolean("edgeToEdgeDisplay");
+        if (configMap.has("colorMode") && !configMap.isNull("colorMode")) {
+            final JSONObject colorModeObj = configMap.getJSONObject("colorMode");
+            if (colorModeObj.has("value") && !colorModeObj.isNull("value")) {
+                hasConfig = true;
+                builder.colorMode(RoktConfig.ColorMode.valueOf(colorModeObj.getString("value")));
+            }
+        }
 
-        return new RoktConfig.Builder()
-            .colorMode(colorMode)
-            .cacheConfig(cacheConfig)
-            .edgeToEdgeDisplay(edgeToEdgeDisplay)
-            .build();
+        if (configMap.has("cacheConfig") && !configMap.isNull("cacheConfig")) {
+            final JSONObject cacheConfigMap = configMap.getJSONObject("cacheConfig");
+            hasConfig = true;
+            final long cacheDuration = cacheConfigMap.has("cacheDurationInSeconds")
+                && !cacheConfigMap.isNull("cacheDurationInSeconds")
+                ? cacheConfigMap.getLong("cacheDurationInSeconds")
+                : 0L;
+            final JSONObject cacheAttributes = cacheConfigMap.has("cacheAttributes")
+                && !cacheConfigMap.isNull("cacheAttributes")
+                ? cacheConfigMap.getJSONObject("cacheAttributes")
+                : new JSONObject();
+            builder.cacheConfig(new CacheConfig(cacheDuration, ConvertStringMap(cacheAttributes)));
+        }
+
+        if (configMap.has("edgeToEdgeDisplay") && !configMap.isNull("edgeToEdgeDisplay")) {
+            hasConfig = true;
+            builder.edgeToEdgeDisplay(configMap.getBoolean("edgeToEdgeDisplay"));
+        }
+
+        return hasConfig ? builder.build() : null;
     }
 
     public void selectPlacements(final JSONArray args) throws JSONException {
         final String identifier = args.getString(0);
         final JSONObject attributesMap = args.getJSONObject(1);
-        final JSONObject configMap = args.getJSONObject(2);
+        final JSONObject configMap = args.isNull(2) ? null : args.getJSONObject(2);
 
         final Map<String, String> attributes = ConvertStringMap(attributesMap);
         final RoktConfig roktConfig = buildRoktConfig(configMap);
@@ -488,7 +506,7 @@ public class MParticleCordovaPlugin extends CordovaPlugin {
     public void selectShoppableAds(final JSONArray args, final CallbackContext callbackContext) throws JSONException {
         final String identifier = args.getString(0);
         final JSONObject attributesMap = args.getJSONObject(1);
-        final JSONObject configMap = args.getJSONObject(2);
+        final JSONObject configMap = args.isNull(2) ? null : args.getJSONObject(2);
 
         final Map<String, String> attributes = ConvertStringMap(attributesMap);
         final RoktConfig roktConfig = buildRoktConfig(configMap);
