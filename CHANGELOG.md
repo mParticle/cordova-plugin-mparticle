@@ -9,6 +9,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Bumped Android native dependencies to `com.mparticle:android-core:6.0.0` and `com.mparticle:android-rokt-kit:6.0.0`.
+- Bumped iOS pod specs to `mParticle-Apple-SDK ~> 9.3` and `mParticle-Rokt ~> 9.3`.
+- Migrated the Android Rokt bridge for SDK 6.0.0: Rokt moved out of `android-core` into `android-rokt-kit` and `com.rokt.roktsdk` contracts (`MParticleRoktKt.getRokt()`, `com.rokt.roktsdk.RoktEvent`, `com.rokt.roktsdk.RoktConfig`, etc.).
+
+### Added
+
+- Android support for `mparticle.Rokt.selectShoppableAds` and `mparticle.Rokt.purchaseFinalized` (previously logged no-ops on Android).
+
+### Fixed
+
+- Android Rokt event serialization updated for SDK 6.0.0 event types (`getIdentifier()` replaces `getPlacementId()`).
+
+### Notes
+
+- `mparticle.Rokt.handleURLCallback` remains iOS-only; Android SDK 6.0.0 does not yet expose an equivalent hook.
+- Device-level consent APIs in native SDK 9.3.1 / 6.0.0 are not yet exposed through the Cordova JS bridge.
+- `@mparticle/cordova-rokt-payment-extension` remains iOS-only (registers `RoktPaymentExtension` for Apple Pay / AfterPay / PayPal).
+
 ## [4.0.1] - 2026-06-12
 
 ## [4.0.0] - 2026-06-11

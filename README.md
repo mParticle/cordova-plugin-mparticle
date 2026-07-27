@@ -5,6 +5,17 @@ Cordova plugin for mParticle
 [![npm version](https://badge.fury.io/js/cordova-plugin-mparticle.svg)](https://badge.fury.io/js/cordova-plugin-mparticle)
 [![Standard - JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](http://standardjs.com/)
 
+## Native SDK versions
+
+This release targets the following native SDKs:
+
+| Platform | Dependency | Version |
+| --- | --- | --- |
+| iOS | `mParticle-Apple-SDK` | `~> 9.3` ([v9.3.1](https://github.com/mParticle/mparticle-apple-sdk/releases/tag/v9.3.1)) |
+| Android | `com.mparticle:android-core` | `6.0.0` ([release](https://github.com/mParticle/mparticle-android-sdk/releases/tag/6.0.0)) |
+
+When using Rokt, also install `@mparticle/cordova-rokt-kit`, which pins `mParticle-Rokt ~> 9.3` on iOS and `com.mparticle:android-rokt-kit:6.0.0` on Android.
+
 # Installation
 
 ```bash
@@ -20,7 +31,7 @@ cordova plugin add @mparticle/cordova-sdk
 **Install the SDK** using CocoaPods:
 
 ```bash
-$ # Update your Podfile to depend on 'mParticle-Apple-SDK' version 9.2.0 or later
+$ # Update your Podfile to depend on 'mParticle-Apple-SDK' version 9.3.0 or later
 $ pod install
 ```
 
@@ -305,7 +316,7 @@ identity.modify(request, function (userId) => {
 Add the Rokt kit to your `config.xml`:
 
 ```xml
-<plugin name="@mparticle/cordova-rokt-kit" spec="~> 3.0" />
+<plugin name="@mparticle/cordova-rokt-kit" spec="~> 4.0" />
 ```
 
 ### Select Placements
@@ -379,7 +390,7 @@ Each event delivered to your callback is an object with an `event` discriminator
 | `OpenUrl` | `placementId`, `url` | Passthrough link requested. |
 | `CartItemInstantPurchase` | `placementId`, `cartItemId`, `catalogItemId`, `currency`, `description`, `linkedProductId`, `totalPrice`, `quantity`, `unitPrice` | Shoppable Ads purchase completed. |
 
-The following event types are **iOS only** (no Android equivalent in the underlying SDK):
+The following event types are **iOS only** (not yet emitted by the Android Rokt SDK):
 
 | Event | Fields |
 | --- | --- |
@@ -391,17 +402,19 @@ The following event types are **iOS only** (no Android equivalent in the underly
 
 ### Shoppable Ads
 
-Shoppable Ads enable post-purchase upsell offers with instant checkout (Apple Pay, AfterPay/Clearpay, PayPal via Stripe). Currently supported on **iOS only** — `selectShoppableAds` is a logged no-op on Android, matching the React Native and Flutter wrappers.
+Shoppable Ads enable post-purchase upsell offers with instant checkout (Apple Pay, AfterPay/Clearpay, PayPal via Stripe). `selectShoppableAds` and `purchaseFinalized` are supported on **both iOS and Android** when using `@mparticle/cordova-rokt-kit` with native SDK 6.0.0 / 9.3.x.
 
-#### 1. Add the payment extension kit
+Payment extension registration for Apple Pay / AfterPay / PayPal remains **iOS-only** via `@mparticle/cordova-rokt-payment-extension`. Register the extension natively on Android if your integration requires it.
+
+#### 1. Add the payment extension kit (iOS)
 
 ```xml
-<plugin name="@mparticle/cordova-rokt-payment-extension" spec="~> 3.0" />
+<plugin name="@mparticle/cordova-rokt-payment-extension" spec="~> 4.0" />
 ```
 
-This contributes the `RoktPaymentExtension` CocoaPod (`~> 2.0`) to your iOS target. There is no Android artefact.
+This contributes the `RoktPaymentExtension` CocoaPod (`~> 2.0`) to your iOS target. There is no Cordova artefact for Android payment extension registration.
 
-#### 2. Register the payment extension from your AppDelegate
+#### 2. Register the payment extension from your AppDelegate (iOS)
 
 `RoktPaymentExtension` is a pure-Swift class whose failable initialiser isn't `@objc`-exported, so ObjC AppDelegates need a small Swift shim. See [`example/platform_overrides/ios/RoktPaymentSetup.swift`](example/platform_overrides/ios/RoktPaymentSetup.swift) for the working example:
 
@@ -427,7 +440,7 @@ Then call from your AppDelegate after `startWithOptions:`:
 [RoktPaymentSetup registerPaymentExtensionWithMerchantId:@"merchant.com.yourapp.rokt"];
 ```
 
-The Rokt kit on mParticle Apple SDK 9.2 reads `stripePublishableKey` from kit configuration in the mParticle dashboard and forwards it to Rokt as `stripeKey` at registration time — the host only supplies the Apple Pay merchant identifier above.
+The Rokt kit on mParticle Apple SDK 9.3 reads `stripePublishableKey` from kit configuration in the mParticle dashboard and forwards it to Rokt as `stripeKey` at registration time — the host only supplies the Apple Pay merchant identifier above.
 
 #### 3. Display Shoppable Ads
 

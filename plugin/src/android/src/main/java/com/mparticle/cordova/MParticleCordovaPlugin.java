@@ -4,7 +4,6 @@ import android.util.Log;
 
 import com.mparticle.MPEvent;
 import com.mparticle.MParticle;
-import com.mparticle.RoktEvent;
 import com.mparticle.commerce.CommerceEvent;
 import com.mparticle.commerce.Impression;
 import com.mparticle.commerce.Product;
@@ -15,8 +14,10 @@ import com.mparticle.consent.ConsentState;
 import com.mparticle.consent.GDPRConsent;
 import com.mparticle.identity.*;
 import com.mparticle.internal.Logger;
-import com.mparticle.rokt.RoktConfig;
-import com.mparticle.rokt.CacheConfig;
+import com.mparticle.kits.MParticleRoktKt;
+import com.rokt.roktsdk.CacheConfig;
+import com.rokt.roktsdk.RoktConfig;
+import com.rokt.roktsdk.RoktEvent;
 
 import kotlin.Unit;
 import kotlin.coroutines.Continuation;
@@ -443,34 +444,41 @@ public class MParticleCordovaPlugin extends CordovaPlugin {
         }
     }
 
-    public void selectPlacements(final JSONArray args) throws JSONException {
-        final String identifier = args.getString(0);
-        final JSONObject attributesMap = args.getJSONObject(1);
-        final JSONObject configMap = args.getJSONObject(2);
-        
+    private com.mparticle.kits.Rokt rokt() {
+        return MParticleRoktKt.getRokt(MParticle.getInstance());
+    }
 
-        final Map<String, String> attributes = ConvertStringMap(attributesMap);
+    private RoktConfig buildRoktConfig(final JSONObject configMap) throws JSONException {
+        final RoktConfig.ColorMode colorMode = RoktConfig.ColorMode.valueOf(
+            configMap.getJSONObject("colorMode").getString("value")
+        );
 
-        final RoktConfig.ColorMode colorMode = RoktConfig.ColorMode.valueOf(configMap.getJSONObject("colorMode").getString("value"));
-        
         final JSONObject cacheConfigMap = configMap.getJSONObject("cacheConfig");
         final CacheConfig cacheConfig = new CacheConfig(
             cacheConfigMap.getLong("cacheDurationInSeconds"),
             ConvertStringMap(cacheConfigMap.getJSONObject("cacheAttributes"))
         );
-        
+
         final boolean edgeToEdgeDisplay = configMap.getBoolean("edgeToEdgeDisplay");
-        
-        final RoktConfig roktConfig = new RoktConfig.Builder()
+
+        return new RoktConfig.Builder()
             .colorMode(colorMode)
             .cacheConfig(cacheConfig)
             .edgeToEdgeDisplay(edgeToEdgeDisplay)
             .build();
+    }
 
-        MParticle.getInstance().Rokt().selectPlacements(
+    public void selectPlacements(final JSONArray args) throws JSONException {
+        final String identifier = args.getString(0);
+        final JSONObject attributesMap = args.getJSONObject(1);
+        final JSONObject configMap = args.getJSONObject(2);
+
+        final Map<String, String> attributes = ConvertStringMap(attributesMap);
+        final RoktConfig roktConfig = buildRoktConfig(configMap);
+
+        rokt().selectPlacements(
             identifier,
             attributes,
-            null,  // callbacks not used in Cordova
             null,  // embeddedViews not used in Cordova
             null,  // fontTypefaces not used in Cordova
             roktConfig
@@ -478,28 +486,36 @@ public class MParticleCordovaPlugin extends CordovaPlugin {
     }
 
     public void selectShoppableAds(final JSONArray args, final CallbackContext callbackContext) throws JSONException {
-        Logger.warning("selectShoppableAds is not yet supported on Android");
-        callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, false));
+        final String identifier = args.getString(0);
+        final JSONObject attributesMap = args.getJSONObject(1);
+        final JSONObject configMap = args.getJSONObject(2);
+
+        final Map<String, String> attributes = ConvertStringMap(attributesMap);
+        final RoktConfig roktConfig = buildRoktConfig(configMap);
+
+        rokt().selectShoppableAds(identifier, attributes, roktConfig);
+        callbackContext.success();
     }
 
     public void purchaseFinalized(final JSONArray args, final CallbackContext callbackContext) throws JSONException {
-        // Shoppable Ads (selectShoppableAds) is not yet supported on Android, so there is no
-        // active shoppable session to finalize. No-op rather than calling the Rokt SDK without
-        // a session; matches the no-op pattern of handleURLCallback.
-        Logger.warning("purchaseFinalized is not yet supported on Android");
-        callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, false));
+        final String identifier = args.getString(0);
+        final String catalogItemId = args.getString(1);
+        final boolean success = args.getBoolean(2);
+
+        rokt().purchaseFinalized(identifier, catalogItemId, success);
+        callbackContext.success();
     }
 
     public void setSessionId(final JSONArray args, final CallbackContext callbackContext) throws JSONException {
         final String sessionId = args.getString(0);
         if (sessionId != null && sessionId.length() > 0) {
-            MParticle.getInstance().Rokt().setSessionId(sessionId);
+            rokt().setSessionId(sessionId);
         }
         callbackContext.success();
     }
 
     public void getSessionId(final CallbackContext callbackContext) {
-        String sessionId = MParticle.getInstance().Rokt().getSessionId();
+        String sessionId = rokt().getSessionId();
         if (sessionId != null) {
             callbackContext.success(sessionId);
         } else {
@@ -524,7 +540,7 @@ public class MParticleCordovaPlugin extends CordovaPlugin {
             CoroutineScopeKt.cancel(previous, (CancellationException) null);
         }
 
-        Flow<RoktEvent> events = MParticle.getInstance().Rokt().events(identifier);
+        Flow<RoktEvent> events = rokt().events(identifier);
 
         Function2<RoktEvent, Continuation<? super Unit>, Object> onEach =
             (event, continuation) -> {
@@ -565,38 +581,38 @@ public class MParticleCordovaPlugin extends CordovaPlugin {
                 json.put("success", ((RoktEvent.InitComplete) event).getSuccess());
             } else if (event instanceof RoktEvent.PlacementReady) {
                 json.put("event", "PlacementReady");
-                json.put("placementId", ((RoktEvent.PlacementReady) event).getPlacementId());
+                json.put("placementId", ((RoktEvent.PlacementReady) event).getIdentifier());
             } else if (event instanceof RoktEvent.PlacementInteractive) {
                 json.put("event", "PlacementInteractive");
-                json.put("placementId", ((RoktEvent.PlacementInteractive) event).getPlacementId());
+                json.put("placementId", ((RoktEvent.PlacementInteractive) event).getIdentifier());
             } else if (event instanceof RoktEvent.PlacementClosed) {
                 json.put("event", "PlacementClosed");
-                json.put("placementId", ((RoktEvent.PlacementClosed) event).getPlacementId());
+                json.put("placementId", ((RoktEvent.PlacementClosed) event).getIdentifier());
             } else if (event instanceof RoktEvent.PlacementCompleted) {
                 json.put("event", "PlacementCompleted");
-                json.put("placementId", ((RoktEvent.PlacementCompleted) event).getPlacementId());
+                json.put("placementId", ((RoktEvent.PlacementCompleted) event).getIdentifier());
             } else if (event instanceof RoktEvent.PlacementFailure) {
                 json.put("event", "PlacementFailure");
-                String placementId = ((RoktEvent.PlacementFailure) event).getPlacementId();
+                String placementId = ((RoktEvent.PlacementFailure) event).getIdentifier();
                 json.put("placementId", placementId != null ? placementId : JSONObject.NULL);
             } else if (event instanceof RoktEvent.OfferEngagement) {
                 json.put("event", "OfferEngagement");
-                json.put("placementId", ((RoktEvent.OfferEngagement) event).getPlacementId());
+                json.put("placementId", ((RoktEvent.OfferEngagement) event).getIdentifier());
             } else if (event instanceof RoktEvent.PositiveEngagement) {
                 json.put("event", "PositiveEngagement");
-                json.put("placementId", ((RoktEvent.PositiveEngagement) event).getPlacementId());
+                json.put("placementId", ((RoktEvent.PositiveEngagement) event).getIdentifier());
             } else if (event instanceof RoktEvent.FirstPositiveEngagement) {
                 json.put("event", "FirstPositiveEngagement");
-                json.put("placementId", ((RoktEvent.FirstPositiveEngagement) event).getPlacementId());
+                json.put("placementId", ((RoktEvent.FirstPositiveEngagement) event).getIdentifier());
             } else if (event instanceof RoktEvent.OpenUrl) {
                 RoktEvent.OpenUrl openUrl = (RoktEvent.OpenUrl) event;
                 json.put("event", "OpenUrl");
-                json.put("placementId", openUrl.getPlacementId());
+                json.put("placementId", openUrl.getIdentifier());
                 json.put("url", openUrl.getUrl());
             } else if (event instanceof RoktEvent.CartItemInstantPurchase) {
                 RoktEvent.CartItemInstantPurchase purchase = (RoktEvent.CartItemInstantPurchase) event;
                 json.put("event", "CartItemInstantPurchase");
-                json.put("placementId", purchase.getPlacementId());
+                json.put("placementId", purchase.getIdentifier());
                 json.put("cartItemId", purchase.getCartItemId());
                 json.put("catalogItemId", purchase.getCatalogItemId());
                 json.put("currency", purchase.getCurrency());
