@@ -13,7 +13,11 @@
             </feature>
         </config-file>
         <source-file src="src/android/src/main/java/com/mparticle/cordova/MParticleCordovaPlugin.java" target-dir="src/com/mparticle/cordova" />
-        <framework src="com.mparticle:android-core:5.79.1"/>
+        <source-file src="src/android/src/main/java/com/mparticle/cordova/RoktKitAvailability.java" target-dir="src/com/mparticle/cordova" />
+        <source-file src="src/android/src/main/java/com/mparticle/cordova/RoktPluginDelegate.java" target-dir="src/com/mparticle/cordova" />
+        <source-file src="src/android/src/main/java/com/mparticle/cordova/RoktBridge.java" target-dir="src/com/mparticle/cordova" />
+        <framework src="com.mparticle:android-core:6.0.0"/>
+        <framework src="src/android/cordova.gradle" custom="true" type="gradleReference" />
     </platform>
     <platform name="ios">
         <config-file target="config.xml" parent="/*">
@@ -27,7 +31,7 @@
                 <source url="https://cdn.cocoapods.org/"/>
             </config>
             <pods use-frameworks="true">
-                <pod name="mParticle-Apple-SDK" spec="~> 9.2" />
+                <pod name="mParticle-Apple-SDK" spec="~> 9.3" />
             </pods>
         </podspec>
     </platform>

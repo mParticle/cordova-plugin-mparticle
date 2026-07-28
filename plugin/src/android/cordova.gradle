@@ -1,0 +1,11 @@
+repositories {
+    google()
+    mavenCentral()
+}
+
+dependencies {
+    // Compile against Rokt kit types without requiring it at runtime. Apps that use Rokt
+    // must install @mparticle/cordova-rokt-kit, which adds android-rokt-kit to the app.
+    compileOnly "com.mparticle:android-rokt-kit:6.0.0"
+    compileOnly "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0"
+}

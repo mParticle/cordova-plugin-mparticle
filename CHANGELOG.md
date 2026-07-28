@@ -9,6 +9,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Bumped Android native dependencies to `com.mparticle:android-core:6.0.0` and `com.mparticle:android-rokt-kit:6.0.0`.
+- Bumped iOS pod specs to `mParticle-Apple-SDK ~> 9.3` and `mParticle-Rokt ~> 9.3`.
+- Migrated the Android Rokt bridge for SDK 6.0.0: Rokt moved out of `android-core` into `android-rokt-kit` and `com.rokt.roktsdk` contracts (`MParticleRoktKt.getRokt()`, `com.rokt.roktsdk.RoktEvent`, `com.rokt.roktsdk.RoktConfig`, etc.).
+- Android Rokt integration is now optional: the core plugin compiles against `android-rokt-kit` via `compileOnly` and guards Rokt APIs at runtime (`RoktKitAvailability`). Apps without `@mparticle/cordova-rokt-kit` build successfully; Rokt method calls return a clear error until the kit is installed.
+
+### Added
+
+- Android support for `mparticle.Rokt.selectShoppableAds` and `mparticle.Rokt.purchaseFinalized` (previously logged no-ops on Android).
+
+### Fixed
+
+- Android Rokt event serialization updated for SDK 6.0.0 event types (`getIdentifier()` replaces `getPlacementId()`).
+
+### Notes
+
+- `mparticle.Rokt.handleURLCallback` remains iOS-only; Android SDK 6.0.0 does not yet expose an equivalent hook.
+- Device-level consent APIs in native SDK 9.3.1 / 6.0.0 are not yet exposed through the Cordova JS bridge.
+- `@mparticle/cordova-rokt-payment-extension` remains iOS-only (registers `RoktPaymentExtension` for Apple Pay / AfterPay / PayPal).
+
 ## [4.0.1] - 2026-06-12
 
 ## [4.0.0] - 2026-06-11
@@ -21,7 +42,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - `mparticle.Rokt.setSessionId(sessionId)` / `mparticle.Rokt.getSessionId(completion)` — bridged to `MPRokt.setSessionId:` / `-getSessionId` on iOS and `MParticle.getInstance().Rokt().setSessionId / .getSessionId` on Android. Useful for keeping the native and WebView legs of a flow on the same Rokt session.
-- `mparticle.Rokt.handleURLCallback(url, completion)` — bridged to `[MPRokt handleURLCallback:]` on iOS so the host AppDelegate can hand redirect-based payment callbacks (AfterPay, PayPal) back to the registered Rokt payment extension. Android is a logged no-op until the Android SDK ships the same hook.
+- `mparticle.Rokt.handleURLCallback(url, completion)` — bridged to `[MPRokt handleURLCallback:]` on iOS so the host AppDelegate can hand redirect-based payment callbacks (AfterPay, PayPal) back to the registered Rokt payment extension. Android is a silent no-op that resolves to `false`.
 - README examples for configuring a custom CNAME endpoint on iOS (`MPNetworkOptions.customBaseURL`) and Android (`NetworkOptions.withNetworkOptions`).
 
 ## [3.0.1] - 2026-05-27
