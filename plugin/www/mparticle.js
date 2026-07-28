@@ -580,8 +580,7 @@ var mparticle = {
      * Cordova bridge accepts a string URL, marshals it to NSURL, and asks
      * the Rokt payment extension(s) to claim it.
      *
-     * iOS only; the Rokt Android SDK doesn't yet expose this hook, so the
-     * Android bridge logs a warning and resolves to `false`.
+     * iOS only; the Android bridge resolves to `false`.
      *
      * The completion callback receives a boolean indicating whether a
      * registered payment extension handled the URL.

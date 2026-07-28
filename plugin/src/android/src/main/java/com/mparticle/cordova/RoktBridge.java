@@ -96,12 +96,6 @@ final class RoktBridge implements RoktPluginDelegate {
     }
 
     @Override
-    public void handleURLCallback(final CallbackContext callbackContext) {
-        Logger.warning("handleURLCallback is not yet supported on Android");
-        callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, false));
-    }
-
-    @Override
     public void roktEvents(final JSONArray args, final CallbackContext callbackContext) throws JSONException {
         final String identifier = args.getString(0);
 

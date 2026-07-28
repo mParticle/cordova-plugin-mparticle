@@ -105,7 +105,9 @@ public class MParticleCordovaPlugin extends CordovaPlugin {
         } else if (action.equals("getSessionId")) {
             return executeRoktAction(callbackContext, delegate -> delegate.getSessionId(callbackContext));
         } else if (action.equals("handleURLCallback")) {
-            return executeRoktAction(callbackContext, delegate -> delegate.handleURLCallback(callbackContext));
+            // iOS-only; Android resolves to false without requiring the Rokt kit.
+            callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, false));
+            return true;
         } else if (action.equals("roktEvents")) {
             return executeRoktAction(callbackContext, delegate -> delegate.roktEvents(args, callbackContext));
         } else {

@@ -15,8 +15,6 @@ interface RoktPluginDelegate {
 
     void getSessionId(CallbackContext callbackContext);
 
-    void handleURLCallback(CallbackContext callbackContext);
-
     void roktEvents(JSONArray args, CallbackContext callbackContext) throws JSONException;
 
     void onDestroy();

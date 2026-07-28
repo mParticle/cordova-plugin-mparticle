@@ -490,7 +490,7 @@ mparticle.Rokt.handleURLCallback(urlString, function (handled) {
 });
 ```
 
-`handleURLCallback` is iOS-only; the Android bridge logs a warning and resolves to `false`.
+`handleURLCallback` is iOS-only; the Android bridge resolves to `false`.
 
 #### 5. Session continuity with WebViews (optional)
 
