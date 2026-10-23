@@ -1,4 +1,4 @@
-#import <Cordova/CDV.h>
+#import <Cordova/Cordova.h>
 @import mParticle_Apple_SDK;
 @import mParticle_Apple_SDK_ObjC;
 @import RoktContracts;

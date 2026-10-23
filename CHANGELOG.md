@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Breaking (iOS):** the plugins are now Swift packages, and the mParticle Apple SDK, the Rokt kit and the Rokt payment extension come from Swift Package Manager instead of CocoaPods, ahead of the CocoaPods trunk going read-only on 2 December 2026. iOS now needs cordova-ios 8 or later and a `deployment-target` of 15.0 or later, and all platforms need Cordova CLI 12 or later. Projects on cordova-ios 7 or earlier should stay on 4.x. See [MIGRATING.md](MIGRATING.md).
+- iOS resolves `mparticle-apple-sdk` and `mp-apple-integration-rokt` from `9.3.0` up to `10.0.0`, and `rokt-payment-extension-ios` from `2.0.0` up to `3.0.0`, the same ranges as the previous pods.
+- The example app uses cordova-ios 8, with a Swift `AppDelegate` that registers the payment extension directly instead of through an Objective-C shim.
+
 ## [4.1.0] - 2026-07-28
 
 ### Changed

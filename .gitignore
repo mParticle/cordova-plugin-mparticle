@@ -75,3 +75,8 @@ plugin/README.md
 # enforced by the JS Tests CI job.
 Kits/Rokt/package-lock.json
 Kits/RoktPaymentExtension/package-lock.json
+
+# Swift Package Manager files from building a plugin's Package.swift locally
+.build/
+.swiftpm/
+Package.resolved
