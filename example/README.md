@@ -6,7 +6,7 @@ This example demonstrates how to integrate the MParticle Cordova plugin into you
 
 - Node.js and npm
 - Cordova CLI
-- Xcode (for iOS development)
+- Xcode 15 or later (for iOS development). iOS uses cordova-ios 8, which takes the mParticle SDK from Swift Package Manager; CocoaPods is not needed.
 - Android Studio (for Android development)
 
 ## Setup
@@ -21,7 +21,7 @@ npm install
      - `REPLACE_ME_API_KEY` with your Android API key
      - `REPLACE_ME_API_SECRET` with your Android API secret
    
-   - In `platform_overrides/ios/AppDelegate.m`, replace:
+   - In `platform_overrides/ios/AppDelegate.swift`, replace:
      - `REPLACE_ME_API_KEY` with your iOS API key
      - `REPLACE_ME_API_SECRET` with your iOS API secret
 
@@ -56,6 +56,11 @@ For iOS:
 cordova run ios
 ```
 
+The `after_prepare` hook copies the native startup files from `platform_overrides/`
+before each build or run. Edit those source files to keep your changes; you can
+also apply them to an existing platform with `cordova prepare android` or
+`cordova prepare ios`.
+
 ## Development
 
 The example includes a clean script to help reset the project state:
@@ -77,9 +82,9 @@ cordova platform add android ios
 
 ## Project Structure
 
-- `platform_overrides/` - Platform-specific files that are automatically copied during platform setup
+- `platform_overrides/` - Platform-specific files that are automatically copied after every prepare (including platform setup, build and run)
   - `android/MainActivity.java` - Android app entry point
-  - `ios/AppDelegate.m` - iOS app delegate
+  - `ios/AppDelegate.swift` - iOS app delegate (replaces the cordova-ios 8 template's)
 - `Kits/` - mParticle kit dependency plugins
   - `Rokt/` - Rokt kit plugin (adds native dependencies)
 - `www/` - Web assets and Cordova application code

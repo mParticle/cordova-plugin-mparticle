@@ -106,6 +106,18 @@ jobs:
         run: cordova platform add ios
       - name: Build iOS
         run: cordova build ios --verbose
+      # The plugins are Swift packages, so no Podfile should exist. Cordova finds CDVMParticle by
+      # name and the Rokt kit registers itself at load time, so a missing class only shows at
+      # runtime. Debug builds keep the code in <app>.debug.dylib.
+      - name: Check Swift Package Manager linking
+        run: |
+          test ! -e platforms/ios/Podfile || { echo "::error::A Podfile was generated; a plugin still uses CocoaPods"; exit 1; }
+          APP=$(find platforms/ios/build -maxdepth 3 -name '*.app' -type d | head -1)
+          [ -d "$APP" ] || { echo "::error::No .app found under platforms/ios/build"; exit 1; }
+          SYMBOLS=$(nm -U "$APP"/*.debug.dylib "$APP/$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$APP/Info.plist")" 2>/dev/null || true)
+          for class in CDVMParticle MPKitRokt; do
+            grep -q "_OBJC_CLASS_\$_${class}\$" <<< "$SYMBOLS" || { echo "::error::$class is not linked into $APP"; exit 1; }
+          done
 
   pr-notify:
     if: >
