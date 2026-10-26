@@ -21,13 +21,12 @@
     </platform>
     <platform name="ios">
         <preference name="deployment-target" value="16.0" />
-        <preference name="pods_ios_min_version" value="16.0" />
         <allow-intent href="itms:*" />
         <allow-intent href="itms-apps:*" />
     </platform>
     
-    <!-- Platform-specific file copy hook -->
-    <hook type="after_platform_add" src="hooks/after_platform_add/010_copy_platform_specific_files.js" />
+    <!-- Refresh native startup files after every prepare, including build and run. -->
+    <hook type="after_prepare" src="hooks/after_prepare/010_copy_platform_specific_files.js" />
     <plugin name="@mparticle/cordova-sdk" spec="../plugin" />
     <plugin name="@mparticle/cordova-rokt-kit" spec="../Kits/Rokt" />
     <plugin name="@mparticle/cordova-rokt-payment-extension" spec="../Kits/RoktPaymentExtension" />
