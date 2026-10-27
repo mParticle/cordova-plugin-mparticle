@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.0.1] - 2026-10-27
+
 ## [5.0.0] - 2026-10-27
 
 ### Changed
@@ -103,7 +105,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add GDPR and CCPA Consent ([#13](https://github.com/mParticle/cordova-plugin-mparticle/issues/13)) ([60368be](https://github.com/mParticle/cordova-plugin-mparticle/commit/60368be9d9ec8f471bc8d5a7b479ed0ce7d9f05e))
 
-[unreleased]: https://github.com/mParticle/cordova-plugin-mparticle/compare/5.0.0...HEAD
+[unreleased]: https://github.com/mParticle/cordova-plugin-mparticle/compare/5.0.1...HEAD
+[5.0.1]: https://github.com/mParticle/cordova-plugin-mparticle/compare/5.0.0...5.0.1
 [5.0.0]: https://github.com/mParticle/cordova-plugin-mparticle/compare/4.1.0...5.0.0
 [4.1.0]: https://github.com/mParticle/cordova-plugin-mparticle/compare/4.0.1...4.1.0
 [4.0.1]: https://github.com/mParticle/cordova-plugin-mparticle/compare/4.0.0...4.0.1
