@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.0.0] - 2026-10-27
+
 ### Changed
 
 - **Breaking (iOS):** the plugins are now Swift packages, and the mParticle Apple SDK, the Rokt kit and the Rokt payment extension come from Swift Package Manager instead of CocoaPods, ahead of the CocoaPods trunk going read-only on 2 December 2026. iOS now needs cordova-ios 8 or later and a `deployment-target` of 15.0 or later, and all platforms need Cordova CLI 12 or later. Projects on cordova-ios 7 or earlier should stay on 4.x. See [MIGRATING.md](MIGRATING.md).
@@ -101,7 +103,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add GDPR and CCPA Consent ([#13](https://github.com/mParticle/cordova-plugin-mparticle/issues/13)) ([60368be](https://github.com/mParticle/cordova-plugin-mparticle/commit/60368be9d9ec8f471bc8d5a7b479ed0ce7d9f05e))
 
-[unreleased]: https://github.com/mParticle/cordova-plugin-mparticle/compare/4.1.0...HEAD
+[unreleased]: https://github.com/mParticle/cordova-plugin-mparticle/compare/5.0.0...HEAD
+[5.0.0]: https://github.com/mParticle/cordova-plugin-mparticle/compare/4.1.0...5.0.0
 [4.1.0]: https://github.com/mParticle/cordova-plugin-mparticle/compare/4.0.1...4.1.0
 [4.0.1]: https://github.com/mParticle/cordova-plugin-mparticle/compare/4.0.0...4.0.1
 [4.0.0]: https://github.com/mParticle/cordova-plugin-mparticle/compare/3.0.1...4.0.0
