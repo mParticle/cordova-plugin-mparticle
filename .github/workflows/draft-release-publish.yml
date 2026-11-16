@@ -16,20 +16,21 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
-permissions:
-  contents: write
-  pull-requests: write
-  id-token: write
+permissions: {}
 
 jobs:
   publish-draft-release:
     runs-on: macos-latest
+    permissions:
+      contents: read
     steps:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Setup Node.js
-        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 #7.1.0
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 24
 
@@ -47,8 +48,10 @@ jobs:
           level: ${{ github.event.inputs.bump-type || 'patch' }}
 
       - name: Save validated version to file
+        env:
+          NEW_VERSION: ${{ steps.bump-version.outputs.new_version }}
         run: |
-          echo "${{ steps.bump-version.outputs.new_version }}" > VERSION
+          echo "$NEW_VERSION" > VERSION
 
       - name: NPM Install and Build
         working-directory: plugin
@@ -60,28 +63,38 @@ jobs:
 
       - name: Update Plugin package.json
         working-directory: plugin
+        env:
+          NEW_VERSION: ${{ steps.bump-version.outputs.new_version }}
         run: |
-          npm version ${{ steps.bump-version.outputs.new_version }} --no-git-tag-version
+          npm version "$NEW_VERSION" --no-git-tag-version
 
       - name: Update Rokt Kit package.json
         working-directory: Kits/Rokt
+        env:
+          NEW_VERSION: ${{ steps.bump-version.outputs.new_version }}
         run: |
-          npm version ${{ steps.bump-version.outputs.new_version }} --no-git-tag-version
+          npm version "$NEW_VERSION" --no-git-tag-version
 
       - name: Update Rokt Payment Extension package.json
         working-directory: Kits/RoktPaymentExtension
+        env:
+          NEW_VERSION: ${{ steps.bump-version.outputs.new_version }}
         run: |
-          npm version ${{ steps.bump-version.outputs.new_version }} --no-git-tag-version
+          npm version "$NEW_VERSION" --no-git-tag-version
 
       - name: Update plugin.xml versions
+        env:
+          NEW_VERSION: ${{ steps.bump-version.outputs.new_version }}
         run: |
-          sed -i '' "s/version=\"[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\"/version=\"${{ steps.bump-version.outputs.new_version }}\"/" plugin/plugin.xml
-          sed -i '' "s/version=\"[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\"/version=\"${{ steps.bump-version.outputs.new_version }}\"/" Kits/Rokt/plugin.xml
-          sed -i '' "s/version=\"[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\"/version=\"${{ steps.bump-version.outputs.new_version }}\"/" Kits/RoktPaymentExtension/plugin.xml
+          sed -i '' "s/version=\"[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\"/version=\"${NEW_VERSION}\"/" plugin/plugin.xml
+          sed -i '' "s/version=\"[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\"/version=\"${NEW_VERSION}\"/" Kits/Rokt/plugin.xml
+          sed -i '' "s/version=\"[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\"/version=\"${NEW_VERSION}\"/" Kits/RoktPaymentExtension/plugin.xml
 
       - name: Update iOS wrapper SDK version
+        env:
+          NEW_VERSION: ${{ steps.bump-version.outputs.new_version }}
         run: |
-          sed -i '' "s/_setWrapperSdk_internal:MPWrapperSdkCordova version:@\"[0-9.]*\"/_setWrapperSdk_internal:MPWrapperSdkCordova version:@\"${{ steps.bump-version.outputs.new_version }}\"/" plugin/src/ios/CDVMParticle.m
+          sed -i '' "s/_setWrapperSdk_internal:MPWrapperSdkCordova version:@\"[0-9.]*\"/_setWrapperSdk_internal:MPWrapperSdkCordova version:@\"${NEW_VERSION}\"/" plugin/src/ios/CDVMParticle.m
 
       - name: Publish Plugin to npm (dry-run)
         working-directory: plugin
@@ -96,7 +109,7 @@ jobs:
         run: npm publish --dry-run
 
       - name: Update changelog
-        uses: thomaseizinger/keep-a-changelog-new-release@f62c3c390716df5af712ba5d94f4f4a8efc1306d # v3.1.0
+        uses: thomaseizinger/keep-a-changelog-new-release@f62c3c390716df5af712ba5d94f4f4a8efc1306d # 3.1.0
         with:
           tag: ${{ steps.bump-version.outputs.new_version }}
           changelogPath: CHANGELOG.md
@@ -110,6 +123,8 @@ jobs:
           owner: ${{ github.repository_owner }}
           repositories: |
             cordova-plugin-mparticle
+          permission-contents: write
+          permission-pull-requests: write
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
